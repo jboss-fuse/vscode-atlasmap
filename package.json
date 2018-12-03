@@ -4,19 +4,38 @@
 	"version": "0.0.1",
 	"publisher": "jboss-fuse",
 	"engines": {
-		"vscode": "^1.25.0"
+		"vscode": "^1.29.1"
 	},
 	"categories": [
 		"Other"
 	],
 	"main": "./out/extension",
+	"activationEvents": [
+		"onCommand:atlasmap.start",
+		"onWebviewPanel:atlasmap"
+	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "atlasmap.start",
+				"title": "Start Atlas Map session",
+				"category": "Atlas Map"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "tsc -p ./",
+		"compile": "tsc -p ./",
+		"watch": "tsc -w -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install"
+	},
 	"dependencies": {
 		"fetch": "^1.1.0",
-		"vscode": "^1.1.18"
+		"vscode": "^1.1.24"
 	},
 	"devDependencies": {
-		"@types/node": "^10.5.2",
+		"@types/node": "^10.12.12",
 		"tslint": "^5.11.0",
-		"typescript": "^2.9.2"
+		"typescript": "^3.2.1"
 	}
 }
