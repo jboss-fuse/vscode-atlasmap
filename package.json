@@ -1,0 +1,22 @@
+{
+	"name": "atlasmap-viewer",
+	"description": "Opens a browser view for Atlas Data Mapper",
+	"version": "0.0.1",
+	"publisher": "jboss-fuse",
+	"engines": {
+		"vscode": "^1.25.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"main": "./out/extension",
+	"dependencies": {
+		"fetch": "^1.1.0",
+		"vscode": "^1.1.18"
+	},
+	"devDependencies": {
+		"@types/node": "^10.5.2",
+		"tslint": "^5.11.0",
+		"typescript": "^2.9.2"
+	}
+}
