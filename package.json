@@ -1,22 +1,47 @@
 {
 	"name": "atlasmap-viewer",
-	"description": "Opens a browser view for Atlas Data Mapper",
+	"description": "Opens a browser for Atlas Data Mapper",
 	"version": "0.0.1",
 	"publisher": "jboss-fuse",
+	"preview": true,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jboss-fuse/vscode-atlasmap.git"
+	},
+	"license": "Apache-2.0",
 	"engines": {
-		"vscode": "^1.25.0"
+		"vscode": "^1.29.1"
 	},
 	"categories": [
 		"Other"
 	],
 	"main": "./out/extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "atlasmap.open",
+				"title": "Open Atlas Map in default system browser",
+				"category": "Atlas Map"
+			}
+		]
+	},
+	"activationEvents": [
+		"onCommand:atlasmap.open"
+	],
+	"scripts": {
+		"vscode:prepublish": "tsc -p ./",
+		"compile": "tsc -p ./",
+		"watch": "tsc -w -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install"
+	},
 	"dependencies": {
 		"fetch": "^1.1.0",
-		"vscode": "^1.1.18"
+		"vscode": "^1.1.26",
+		"opn": "^5.4.0"
 	},
 	"devDependencies": {
-		"@types/node": "^10.5.2",
-		"tslint": "^5.11.0",
-		"typescript": "^2.9.2"
+		"@types/node": "^10.12.18",
+		"tslint": "^5.12.0",
+		"typescript": "^3.2.2"
 	}
 }
