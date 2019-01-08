@@ -15,6 +15,17 @@
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"label": "test",
+			"args": [
+				"run",
+				"test"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
 		}
 	]
 }
