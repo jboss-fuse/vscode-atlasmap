@@ -1,6 +1,6 @@
 {
 	"name": "atlasmap-viewer",
-	"description": "Opens a browser for Atlas Data Mapper",
+	"description": "Opens a browser for AtlasMap",
 	"version": "0.0.1",
 	"publisher": "jboss-fuse",
 	"preview": true,
@@ -20,8 +20,8 @@
 		"commands": [
 			{
 				"command": "atlasmap.open",
-				"title": "Open Atlas Map in default system browser",
-				"category": "Atlas Map"
+				"title": "Open AtlasMap in default system browser",
+				"category": "AtlasMap"
 			}
 		]
 	},
