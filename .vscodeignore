@@ -1,0 +1,9 @@
+**/*.ts
+*.vsix
+.gitignore
+.travis.yml
+.vscode/**
+gulpfile.js
+sonar-project.properties
+tsconfig.json
+tslint.json
