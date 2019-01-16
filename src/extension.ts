@@ -11,10 +11,33 @@ export function activate(context: vscode.ExtensionContext) {
 	var atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
 
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.open', async () => {
+		const url = await retrieveAtlasMapUrl();
+		opn(url);
+	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', () => {
+		var atlasmapProcess = child_process.spawn(
+			'java', ['-jar', atlasmapExecutablePath]
+		);
+		atlasmapProcess.stdout.on('data', function(data){
+			var dec = new TextDecoder("utf-8");
+			atlasmapServerOutputChannel.append(dec.decode(data));
+		});
+	}));
+
+}
+
+/**
+ * asks for inputs (url and port) by also providing the stored default configuration
+ * values for those input fields. Whenever one of the inputs differ from the stored
+ * configuration value then we issue an update on the saved value
+ */
+async function retrieveAtlasMapUrl(): Promise<string> {
 		// obtain the stored configuration settings for url and port
-		const urlFromSettings = vscode.workspace.getConfiguration().get("atlasmap.url");
-		const portFromSettings = vscode.workspace.getConfiguration().get("atlasmap.port");
+		const urlConfigKey = "atlasmap.url";
+		const portConfigKey = "atlasmap.port";
+		const urlFromSettings = vscode.workspace.getConfiguration().get(urlConfigKey);
+		const portFromSettings = vscode.workspace.getConfiguration().get(portConfigKey);
 
 		// obtain the atlasmap url
 		var url = await vscode.window.showInputBox(
@@ -32,17 +55,14 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		);
 
-		var setUrlAsGlobal = vscode.workspace.getConfiguration().inspect("atlasmap.url").workspaceValue == undefined;
-		var setPortAsGlobal = vscode.workspace.getConfiguration().inspect("atlasmap.port").workspaceValue == undefined;
-
 		if (url !== urlFromSettings) {
 			// url changed - update the configuration to remember the url
-			vscode.workspace.getConfiguration().update("atlasmap.url", url, setUrlAsGlobal);
+			updateConfigValue(urlConfigKey, url);
 		}
 
 		if (port !== portFromSettings) {
 			// port changed - update the configuration to remember the port
-			vscode.workspace.getConfiguration().update("atlasmap.port", port, setPortAsGlobal);
+			updateConfigValue(portConfigKey, port);
 		}
 
 		if (!url.startsWith("http://") && !url.startsWith("https://")) {
@@ -54,17 +74,16 @@ export function activate(context: vscode.ExtensionContext) {
 			url = url.substring(0, url.lastIndexOf(":"));
 		}
 
-		opn(url + ':' + port);
-	}));
+		return url + ":" + port;
+}
 
-	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', () => {
-		var atlasmapProcess = child_process.spawn(
-			'java', ['-jar', atlasmapExecutablePath]
-		);
-		atlasmapProcess.stdout.on('data', function(data){
-			var dec = new TextDecoder("utf-8");
-			atlasmapServerOutputChannel.append(dec.decode(data));
-		});
-	}));
-
+/**
+ * updates the configuration settings of the given key with the given value
+ * 
+ * @param key 	the key to update
+ * @param value the value to use as new value
+ */
+function updateConfigValue(key: string, value: string): void {
+	const setAsGlobal = vscode.workspace.getConfiguration().inspect(key).workspaceValue == undefined;
+	vscode.workspace.getConfiguration().update(key, value, setAsGlobal);
 }
