@@ -1,9 +1,10 @@
 import * as child_process from 'child_process';
 import * as opn from 'opn';
+import * as path from 'path';
+import * as requirements from './requirements';
 import * as vscode from 'vscode';
 import { TextDecoder } from 'util';
 import * as request from 'request';
-import * as path from 'path';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -26,12 +27,23 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', () => {
-		let atlasmapProcess = child_process.spawn(
-			'java', ['-jar', atlasmapExecutablePath]
-		);
-		atlasmapProcess.stdout.on('data', function(data){
-			let dec = new TextDecoder("utf-8");
-			atlasmapServerOutputChannel.append(dec.decode(data));
+
+		requirements.resolveRequirements().catch(error => {
+			vscode.window.showErrorMessage(error.message, error.label).then((selection) => {
+				if (error.label && error.label === selection && error.openUrl) {
+					vscode.commands.executeCommand('vscode.open', error.openUrl);
+				}
+			});
+			throw error;
+		}).then(requirements => {
+			var javaExecutablePath = path.resolve(requirements.java_home + '/bin/java');
+			var atlasmapProcess = child_process.spawn(
+				javaExecutablePath, ['-jar', atlasmapExecutablePath]
+			);
+			atlasmapProcess.stdout.on('data', function (data) {
+				var dec = new TextDecoder("utf-8");
+				atlasmapServerOutputChannel.append(dec.decode(data));
+			});
 		});
 	}));
 

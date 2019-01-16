@@ -62,7 +62,9 @@
 		"tslint": "gulp tslint"
 	},
 	"dependencies": {
+		"expand-home-dir": "^0.0.3",
 		"fetch": "^1.1.0",
+		"find-java-home": "^0.2.0",
 		"opn": "^5.4.0",
 		"request": "^2.88.0",
 		"vscode": "^1.1.26"
