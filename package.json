@@ -43,7 +43,6 @@
 		"tslint": "gulp tslint"
 	},
 	"dependencies": {
-		"chunk": "^0.0.2",
 		"fetch": "^1.1.0",
 		"opn": "^5.4.0",
 		"vscode": "^1.1.26"
