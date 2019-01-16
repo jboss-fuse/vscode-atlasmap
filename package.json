@@ -31,7 +31,7 @@
 		],
 		"configuration": {
 			"type": "object",
-			"title": "AtlasMap Settings [CURRENTLY NOT USED!!!]",
+			"title": "AtlasMap Settings",
 			"properties": {
 				"atlasmap.url": {
 					"type": "string",
