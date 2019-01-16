@@ -1,5 +1,4 @@
 import * as child_process from 'child_process';
-import * as chunk from 'chunk';
 import * as opn from 'opn';
 import * as vscode from 'vscode';
 import { TextDecoder } from 'util';
