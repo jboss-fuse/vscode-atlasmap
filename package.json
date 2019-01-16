@@ -38,6 +38,7 @@
 		"vscode:prepublish": "tsc -p ./",
 		"compile": "tsc -p ./",
 		"watch": "tsc -w -p ./",
+		"preinstall": "node ./scripts/preinstall.js",
 		"postinstall": "node ./node_modules/vscode/bin/install",
 		"test": "node ./node_modules/vscode/bin/test",
 		"tslint": "gulp tslint"
@@ -54,6 +55,7 @@
 		"gulp": "^4.0.0",
 		"gulp-tslint": "^8.1.3",
 		"mocha": "^5.2.0",
+		"mvn-artifact-download": "^4.0.0",
 		"tslint": "^5.12.0",
 		"typescript": "^3.2.2"
 	}
