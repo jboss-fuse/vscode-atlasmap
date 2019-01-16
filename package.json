@@ -28,7 +28,23 @@
 				"title": "Start AtlasMap",
 				"category": "AtlasMap"
 			}
-		]
+		],
+		"configuration": {
+			"type": "object",
+			"title": "AtlasMap Settings [CURRENTLY NOT USED!!!]",
+			"properties": {
+				"atlasmap.url": {
+					"type": "string",
+					"default": "localhost",
+					"description": "Url of the AtlasMap instance to use."
+				},
+				"atlasmap.port": {
+					"type": "string",
+					"default": "8585",
+					"description": "Port number of the AtlasMap instance to use."
+				}
+			}
+		}
 	},
 	"activationEvents": [
 		"onCommand:atlasmap.open",
