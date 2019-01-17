@@ -71,7 +71,6 @@
 		"expand-home-dir": "^0.0.3",
 		"fetch": "^1.1.0",
 		"find-java-home": "^0.2.0",
-		"opn": "^5.4.0",
 		"request": "^2.88.0"
 	},
 	"devDependencies": {
@@ -90,6 +89,6 @@
 		"sinon-chai": "^3.3.0",
 		"tslint": "^5.12.1",
 		"typescript": "^3.2.4",
-		"vscode": "^1.1.26"
+		"vscode": "^1.1.28"
 	}
 }

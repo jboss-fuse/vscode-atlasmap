@@ -5,6 +5,7 @@ import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
 import * as detect from 'detect-port';
+import * as atlasmap from "./../extension";
 
 const request = require("request");
 const expect = chai.expect;
@@ -75,6 +76,7 @@ describe("AtlasMap/Commands", function() {
 			let url:string = "http://localhost:" + port;
 			const body = await getWebUI(url);
 			expect(body, "Unexpected html response body").to.contain("AtlasMap");
+			expect(atlasmap.AtlasMapPanel.currentPanel._panel.webview.html).to.contain(url);
 		});
 	});
 
