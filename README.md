@@ -14,12 +14,12 @@ This extension is providing 2 commands to help development of [AtlasMap](http://
 ![Start AtlasMap command in palette](doc/StartAtlasMapCommand.png)
 
 AtlasMap is started on port 8585.
-To check that it has been started correctly, you can go to Output view and check for the "AtlasMap server" output:
+To check if it has been started correctly, you can go to Output view and check for the "AtlasMap server" output:
 ![AtlasMap server output](doc/AtlasMapServerOutput.png)
 
 ### Open an AtlasMap instance
 
-"AtlasMap: Open AtlasMap in default system browser" is opening the default system browser on 127.0.0.1:8585 address which is the URL used if you launched AtlasMap through the "Start AtlasMap" command.
+"AtlasMap: Open AtlasMap in default system browser" is opening the default system browser on the specified address which is the URL used if you launched AtlasMap through the "Start AtlasMap" command or any URL you specify in the command inputs. The command will ask you for the URL and the port number to use and will also persist the inputs in the settings of VS Code.
 ![Open AtlasMap command in palette](doc/OpenAtlasMapCommand.png)
 
 It opens with some default Data types.
@@ -30,4 +30,4 @@ It opens with some default Data types.
 ## Prerequisites
 
 - java 8+ must be installed on system path
-- port 8585 must be available
+- port 8585 must be available if you want to launch a local AtlasMap instance

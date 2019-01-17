@@ -36,7 +36,7 @@
 				"atlasmap.url": {
 					"type": "string",
 					"default": "localhost",
-					"description": "Url of the AtlasMap instance to use."
+					"description": "Url of the AtlasMap instance used by the Open AtlasMap command."
 				},
 				"atlasmap.port": {
 					"type": "string",

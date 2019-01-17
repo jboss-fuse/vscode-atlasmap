@@ -3,33 +3,34 @@ import * as opn from 'opn';
 import * as vscode from 'vscode';
 import { TextDecoder } from 'util';
 import * as request from 'request';
+import * as path from 'path';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	var atlasmapServerOutputChannel = vscode.window.createOutputChannel("Atlasmap server");
-
-	var path = require('path');
-	var atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
+	let atlasmapServerOutputChannel = vscode.window.createOutputChannel("Atlasmap server");
+	let atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
 
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.open', async () => {
 		const url = await retrieveAtlasMapUrl();
-		request.get(url, function (error, response, body) {
-			if (!error && response && "404" !== response.statusCode) {
-				// found the url resolvable - call the external browser
-				opn(url);
-			} else {
-				// seems the url is not found - inform the user
-				vscode.window.showErrorMessage("We can't find a running AtlasMap UI instance at " + url);
-			}
-		});
+		if (url !== undefined) {
+			request.get(url, function (error, response, body) {
+				if (!error && response && "404" !== response.statusCode) {
+					// found the url resolvable - call the external browser
+					opn(url);
+				} else {
+					// seems the url is not found - inform the user
+					vscode.window.showErrorMessage("We can't find a running AtlasMap UI instance at " + url);
+				}
+			});
+		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', () => {
-		var atlasmapProcess = child_process.spawn(
+		let atlasmapProcess = child_process.spawn(
 			'java', ['-jar', atlasmapExecutablePath]
 		);
 		atlasmapProcess.stdout.on('data', function(data){
-			var dec = new TextDecoder("utf-8");
+			let dec = new TextDecoder("utf-8");
 			atlasmapServerOutputChannel.append(dec.decode(data));
 		});
 	}));
@@ -42,44 +43,47 @@ export function activate(context: vscode.ExtensionContext) {
  * configuration value then we issue an update on the saved value
  */
 async function retrieveAtlasMapUrl(): Promise<string> {
-		// obtain the stored configuration settings for url and port
 		const urlConfigKey = "atlasmap.url";
 		const portConfigKey = "atlasmap.port";
-		const urlFromSettings = vscode.workspace.getConfiguration().get(urlConfigKey);
-		const portFromSettings = vscode.workspace.getConfiguration().get(portConfigKey);
+		const config = vscode.workspace.getConfiguration();
+		const urlFromSettings:string = config.get(urlConfigKey);
+		const portFromSettings:string = config.get(portConfigKey);
 
-		// obtain the atlasmap url
-		var url = await vscode.window.showInputBox(
+		let url = await vscode.window.showInputBox(
 			{ 
 				prompt: 'Enter the url of your AtlasMap instance (without port).',
-				value: '' + urlFromSettings
+				value: urlFromSettings
 			}
 		);
 
-		// obtain the atlasmap port
-		var port = await vscode.window.showInputBox(
+		let port = await vscode.window.showInputBox(
 			{ 
-				prompt: 'Provide glob pattern of files to have empty last line.',
-				value: '' + portFromSettings
+				prompt: 'Enter the port number of your AtlasMap instance.',
+				value: portFromSettings,
+				validateInput: (value: string): string | undefined => {
+					let numPort:number = parseInt(value);
+					if (isNaN(numPort) || numPort < 1 || numPort > 65535) {
+						return "Enter a valid port number (1 - 65535).";
+					} else {
+						return "";
+					}
+				}
 			}
 		);
 
-		if (url !== urlFromSettings) {
-			// url changed - update the configuration to remember the url
-			updateConfigValue(urlConfigKey, url);
+		// check if the user hit escape in one of the entry boxes
+		if (url === undefined || port === undefined) {
+			return undefined;
 		}
 
-		if (port !== portFromSettings) {
-			// port changed - update the configuration to remember the port
-			updateConfigValue(portConfigKey, port);
-		}
-
+		updateConfigValueIfNeeded(config, urlConfigKey, urlFromSettings, url);
+		updateConfigValueIfNeeded(config, portConfigKey, portFromSettings,port);
+		
 		if (!url.startsWith("http://") && !url.startsWith("https://")) {
 			url = "http://" + url;
 		}
 
 		if (url.lastIndexOf(":") > 4) {
-			// url contains a port ? cut it off
 			url = url.substring(0, url.lastIndexOf(":"));
 		}
 
@@ -89,10 +93,14 @@ async function retrieveAtlasMapUrl(): Promise<string> {
 /**
  * updates the configuration settings of the given key with the given value
  * 
- * @param key 	the key to update
- * @param value the value to use as new value
+ * @param config 	the vscode configuration object
+ * @param key 		the key to update
+ * @param oldValue	the old value
+ * @param newValue	the value to use as new value
  */
-function updateConfigValue(key: string, value: string): void {
-	const setAsGlobal = vscode.workspace.getConfiguration().inspect(key).workspaceValue == undefined;
-	vscode.workspace.getConfiguration().update(key, value, setAsGlobal);
+function updateConfigValueIfNeeded(config: vscode.WorkspaceConfiguration, key: string, oldValue: string, newValue: string): void {
+	if (newValue !== oldValue) {
+		const setAsGlobal = config.inspect(key).workspaceValue == undefined;
+		config.update(key, newValue, setAsGlobal);
+	}
 }
