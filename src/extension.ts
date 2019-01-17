@@ -2,6 +2,7 @@ import * as child_process from 'child_process';
 import * as opn from 'opn';
 import * as vscode from 'vscode';
 import { TextDecoder } from 'util';
+import * as request from 'request';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -12,7 +13,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.open', async () => {
 		const url = await retrieveAtlasMapUrl();
-		opn(url);
+		request.get(url, function (error, response, body) {
+			if (!error && response && "404" !== response.statusCode) {
+				// found the url resolvable - call the external browser
+				opn(url);
+			} else {
+				// seems the url is not found - inform the user
+				vscode.window.showErrorMessage("We can't find a running AtlasMap UI instance at " + url);
+			}
+		});
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', () => {
