@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.open', async () => {
 		const url = await retrieveAtlasMapUrl();
 		if (url !== undefined) {
-			request.get(url, function (error, response, body) {
+			request.get(url, function (error: any, response: any, body: any) {
 				if (!error && response && "404" !== response.statusCode) {
 					// found the url resolvable - call the external browser
 					opn(url);
