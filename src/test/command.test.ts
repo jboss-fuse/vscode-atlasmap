@@ -9,44 +9,45 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 describe("AtlasMap/Commands", () => {
-  let sandbox: sinon.SinonSandbox;
-  let inputStub: sinon.SinonStub;
+	let sandbox: sinon.SinonSandbox;
+	let inputStub: sinon.SinonStub;
 
-  before(() => {
-    sandbox = sinon.createSandbox();
-    inputStub = sandbox.stub(vscode.window, "showInputBox");
-  });
+	before(() => {
+		sandbox = sinon.createSandbox();
+		inputStub = sandbox.stub(vscode.window, "showInputBox");
+	});
 
-  after(() => {
-    sandbox.restore();
-  });
+	after(() => {
+		sandbox.restore();
+	});
 
-  describe("Open", () => {
-    before(() => {
-      inputStub.onFirstCall().returns("8585");
-    });
+	describe("Open", () => {
+		before(() => {
+			inputStub.onFirstCall().returns("8585");
+		});
 
-    after(() => {
-      inputStub.reset();
-    });
+		after(() => {
+			inputStub.reset();
+		});
 
-    it("works with valid inputs", async () => {
-      const result = await vscode.commands.executeCommand("atlasmap.open");
-    });
-  });
+		it("works with valid inputs", async () => {
+			await vscode.commands.executeCommand("atlasmap.start");
+			await vscode.commands.executeCommand("atlasmap.open");
+		});
+	});
 
-  describe("Start", () => {
-    before(() => {
-      inputStub.onFirstCall().returns("localhost");
-      inputStub.onSecondCall().returns("8585");
-    });
+	describe("Start", () => {
+		before(() => {
+			inputStub.onFirstCall().returns("localhost");
+			inputStub.onSecondCall().returns("8585");
+		});
 
-    after(() => {
-      inputStub.reset();
-    });
+		after(() => {
+			inputStub.reset();
+		});
 
-    it("works with valid inputs", async () => {
-      const result = await vscode.commands.executeCommand("atlasmap.start");
-    });
-  });
+		it("works with valid inputs", async () => {
+			await vscode.commands.executeCommand("atlasmap.start");
+		});
+	});
 });
