@@ -1,51 +1,52 @@
-'use strict';
+"use strict";
 
-import * as vscode from 'vscode';
-import * as chai from 'chai';
-import * as sinonChai from 'sinon-chai';
-import * as sinon from 'sinon';
+import * as vscode from "vscode";
+import * as chai from "chai";
+import * as sinonChai from "sinon-chai";
+import * as sinon from "sinon";
 
 const expect = chai.expect;
 chai.use(sinonChai);
 
-describe('AtlasMap/Commands', () => {
-	let sandbox: sinon.SinonSandbox;
-	const errorMessage = 'ERROR MESSAGE';
+describe("AtlasMap/Commands", () => {
+  let sandbox: sinon.SinonSandbox;
+  let inputStub: sinon.SinonStub;
 
-	before(() => {
-		sandbox = sinon.createSandbox();
-	});
+  before(() => {
+    sandbox = sinon.createSandbox();
+    inputStub = sandbox.stub(vscode.window, "showInputBox");
+  });
 
-	after(() => {
-		sandbox.restore();
-	});
+  after(() => {
+    sandbox.restore();
+  });
 
-	describe('Open', () => {
-		let inputStub: sinon.SinonStub;
+  describe("Open", () => {
+    before(() => {
+      inputStub.onFirstCall().returns("8585");
+    });
 
-		before(() => {
-			inputStub = sandbox.stub(vscode.window, 'showInputBox');
-			inputStub.onFirstCall().returns("localhost");
-			inputStub.onSecondCall().returns("8585");
-		});
+    after(() => {
+      inputStub.reset();
+    });
 
-		it('works with valid inputs', async () => {
-			const result = await vscode.commands.executeCommand('atlasmap.open');
-			expect(result).null;
-		});
-	});
+    it("works with valid inputs", async () => {
+      const result = await vscode.commands.executeCommand("atlasmap.open");
+    });
+  });
 
-	describe('Start', () => {
-		let inputStub: sinon.SinonStub;
+  describe("Start", () => {
+    before(() => {
+      inputStub.onFirstCall().returns("localhost");
+      inputStub.onSecondCall().returns("8585");
+    });
 
-		before(() => {
-			inputStub = sandbox.stub(vscode.window, 'showInputBox');
-			inputStub.onFirstCall().returns("8585");
-		});
+    after(() => {
+      inputStub.reset();
+    });
 
-		it('works with valid inputs', async () => {
-			const result = await vscode.commands.executeCommand('atlasmap.start');
-			expect(result).null;
-		});
-	});
+    it("works with valid inputs", async () => {
+      const result = await vscode.commands.executeCommand("atlasmap.start");
+    });
+  });
 });

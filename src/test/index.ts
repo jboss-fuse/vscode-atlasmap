@@ -1,9 +1,13 @@
-'use strict';
+"use strict";
 
-import * as testRunner from 'vscode/lib/testrunner';
+import * as testRunner from "vscode/lib/testrunner";
+
+process.on("unhandledRejection", err => {
+	console.log("Unhandled rejection:", err);
+});
 
 testRunner.configure({
-	ui: 'bdd',
+	ui: "bdd",
 	useColors: true,
 	timeout: 100000,
 	slow: 50000
