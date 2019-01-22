@@ -1,9 +1,9 @@
 "use strict";
 
-import * as vscode from "vscode";
 import * as chai from "chai";
-import * as sinonChai from "sinon-chai";
 import * as sinon from "sinon";
+import * as sinonChai from "sinon-chai";
+import * as vscode from "vscode";
 
 const expect = chai.expect;
 chai.use(sinonChai);

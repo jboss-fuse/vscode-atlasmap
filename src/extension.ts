@@ -1,19 +1,19 @@
-import * as child_process from 'child_process';
-import * as opn from 'opn';
-import * as vscode from 'vscode';
-import { TextDecoder } from 'util';
-import * as request from 'request';
-import * as path from 'path';
+import * as child_process from "child_process";
+import * as opn from "opn";
+import * as path from "path";
+import * as request from "request";
+import { TextDecoder } from "util";
+import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext) {
 
-	let atlasmapServerOutputChannel = vscode.window.createOutputChannel("Atlasmap server");
-	let atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
+	const atlasmapServerOutputChannel = vscode.window.createOutputChannel("Atlasmap server");
+	const atlasmapExecutablePath = context.asAbsolutePath(path.join("jars", "atlasmap-standalone.jar"));
 
-	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.open', async () => {
+	context.subscriptions.push(vscode.commands.registerCommand("atlasmap.open", async () => {
 		const url = await retrieveAtlasMapUrl();
 		if (url !== undefined) {
-			request.get(url, function (error: any, response: any, body: any) {
+			request.get(url, (error: any, response: any, body: any) => {
 				if (!error && response && "404" !== response.statusCode) {
 					// found the url resolvable - call the external browser
 					opn(url);
@@ -25,16 +25,13 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', () => {
-		let atlasmapProcess = child_process.spawn(
-			'java', ['-jar', atlasmapExecutablePath]
-		);
-		atlasmapProcess.stdout.on('data', function(data){
-			let dec = new TextDecoder("utf-8");
+	context.subscriptions.push(vscode.commands.registerCommand("atlasmap.start", () => {
+		const atlasmapProcess = child_process.spawn("java", ["-jar", atlasmapExecutablePath]);
+		atlasmapProcess.stdout.on("data", (data) => {
+			const dec = new TextDecoder("utf-8");
 			atlasmapServerOutputChannel.append(dec.decode(data));
 		});
 	}));
-
 }
 
 /**
@@ -46,29 +43,29 @@ async function retrieveAtlasMapUrl(): Promise<string> {
 		const urlConfigKey = "atlasmap.url";
 		const portConfigKey = "atlasmap.port";
 		const config = vscode.workspace.getConfiguration();
-		const urlFromSettings:string = config.get(urlConfigKey);
-		const portFromSettings:string = config.get(portConfigKey);
+		const urlFromSettings: string = config.get(urlConfigKey);
+		const portFromSettings: string = config.get(portConfigKey);
 
 		let url = await vscode.window.showInputBox(
-			{ 
-				prompt: 'Enter the url of your AtlasMap instance (without port).',
-				value: urlFromSettings
-			}
+			{
+				prompt: "Enter the url of your AtlasMap instance (without port).",
+				value: urlFromSettings,
+			},
 		);
 
-		let port = await vscode.window.showInputBox(
-			{ 
-				prompt: 'Enter the port number of your AtlasMap instance.',
-				value: portFromSettings,
+		const port = await vscode.window.showInputBox(
+			{
+				prompt: "Enter the port number of your AtlasMap instance.",
 				validateInput: (value: string): string | undefined => {
-					let numPort:number = parseInt(value);
+					const numPort: number = parseInt(value, 10);
 					if (isNaN(numPort) || numPort < 1 || numPort > 65535) {
 						return "Enter a valid port number (1 - 65535).";
 					} else {
 						return "";
 					}
-				}
-			}
+				},
+				value: portFromSettings,
+			},
 		);
 
 		// check if the user hit escape in one of the entry boxes
@@ -77,8 +74,8 @@ async function retrieveAtlasMapUrl(): Promise<string> {
 		}
 
 		updateConfigValueIfNeeded(config, urlConfigKey, urlFromSettings, url);
-		updateConfigValueIfNeeded(config, portConfigKey, portFromSettings,port);
-		
+		updateConfigValueIfNeeded(config, portConfigKey, portFromSettings, port);
+
 		if (!url.startsWith("http://") && !url.startsWith("https://")) {
 			url = "http://" + url;
 		}
@@ -92,15 +89,19 @@ async function retrieveAtlasMapUrl(): Promise<string> {
 
 /**
  * updates the configuration settings of the given key with the given value
- * 
+ *
  * @param config 	the vscode configuration object
  * @param key 		the key to update
  * @param oldValue	the old value
  * @param newValue	the value to use as new value
  */
-function updateConfigValueIfNeeded(config: vscode.WorkspaceConfiguration, key: string, oldValue: string, newValue: string): void {
+function updateConfigValueIfNeeded(
+		config: vscode.WorkspaceConfiguration,
+		key: string,
+		oldValue: string,
+		newValue: string): void {
 	if (newValue !== oldValue) {
-		const setAsGlobal = config.inspect(key).workspaceValue == undefined;
+		const setAsGlobal = config.inspect(key).workspaceValue === undefined;
 		config.update(key, newValue, setAsGlobal);
 	}
 }

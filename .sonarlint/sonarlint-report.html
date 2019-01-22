@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>SonarLint report of vscode-atlasmap</title>
+  <link href="sonarlintreport_files/sonar.css" media="all" rel="stylesheet" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="sonarlintreport_files/favicon.ico">
+  <script type="text/javascript" src="sonarlintreport_files/jquery.min.js"></script>
+  <script type="text/javascript">
+    var issuesPerComponent = [
+    ];
+    var nbComponents = 0;
+    var separators = new Array();
+
+    function showLine(fileIndex, lineId) {
+      var elt = $('#' + fileIndex + 'L' + lineId);
+      if (elt != null) {
+        elt.show();
+      }
+      elt = $('#' + fileIndex + 'LV' + lineId);
+      if (elt != null) {
+        elt.show();
+      }
+    }
+
+    /* lineIds must be sorted */
+    function showLines(fileIndex, lineIds) {
+      var lastSeparatorId = 9999999;
+      for (var lineIndex = 0; lineIndex < lineIds.length; lineIndex++) {
+        var lineId = lineIds[lineIndex];
+        if (lineId > 0) {
+          if (lineId > lastSeparatorId) {
+            var separator = $('#' + fileIndex + 'S' + lastSeparatorId);
+            if (separator != null) {
+              separator.addClass('visible');
+              separators.push(separator);
+            }
+          }
+
+          for (var i = -2; i < 3; ++i) {
+            showLine(fileIndex, lineId + i);
+          }
+          lastSeparatorId = lineId + 2;
+        }
+      }
+    }
+     function hideAll() {
+       $('tr.row').hide();
+       $('div.issue').hide();
+       for (var separatorIndex = 0; separatorIndex < separators.length; separatorIndex++) {
+         separators[separatorIndex].removeClass('visible');
+       }
+       separators.length = 0;
+       $('.sources span.ko').removeClass('ko');
+     }
+
+     function showIssues(fileIndex, issues) {
+       $.each(issues, function(index, issue) {
+         $('#' + issue['id']).show();
+         $('span.issue-' + issue['id']).addClass('ko');
+       });
+       var showComponent = issues.length > 0;
+       if (showComponent) {
+         $('#comp-table-' + fileIndex).show();
+       } else {
+         $('#comp-table-' + fileIndex).hide();
+       }
+     }
+
+
+    function refreshFilters(updateSelect) {
+      if (updateSelect) {
+        populateSelectFilter();
+      }
+      var ruleFilter = $('#rule_filter').val();
+
+      hideAll();
+      $('.all').removeClass('all-masked');
+      for (var compIndex = 0; compIndex < nbComponents; compIndex++) {
+        var filteredIssues = $.grep(issuesPerComponent[compIndex], function(v) {
+              return (ruleFilter == '' || v['r'] == ruleFilter || v['s'] == ruleFilter);
+            }
+        );
+
+        var linesToDisplay = $.map(filteredIssues, function(v, i) {
+          return v['startLine'];
+        });
+
+        linesToDisplay.sort();// the showLines() requires sorted ids
+        showLines(compIndex, linesToDisplay);
+        showIssues(compIndex, filteredIssues);
+      }
+    }
+    
+    var all_severities = ['blocker', 'critical', 'major', 'minor', 'info'];
+
+
+    var severityFilter = [
+    ].sort(function(a, b) {
+        var x = all_severities.indexOf(a.key); var y = all_severities.indexOf(b.key);
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+
+    var ruleFilter = [
+    ].sort(function(a, b) {
+        var x = a.label; var y = b.label;
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+
+    function populateSelectFilter() {
+       var ruleFilterSelect = $('#rule_filter');
+       ruleFilterSelect.empty().append(function() {
+         var output = '';
+         output += '<option value="" selected>Filter by:</option>';
+         output += '<optgroup label="Severity">';
+         $.each(severityFilter, function(key, value) {
+           if (value.total > 0) {
+             output += '<option value="' + value.key + '">' + value.label + ' (' + value.total + ')</option>';
+           }
+         });
+         output += '<optgroup label="Rule">';
+         $.each(ruleFilter, function(key, value) {
+           if (value.total > 0) {
+             output += '<option value="' + value.key + '">' + value.label + ' (' + value.total + ')</option>';
+           }
+         });
+         return output;
+       });
+    }
+  </script>
+</head>
+<body>
+<div id="reportHeader">
+  <div id="logo"><img src="sonarlintreport_files/sonarlint.png" alt="SonarLint"/></div>
+  <div class="title">SonarLint Report</div>
+  <div class="subtitle">vscode-atlasmap - Jan 22, 2019, 1:49:04 PM</div>
+</div>
+
+<div id="content">
+  <div class="banner">No issues</div>
+</div>
+</body>
+</html>
