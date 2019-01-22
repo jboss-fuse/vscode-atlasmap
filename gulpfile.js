@@ -1,8 +1,9 @@
-'use strict';
-import * as gulp  from 'gulp';
-import * as gulp_tslint from 'gulp-tslint';
+(function() { "use strict"; } ());
 
-gulp.task('tslint', () => {
+var gulp = require("gulp");
+var gulp_tslint = require("gulp-tslint");
+
+gulp.task("tslint", () => {
     return gulp.src(['**/*.ts', '!**/*.d.ts', '!node_modules/**'])
       .pipe(gulp_tslint())
       .pipe(gulp_tslint.report());
