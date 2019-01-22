@@ -56,6 +56,10 @@ async function retrieveAtlasMapUrl(): Promise<string> {
 			}
 		);
 
+		if (url == undefined) {
+			return undefined;
+		}
+
 		let port = await vscode.window.showInputBox(
 			{ 
 				prompt: 'Enter the port number of your AtlasMap instance.',
@@ -71,8 +75,7 @@ async function retrieveAtlasMapUrl(): Promise<string> {
 			}
 		);
 
-		// check if the user hit escape in one of the entry boxes
-		if (url === undefined || port === undefined) {
+		if (port === undefined) {
 			return undefined;
 		}
 
