@@ -24,6 +24,8 @@ describe("AtlasMap/Commands", () => {
 	describe("Open", () => {
 		before(() => {
 			inputStub.onFirstCall().returns("8585");
+			inputStub.onSecondCall().returns("localhost");
+			inputStub.onThirdCall().returns("8585");
 		});
 
 		after(() => {
@@ -38,8 +40,7 @@ describe("AtlasMap/Commands", () => {
 
 	describe("Start", () => {
 		before(() => {
-			inputStub.onFirstCall().returns("localhost");
-			inputStub.onSecondCall().returns("8585");
+			inputStub.onFirstCall().returns("8585");
 		});
 
 		after(() => {
