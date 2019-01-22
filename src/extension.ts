@@ -6,6 +6,10 @@ import * as vscode from 'vscode';
 import { TextDecoder } from 'util';
 import * as request from 'request';
 
+const urlConfigKey = "atlasmap.url";
+const portConfigKey = "atlasmap.port";
+const config = vscode.workspace.getConfiguration();
+
 export function activate(context: vscode.ExtensionContext) {
 
 	let atlasmapServerOutputChannel = vscode.window.createOutputChannel("Atlasmap server");
@@ -26,27 +30,44 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', () => {
-
-		requirements.resolveRequirements().catch(error => {
-			vscode.window.showErrorMessage(error.message, error.label).then((selection) => {
-				if (error.label && error.label === selection && error.openUrl) {
-					vscode.commands.executeCommand('vscode.open', error.openUrl);
-				}
-			});
-			throw error;
-		}).then(requirements => {
-			var javaExecutablePath = path.resolve(requirements.java_home + '/bin/java');
-			var atlasmapProcess = child_process.spawn(
-				javaExecutablePath, ['-jar', atlasmapExecutablePath]
-			);
-			atlasmapProcess.stdout.on('data', function (data) {
-				var dec = new TextDecoder("utf-8");
-				atlasmapServerOutputChannel.append(dec.decode(data));
-			});
-		});
+	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', async () => {
+		const port = await retrieveLocalAtlasMapPort();
+		if (port !== undefined) {
+			const detect = require('detect-port');
+			const co = require('co');
+			if (await co(function *() {
+				const _port = yield detect(port);
+				return port == _port;
+			})) {
+				launchAtlasMapLocally(atlasmapExecutablePath, atlasmapServerOutputChannel, port);
+				vscode.window.showInformationMessage("Starting AtlasMap instance at port " + port);
+			} else {
+				vscode.window.showErrorMessage("The port " + port + " is already occupied. Choose a different port.");
+			}
+		}		
 	}));
+}
 
+function launchAtlasMapLocally(atlasmapExecutablePath: string, atlasmapServerOutputChannel: vscode.OutputChannel, port: string) {
+	process.env.SERVER_PORT = port;
+
+	requirements.resolveRequirements().catch(error => {
+		vscode.window.showErrorMessage(error.message, error.label).then((selection) => {
+			if (error.label && error.label === selection && error.openUrl) {
+				vscode.commands.executeCommand('vscode.open', error.openUrl);
+			}
+		});
+		throw error;
+	}).then(requirements => {
+		let javaExecutablePath = path.resolve(requirements.java_home + '/bin/java');
+		let atlasmapProcess = child_process.spawn(
+			javaExecutablePath, ['-jar', atlasmapExecutablePath]
+		);
+		atlasmapProcess.stdout.on('data', function (data) {
+			let dec = new TextDecoder("utf-8");
+			atlasmapServerOutputChannel.append(dec.decode(data));
+		});
+	});
 }
 
 /**
@@ -55,9 +76,6 @@ export function activate(context: vscode.ExtensionContext) {
  * configuration value then we issue an update on the saved value
  */
 async function retrieveAtlasMapUrl(): Promise<string> {
-		const urlConfigKey = "atlasmap.url";
-		const portConfigKey = "atlasmap.port";
-		const config = vscode.workspace.getConfiguration();
 		const urlFromSettings:string = config.get(urlConfigKey);
 		const portFromSettings:string = config.get(portConfigKey);
 
@@ -68,24 +86,11 @@ async function retrieveAtlasMapUrl(): Promise<string> {
 			}
 		);
 
-		if (url == undefined) {
+		if (url === undefined) {
 			return undefined;
 		}
 
-		let port = await vscode.window.showInputBox(
-			{ 
-				prompt: 'Enter the port number of your AtlasMap instance.',
-				value: portFromSettings,
-				validateInput: (value: string): string | undefined => {
-					let numPort:number = parseInt(value);
-					if (isNaN(numPort) || numPort < 1 || numPort > 65535) {
-						return "Enter a valid port number (1 - 65535).";
-					} else {
-						return "";
-					}
-				}
-			}
-		);
+		const port = await retrievePortFromUserInput(portFromSettings);
 
 		if (port === undefined) {
 			return undefined;
@@ -103,6 +108,42 @@ async function retrieveAtlasMapUrl(): Promise<string> {
 		}
 
 		return url + ":" + port;
+}
+
+/**
+ * asks for the port number to use to start up a local AtlasMap instance
+ * the entered port number will be saved to the settings for later use
+ */
+async function retrieveLocalAtlasMapPort(): Promise<string> {
+	const portFromSettings:string = config.get(portConfigKey);
+
+	let port = await retrievePortFromUserInput(portFromSettings);
+
+	// check if the user hit escape
+	if (port === undefined) {
+		return undefined;
+	}
+
+	updateConfigValueIfNeeded(config, portConfigKey, portFromSettings,port);
+	
+	return port;
+}
+
+async function retrievePortFromUserInput(portFromSettings: string): Promise<string> {
+	return vscode.window.showInputBox(
+		{ 
+			prompt: 'Enter the port number of your AtlasMap instance.',
+			value: portFromSettings,
+			validateInput: (value: string): string | undefined => {
+				let numPort:number = parseInt(value);
+				if (isNaN(numPort) || numPort < 1 || numPort > 65535) {
+					return "Enter a valid port number (1 - 65535).";
+				} else {
+					return "";
+				}
+			}
+		}
+	);
 }
 
 /**
