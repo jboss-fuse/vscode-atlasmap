@@ -17,9 +17,10 @@ install:
 script:
   - 'npm test --silent'
 after_success:
-  - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then
-    sonar-scanner;
-    fi
+#  - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then
+  - gulp
+  - sonar-scanner
+#    fi
 deploy:
 - provider: script
   script: vsce publish -p $VSCODE_TOKEN
