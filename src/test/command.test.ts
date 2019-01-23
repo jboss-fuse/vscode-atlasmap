@@ -22,6 +22,23 @@ describe("AtlasMap/Commands", () => {
 		sandbox.restore();
 	});
 
+	describe("Open", () => {
+		before(() => {
+			inputStub.onFirstCall().returns("8585");
+			inputStub.onSecondCall().returns("localhost");
+			inputStub.onThirdCall().returns("8585");
+		});
+
+		after(() => {
+			inputStub.reset();
+		});
+
+		it("works with valid inputs", async () => {
+			await vscode.commands.executeCommand("atlasmap.start");
+			await vscode.commands.executeCommand("atlasmap.open");
+		});
+	});
+
 	describe("Start", () => {
 
 		let port = "8586";
@@ -48,7 +65,6 @@ describe("AtlasMap/Commands", () => {
 
 			await vscode.commands.executeCommand("atlasmap.start");
 			assert.ok(errorMessageSpy.calledOnceWithExactly("The port " + port + " is already occupied. Choose a different port.", sinon.match.any));
-
 		});
 	});
 });
