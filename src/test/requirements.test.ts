@@ -3,9 +3,9 @@ import * as requirements from '../requirements';
 
 //test copied from vscode-java
 
-suite('Java requirements', () => {
+describe('Java requirements', () => {
 
-	test('should parse Java version', function () {
+	it('should parse Java version', function () {
 		//Test boundaries
 		assert.equal(requirements.parseMajorVersion(null), 0);
 		assert.equal(requirements.parseMajorVersion(''), 0);
