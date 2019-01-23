@@ -96,6 +96,7 @@
 		"@types/node": "^10.12.18",
 		"@types/sinon": "^7.0.4",
 		"@types/sinon-chai": "^3.2.1",
+		"assert": "^1.4.1",
 		"chai": "^4.2.0",
 		"gulp": "^4.0.0",
 		"gulp-tslint": "^8.1.3",
