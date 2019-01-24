@@ -39,32 +39,11 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "atlasmap.open",
-				"title": "Open AtlasMap in default system browser",
-				"category": "AtlasMap"
-			},
-			{
 				"command": "atlasmap.start",
-				"title": "Start AtlasMap",
+				"title": "Open AtlasMap",
 				"category": "AtlasMap"
 			}
-		],
-		"configuration": {
-			"type": "object",
-			"title": "AtlasMap Settings",
-			"properties": {
-				"atlasmap.url": {
-					"type": "string",
-					"default": "localhost",
-					"description": "Url of the AtlasMap instance used by the Open AtlasMap command."
-				},
-				"atlasmap.port": {
-					"type": "string",
-					"default": "8585",
-					"description": "Port number of the AtlasMap instance to use."
-				}
-			}
-		}
+		]
 	},
 	"activationEvents": [
 		"onCommand:atlasmap.open",
