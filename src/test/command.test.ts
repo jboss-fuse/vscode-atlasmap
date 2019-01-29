@@ -4,62 +4,83 @@ import * as chai from "chai";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
-import { fail } from "assert";
+import { fail, doesNotReject } from "assert";
 
+const request = require("request");
 const expect = chai.expect;
 chai.use(sinonChai);
 
-describe("AtlasMap/Commands", () => {
+describe("AtlasMap/Commands", function() {
 
 	let sandbox: sinon.SinonSandbox;
 	let executeCommandSpy: sinon.SinonSpy;
 	let showInformationMessageSpy: sinon.SinonSpy;
+	let port: string;
 	const keyString: string = "Starting AtlasMap instance at port ";
 
-	before(() => {
+	before(async function() {
 		sandbox = sinon.createSandbox();
 		executeCommandSpy = sinon.spy(vscode.commands, "executeCommand");
 		showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
+		await vscode.commands.executeCommand("atlasmap.start");
+		await new Promise(resolve => setTimeout(resolve, 15000));
 	});
 
-	after(() => {
+	after(function() {
 		executeCommandSpy.restore();
 		showInformationMessageSpy.restore();
 		sandbox.restore();
 	});
 
-	describe("Start", () => {
-		it("test atlasmap launch and ui availability", async () => {
-			await vscode.commands.executeCommand("atlasmap.start");
-			
-			expect(executeCommandSpy.calledOnce, "AtlasMap Start command has not been invoked").to.be.true;
+	describe("Start AtlasMap Command Tests", function() {
+	
+		it("test command execution", async function() {
+			// atlasmap has been started in the setup of the test suite already - just check the call count and determine the port
 			expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+			port = determineUsedPort();
+			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+		});
 
-			let repeatCount = 0;
-			while (showInformationMessageSpy.callCount < 1 && repeatCount < 15) {
-				await new Promise(resolve => setTimeout(resolve, 1000));
-				repeatCount++;
-			}
+		it("test multiple instances startup prevention", async function() {
+			expect(port, "Port is not set by previously running test").to.not.be.undefined;
+			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
 
-			expect(showInformationMessageSpy.callCount, "Startup Notification not displayed!").to.be.greaterThan(0);
-			let port: string = determineUsedPort();
+			await vscode.commands.executeCommand("atlasmap.start");
 
+			expect(executeCommandSpy.withArgs("atlasmap.start").callCount, "AtlasMap start command was not issued").to.be.greaterThan(1);
+			expect(showInformationMessageSpy.getCalls()[showInformationMessageSpy.callCount-1].args[0], "No detection message for running instance found!").to.equal("Running AtlasMap instance found at port " + port);
+
+			await vscode.commands.executeCommand("atlasmap.start");
+
+			expect(executeCommandSpy.withArgs("atlasmap.start").callCount, "AtlasMap start command was not issued").to.be.greaterThan(2);
+			expect(showInformationMessageSpy.getCalls()[showInformationMessageSpy.callCount-1].args[0], "No detection message for running instance found!").to.equal("Running AtlasMap instance found at port " + port);
+		});
+
+		it("test ui availability", async function() {
 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
 
 			let url:string = "http://localhost:" + port;
-			var request = require("request");
-			await request.get(url, function (error: any, response: any, body: any) {
-				if (!error && response && "404" !== response.statusCode) {
-					// found the url resolvable - call the external browser
-					console.log("found atlasmap ui running at port " + url);
-				} else {
-					// seems the url is not found - inform the user
-					fail("AtlasMap UI not available at " + url);
-				}
-			});			
+			try {
+				let html = await getWebUI(url);
+			} catch (error) {
+				fail("Unable to access the web UI due to " + error);
+			}
 		});
 	});
+
+	function getWebUI(url: string) {
+		return new Promise((resolve, reject) => {
+			request(url, (error: any, response: any, body: any) => {
+				if (error) reject(error);
+				if (response.statusCode != 200) {
+					reject('Invalid status code <' + response.statusCode + '>');
+				}
+				resolve(body);
+			});
+		});
+	}
 
 	function determineUsedPort(): string {
 		let port: string;

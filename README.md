@@ -17,7 +17,7 @@ AtlasMap is started on port 8585 by default. If this port is occupied another fr
 To check if it has been started correctly, you can go to Output view and check for the "AtlasMap Server" output:
 ![AtlasMap server output](doc/AtlasMapServerOutput.png)
 
-The web ui opens with some default data types.
+The AtlasMap web interface opens with some default data types.
 ![Default page AtlasMap](doc/AtlasMapDefaultPage.png)
 
  It allows you to create and modify data transformations using AtlasMap. When the data transformation is finished, you can export it from AtlasMap UI and copy the artifact into your project.
