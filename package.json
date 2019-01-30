@@ -4,14 +4,34 @@
 	"version": "0.0.1",
 	"publisher": "jboss-fuse",
 	"preview": true,
+	"bugs": "https://github.com/jboss-fuse/vscode-atlasmap/issues",
+	"homepage": "https://github.com/jboss-fuse/vscode-atlasmap",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/jboss-fuse/vscode-atlasmap.git"
 	},
+	"contributors": [
+		{
+			"name": "Aurélien Pupier",
+			"email": "apupier@redhat.com",
+			"url": "http://redhat.com"
+		},
+		{
+			"name": "Lars Heinemann",
+			"email": "lheinema@redhat.com",
+			"url": "http://redhat.com"
+		}
+	],
 	"license": "Apache-2.0",
 	"engines": {
 		"vscode": "^1.29.1"
 	},
+	"keywords": [
+		"atlasmap",
+		"data",
+		"transformation",
+		"mapper"
+	],
 	"categories": [
 		"Other"
 	],
@@ -66,8 +86,7 @@
 		"fetch": "^1.1.0",
 		"find-java-home": "^0.2.0",
 		"opn": "^5.4.0",
-		"request": "^2.88.0",
-		"vscode": "^1.1.26"
+		"request": "^2.88.0"		
 	},
 	"devDependencies": {
 		"@types/chai": "^4.1.7",
@@ -83,6 +102,7 @@
 		"sinon": "^7.2.3",
 		"sinon-chai": "^3.3.0",
 		"tslint": "^5.12.1",
-		"typescript": "^3.2.4"
+		"typescript": "^3.2.4",
+		"vscode": "^1.1.26"
 	}
 }
