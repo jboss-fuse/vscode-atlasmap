@@ -46,7 +46,6 @@
 		]
 	},
 	"activationEvents": [
-		"onCommand:atlasmap.open",
 		"onCommand:atlasmap.start"
 	],
 	"scripts": {
