@@ -13,12 +13,18 @@ export function activate(context: vscode.ExtensionContext) {
 	let atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
 	let atlasMapLaunchPort: string;
 
-	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', async () => {
+	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', () => {
 		if (atlasMapLaunchPort === undefined) {
-			const freeLocalPort = await retrieveFreeLocalPort();
-			launchAtlasMapLocally(atlasmapExecutablePath, atlasmapServerOutputChannel, freeLocalPort);
-			vscode.window.showInformationMessage("Starting AtlasMap instance at port " + freeLocalPort);
-			atlasMapLaunchPort = freeLocalPort;
+			retrieveFreeLocalPort()
+				.then( (port) => {
+					launchAtlasMapLocally(atlasmapExecutablePath, atlasmapServerOutputChannel, port);
+					vscode.window.showInformationMessage("Starting AtlasMap instance at port " + port);
+					atlasMapLaunchPort = port;
+				})
+				.catch( (err) => {
+					vscode.window.showErrorMessage("Unable to start AtlasMap instance");
+				});
+			
 		} else {
 			vscode.window.showInformationMessage("Running AtlasMap instance found at port " + atlasMapLaunchPort);
 			const url = "http://localhost:" + atlasMapLaunchPort;
@@ -27,12 +33,17 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 }
 
-async function retrieveFreeLocalPort(): Promise<string> {
-	const freeLocalPort = await co(function *() {
-		const _port = yield detect("8585");
-		return _port;
+function retrieveFreeLocalPort(): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const defaultPort = "8585";
+		detect(defaultPort)
+			.then(_port => {
+				resolve(_port);
+			})
+			.catch(err => {
+				reject(err);
+			});
 	});
-	return freeLocalPort;
 }
 
 function launchAtlasMapLocally(atlasmapExecutablePath: string, atlasmapServerOutputChannel: vscode.OutputChannel, port: string) {
