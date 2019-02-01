@@ -2,14 +2,16 @@
 
 ## How to start development
 
-### Inside VS Code:
+### Inside VS Code
+
 * Click menu *Terminal* -> *New Terminal* to open a terminal view
 
 ### Inside the Terminal View
+
 * enter once *npm install* to install all the needed dependencies and the standalone AtlasMap server jar
 * enter *npm run watch* to monitor the project for changes and to rebuild automatically
-	* you can also click menu *Terminal* -> *Run Task* and then select *npm:watch* from the list 
-	* both ways this will make any manual compiling obsolete which is a great help
+  * you can also click menu *Terminal* -> *Run Task* and then select *npm:watch* from the list
+  * both ways this will make any manual compiling obsolete which is a great help
 * go to *Debug perspective* (*Ctrl+Shift+D*)
 * select *Run AtlasMap extension*
 * click on the green arrow OR press *F5* to launch the extension
