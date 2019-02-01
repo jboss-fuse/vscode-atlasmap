@@ -62,8 +62,7 @@ describe("AtlasMap/Commands", function() {
 
 			let url:string = "http://localhost:" + port;
 			const body = await getWebUI(url);
-			expect(body, "Undefined html response body").to.not.be.undefined;
-			expect(body, "Null html response body").to.not.be.null;
+			expect(body, "Unexpected html response body").to.contain("AtlasMap");
 		});
 
 		function getWebUI(url: string) {
