@@ -8,7 +8,7 @@
 
 ### Inside the Terminal View
 
-* enter once *npm install* to install all the needed dependencies and the standalone AtlasMap server jar
+* enter *npm install* to install all the needed dependencies and the standalone AtlasMap server jar. You will need to call it again only if dependencies are modified in package.json.
 * enter *npm run watch* to monitor the project for changes and to rebuild automatically
   * you can also click menu *Terminal* -> *Run Task* and then select *npm:watch* from the list
   * both ways this will make any manual compiling obsolete which is a great help
