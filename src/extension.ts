@@ -23,6 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
 				})
 				.catch( (err) => {
 					vscode.window.showErrorMessage("Unable to start AtlasMap instance");
+					console.error(err);
 				});
 			
 		} else {
