@@ -4,7 +4,6 @@ import * as chai from "chai";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
-import { fail } from "assert";
 
 const request = require("request");
 const expect = chai.expect;
@@ -57,29 +56,25 @@ describe("AtlasMap/Commands", function() {
 			expect(showInformationMessageSpy.getCalls()[showInformationMessageSpy.callCount-1].args[0], "No detection message for running instance found!").to.equal("Running AtlasMap instance found at port " + port);
 		});
 
-		it("test ui availability", function() {
+		it("test ui availability", async function() {
 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
 
 			let url:string = "http://localhost:" + port;
-			getWebUI(url)
-				.then( (body) => {
-					expect(body, "Undefined html response body").to.not.be.undefined;
-					expect(body, "Null html response body").to.not.be.null;
-				})
-				.catch( (err) => {
-					fail("Unable to access the web UI due to " + err);
-				});
+			const body = await getWebUI(url);
+			expect(body, "Undefined html response body").to.not.be.undefined;
+			expect(body, "Null html response body").to.not.be.null;
 		});
 
 		function getWebUI(url: string) {
 			return new Promise((resolve, reject) => {
 				request(url, (error: any, response: any, body: any) => {
 					if (error) reject(error);
-					if (response.statusCode != 200) {
-						reject('Invalid status code <' + response.statusCode + '>');
+					if (!response || response.statusCode != 200) {
+						reject('Invalid response');
+					} else {
+						resolve(body);
 					}
-					resolve(body);
 				});
 			});
 		}
