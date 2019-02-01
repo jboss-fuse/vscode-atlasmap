@@ -2,14 +2,19 @@
 
 ## How to start development
 
-* Click Terminal -> New Terminal
-* call "npm install --ignore-script"
-* call "npm install"
-* go to "Debug perspective" (Ctrl+Shift+D)
-* select "Run AtlasMap extension"
-* click on the green arrow
+### Inside VS Code:
+* Click menu *Terminal* -> *New Terminal* to open a terminal view
 
-When testing new version of the AtlasMap, just replace the jar in "jars" folder respecting the name "atlasmap-standalone.jar" or launch it separately on port 8585.
+### Inside the Terminal View
+* enter once *npm install* to install all the needed dependencies and the standalone AtlasMap server jar
+* enter *npm run watch* to monitor the project for changes and to rebuild automatically
+	* you can also click menu *Terminal* -> *Run Task* and then select *npm:watch* from the list 
+	* both ways this will make any manual compiling obsolete which is a great help
+* go to *Debug perspective* (*Ctrl+Shift+D*)
+* select *Run AtlasMap extension*
+* click on the green arrow OR press *F5* to launch the extension
+
+When testing new version of the AtlasMap, just replace the jar in *./jars* folder respecting the name *atlasmap-standalone.jar* or launch it separately on port *8585*.
 
 ## How to provide a new version on VS Code Marketplace
 
@@ -28,3 +33,4 @@ When testing new version of the AtlasMap, just replace the jar in "jars" folder 
   * Run 'npm install' so that the package-lock.json is updated
   * Push changes in a PR
   * Follow PR until it is approved/merged
+  
