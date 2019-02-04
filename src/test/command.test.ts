@@ -4,6 +4,8 @@ import * as chai from "chai";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
+import { fail } from "assert";
+import * as detect from 'detect-port';
 
 const request = require("request");
 const expect = chai.expect;
@@ -14,6 +16,7 @@ describe("AtlasMap/Commands", function() {
 	let sandbox: sinon.SinonSandbox;
 	let executeCommandSpy: sinon.SinonSpy;
 	let showInformationMessageSpy: sinon.SinonSpy;
+	let showWarningMessageSpy: sinon.SinonSpy;
 	let port: string;
 	const keyString: string = "Starting AtlasMap instance at port ";
 
@@ -21,6 +24,7 @@ describe("AtlasMap/Commands", function() {
 		sandbox = sinon.createSandbox();
 		executeCommandSpy = sinon.spy(vscode.commands, "executeCommand");
 		showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
+		showWarningMessageSpy = sinon.spy(vscode.window, "showWarningMessage");
 		await vscode.commands.executeCommand("atlasmap.start");
 		await new Promise(resolve => setTimeout(resolve, 15000));
 	});
@@ -28,6 +32,7 @@ describe("AtlasMap/Commands", function() {
 	after(function() {
 		executeCommandSpy.restore();
 		showInformationMessageSpy.restore();
+		showWarningMessageSpy.restore();
 		sandbox.restore();
 	});
 
@@ -64,36 +69,85 @@ describe("AtlasMap/Commands", function() {
 			const body = await getWebUI(url);
 			expect(body, "Unexpected html response body").to.contain("AtlasMap");
 		});
+	});
 
-		function getWebUI(url: string) {
-			return new Promise((resolve, reject) => {
-				request(url, (error: any, response: any, body: any) => {
-					if (error) reject(error);
-					if (!response || response.statusCode != 200) {
-						reject('Invalid response');
-					} else {
-						resolve(body);
-					}
+	describe("Stop AtlasMap Command Tests", function() {
+	
+		it("test stop command execution", async function() {
+			executeCommandSpy.resetHistory();
+			await vscode.commands.executeCommand("atlasmap.start");
+			expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+
+			port = determineUsedPort();
+			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+
+			await vscode.commands.executeCommand("atlasmap.stop");
+			expect(executeCommandSpy.withArgs("atlasmap.stop").calledOnce, "AtlasMap stop command was not issued").to.be.true;
+
+			await new Promise(resolve => setTimeout(resolve, 10000));
+
+			await retrieveFreeLocalPort(port)
+				.then( (_port) => {
+					expect("" + _port, "The port used to run AtlasMap seems to be still occupied. Stop command failed?").to.equal(port);
+				})
+				.catch( (err) => {
+					expect(err).to.be.null;
 				});
-			});
-		}
+		});
 
-		function determineUsedPort(): string {
-			let port: string;
-			for (var callIdx=0; callIdx < showInformationMessageSpy.callCount; callIdx++) {
-				let cal = showInformationMessageSpy.getCall(callIdx);
-				for (var argIdx=0; argIdx < cal.args.length; argIdx++) {
-					var arg = cal.args[argIdx];
-					if (arg.startsWith(keyString)) {
-						port = arg.substring(keyString.length);
-						break;
-					}
+		it("test stopping without AtlasMap running", async function() {
+			// make sure no atlasmap is running
+			await vscode.commands.executeCommand("atlasmap.stop");
+			await new Promise(resolve => setTimeout(resolve, 10000));
+			showWarningMessageSpy.resetHistory();
+
+			// try to stop the not running atlasmap
+			await vscode.commands.executeCommand("atlasmap.stop");
+			expect(showWarningMessageSpy.getCalls()[showWarningMessageSpy.callCount-1].args[0], "No warning message found that no AtlasMap has been detected!").to.equal("Unable to locate running AtlasMap instance");
+		});
+	});
+
+	function retrieveFreeLocalPort(testport: string): Promise<string> {
+		return new Promise((resolve, reject) => {
+			detect(testport)
+				.then(_port => {
+					resolve(_port);
+				})
+				.catch(err => {
+					reject(err);
+				});
+		});
+	}
+
+	function getWebUI(url: string) {
+		return new Promise((resolve, reject) => {
+			request(url, (error: any, response: any, body: any) => {
+				if (error) reject(error);
+				if (!response || response.statusCode != 200) {
+					reject('Invalid response');
+				} else {
+					resolve(body);
 				}
-				if (port !== undefined) {
+			});
+		});
+	}
+
+	function determineUsedPort(): string {
+		let port: string;
+		for (var callIdx=0; callIdx < showInformationMessageSpy.callCount; callIdx++) {
+			let cal = showInformationMessageSpy.getCall(callIdx);
+			for (var argIdx=0; argIdx < cal.args.length; argIdx++) {
+				var arg = cal.args[argIdx];
+				if (arg.startsWith(keyString)) {
+					port = arg.substring(keyString.length);
 					break;
 				}
 			}
-			return port;
+			if (port !== undefined) {
+				break;
+			}
 		}
-	});		
+		return port;
+	}
 });
