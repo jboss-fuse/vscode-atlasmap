@@ -7,11 +7,13 @@ import * as requirements from './requirements';
 import * as vscode from 'vscode';
 import { TextDecoder } from 'util';
 
+let atlasmapServerOutputChannel = vscode.window.createOutputChannel("AtlasMap Server");
+let atlasmapProcess: child_process.ChildProcess;
+let atlasMapLaunchPort: string;
+
 export function activate(context: vscode.ExtensionContext) {
 
-	let atlasmapServerOutputChannel = vscode.window.createOutputChannel("AtlasMap Server");
 	let atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
-	let atlasMapLaunchPort: string;
 
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', () => {
 		if (atlasMapLaunchPort === undefined) {
@@ -32,6 +34,47 @@ export function activate(context: vscode.ExtensionContext) {
 			opn(url);
 		}
 	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.stop', () => {
+		if (atlasmapProcess === undefined) {
+			vscode.window.showWarningMessage("Unable to locate running AtlasMap instance");
+		} else {
+			stopLocalAtlasMapInstance(atlasmapProcess, atlasmapServerOutputChannel)
+			.then( (stopped) => {
+				if (stopped) {
+					vscode.window.showInformationMessage("Stopped AtlasMap instance at port " + atlasMapLaunchPort);
+					atlasMapLaunchPort = undefined;
+					atlasmapProcess = undefined;
+				} else {
+					vscode.window.showWarningMessage("Unable to stop the running AtlasMap instance");
+				}
+			})
+			.catch( (err) => {
+				vscode.window.showWarningMessage("Unable to stop the running AtlasMap instance");
+				console.error(err);
+			});
+		}
+	}));
+}
+
+function stopLocalAtlasMapInstance(atlasmapProcess: child_process.ChildProcess, atlasmapServerOutputChannel: vscode.OutputChannel): Promise<boolean> {
+	return new Promise( (resolve, reject) => {
+		if (atlasmapProcess) {
+			try {
+				atlasmapProcess.kill();
+			} catch (error) {
+				reject(error);
+			}
+		}
+		if (atlasmapServerOutputChannel) {
+			try {
+				atlasmapServerOutputChannel.dispose();
+			} catch (error) {
+				reject(error);
+			}
+		}
+		resolve(atlasmapProcess ? atlasmapProcess.killed : true);
+	});	
 }
 
 function retrieveFreeLocalPort(): Promise<string> {
@@ -49,7 +92,7 @@ function retrieveFreeLocalPort(): Promise<string> {
 
 function launchAtlasMapLocally(atlasmapExecutablePath: string, atlasmapServerOutputChannel: vscode.OutputChannel, port: string) {
 	process.env.SERVER_PORT = port;
-
+	
 	requirements.resolveRequirements().catch(error => {
 		vscode.window.showErrorMessage(error.message, error.label).then((selection) => {
 			if (error.label && error.label === selection && error.openUrl) {
@@ -59,9 +102,7 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, atlasmapServerOut
 		throw error;
 	}).then(requirements => {
 		let javaExecutablePath = path.resolve(requirements.java_home + '/bin/java');
-		let atlasmapProcess = child_process.spawn(
-			javaExecutablePath, ['-jar', atlasmapExecutablePath]
-		);
+		atlasmapProcess = child_process.spawn(javaExecutablePath, ['-jar', atlasmapExecutablePath]);
 		atlasmapProcess.stdout.on('data', function (data) {
 			let dec = new TextDecoder("utf-8");
 			let text = dec.decode(data);
