@@ -7,7 +7,7 @@ import * as requirements from './requirements';
 import * as vscode from 'vscode';
 import { TextDecoder } from 'util';
 
-let atlasmapServerOutputChannel = vscode.window.createOutputChannel("AtlasMap Server");
+let atlasmapServerOutputChannel: vscode.OutputChannel;
 let atlasmapProcess: child_process.ChildProcess;
 let atlasMapLaunchPort: string;
 
@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (atlasMapLaunchPort === undefined) {
 			retrieveFreeLocalPort()
 				.then( (port) => {
-					launchAtlasMapLocally(atlasmapExecutablePath, atlasmapServerOutputChannel, port);
+					launchAtlasMapLocally(atlasmapExecutablePath, port);
 					vscode.window.showInformationMessage("Starting AtlasMap instance at port " + port);
 					atlasMapLaunchPort = port;
 				})
@@ -39,7 +39,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (atlasmapProcess === undefined) {
 			vscode.window.showWarningMessage("Unable to locate running AtlasMap instance");
 		} else {
-			stopLocalAtlasMapInstance(atlasmapProcess, atlasmapServerOutputChannel)
+			stopLocalAtlasMapInstance()
 			.then( (stopped) => {
 				if (stopped) {
 					vscode.window.showInformationMessage("Stopped AtlasMap instance at port " + atlasMapLaunchPort);
@@ -57,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 }
 
-function stopLocalAtlasMapInstance(atlasmapProcess: child_process.ChildProcess, atlasmapServerOutputChannel: vscode.OutputChannel): Promise<boolean> {
+function stopLocalAtlasMapInstance(): Promise<boolean> {
 	return new Promise( (resolve, reject) => {
 		if (atlasmapProcess) {
 			try {
@@ -90,9 +90,11 @@ function retrieveFreeLocalPort(): Promise<string> {
 	});
 }
 
-function launchAtlasMapLocally(atlasmapExecutablePath: string, atlasmapServerOutputChannel: vscode.OutputChannel, port: string) {
+function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string) {
 	process.env.SERVER_PORT = port;
 	
+	atlasmapServerOutputChannel = vscode.window.createOutputChannel("AtlasMap Server");
+
 	requirements.resolveRequirements().catch(error => {
 		vscode.window.showErrorMessage(error.message, error.label).then((selection) => {
 			if (error.label && error.label === selection && error.openUrl) {
