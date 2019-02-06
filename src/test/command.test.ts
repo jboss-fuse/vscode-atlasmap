@@ -5,7 +5,6 @@ import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
 import * as detect from 'detect-port';
-import * as opn from 'opn';
 
 const request = require("request");
 const expect = chai.expect;
@@ -37,6 +36,10 @@ describe("AtlasMap/Commands", function() {
 		showWarningMessageSpy.restore();
 		createOutputChannelSpy.restore();
 		sandbox.restore();
+	});
+
+	beforeEach(function() {
+		createOutputChannelSpy.resetHistory();
 	});
 
 	describe("Start AtlasMap Command Tests", function() {
@@ -117,8 +120,7 @@ describe("AtlasMap/Commands", function() {
 	
 		it("test output channel recreation", async function() {
 			executeCommandSpy.resetHistory();
-			createOutputChannelSpy.resetHistory();
-			await openCommand();
+			await vscode.commands.executeCommand("atlasmap.start");
 			await new Promise(resolve => setTimeout(resolve, 15000));
 			expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 
@@ -130,7 +132,7 @@ describe("AtlasMap/Commands", function() {
 			await vscode.commands.executeCommand("atlasmap.stop");
 			expect(executeCommandSpy.withArgs("atlasmap.stop").calledOnce, "AtlasMap stop command was not issued").to.be.true;
 			await new Promise(resolve => setTimeout(resolve, 10000));
-			await openCommand();
+			await vscode.commands.executeCommand("atlasmap.start");
 			await new Promise(resolve => setTimeout(resolve, 15000));
 			expect(executeCommandSpy.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
 
@@ -144,10 +146,6 @@ describe("AtlasMap/Commands", function() {
 			expect(body, "Unexpected html response body").to.contain("AtlasMap");
 		});
 	});
-
-	function openCommand() {
-		vscode.commands.executeCommand("atlasmap.start");
-	}
 
 	function retrieveFreeLocalPort(testport: string): Promise<string> {
 		return new Promise((resolve, reject) => {
