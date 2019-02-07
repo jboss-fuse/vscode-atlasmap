@@ -10,14 +10,14 @@ This extension is providing a command to help development of [AtlasMap](http://d
 
 ### Start an AtlasMap instance
 
-"AtlasMap: Open AtlasMap" command is starting a local AtlasMap instance and opens a browser pointing to its web UI:
+"AtlasMap: Open AtlasMap" command is starting a local AtlasMap instance and opens a Web View pointing to its web UI:
 ![Open AtlasMap command in palette](doc/OpenAtlasMapCommand.png)
 
 AtlasMap is started on port 8585 by default. If this port is occupied another free port will be choosen automatically.
 To check if it has been started correctly, you can go to Output view and check for the "AtlasMap Server" output:
 ![AtlasMap Server output](doc/AtlasMapServerOutput.png)
 
-The AtlasMap web interface opens with some default data types.
+The AtlasMap web interface opens with the last edited Data transformation.
 ![Default page AtlasMap](doc/AtlasMapDefaultPage.png)
 
  It allows you to create and modify data transformations using AtlasMap. You can export your data transformation from the AtlasMap UI and save the artifact into your project.
