@@ -1,4 +1,4 @@
-import * as atlasmapWebView from './atlasmapWebView';
+import * as atlasMapWebView from './atlasMapWebView';
 import * as child_process from 'child_process';
 import * as detect from 'detect-port';
 import * as path from 'path';
@@ -30,7 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
 		} else {
 			vscode.window.showInformationMessage("Running AtlasMap instance found at port " + atlasMapLaunchPort);
 			const url = "http://localhost:" + atlasMapLaunchPort;
-			atlasmapWebView.default.createOrShow(context.extensionPath, url);
+			atlasMapWebView.default.createOrShow(context.extensionPath, url);
 		}
 	}));
 
@@ -110,7 +110,7 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string, ext
 			atlasmapServerOutputChannel.append(text);
 			if (text.indexOf("### AtlasMap Data Mapper UI started") > 0) {
 				const url = "http://localhost:" + port;
-				atlasmapWebView.default.createOrShow(extensionPath, url);
+				atlasMapWebView.default.createOrShow(extensionPath, url);
 			}
 		});
 	});
