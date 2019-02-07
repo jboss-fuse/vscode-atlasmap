@@ -66,13 +66,13 @@ function stopLocalAtlasMapInstance(): Promise<boolean> {
 				reject(error);
 			}
 		}
-		if (atlasmapServerOutputChannel) {
-			try {
-				atlasmapServerOutputChannel.dispose();
-			} catch (error) {
-				reject(error);
-			}
-		}
+		// if (atlasmapServerOutputChannel) {
+		// 	try {
+		// 		atlasmapServerOutputChannel.dispose();
+		// 	} catch (error) {
+		// 		// reject(error);
+		// 	}
+		// }
 		resolve(atlasmapProcess ? atlasmapProcess.killed : true);
 	});	
 }
@@ -82,7 +82,7 @@ function retrieveFreeLocalPort(): Promise<string> {
 		const defaultPort = "8585";
 		detect(defaultPort)
 			.then(_port => {
-				resolve(_port);
+				resolve("" + _port);
 			})
 			.catch(err => {
 				reject(err);
