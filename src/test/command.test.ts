@@ -5,10 +5,15 @@ import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
 import * as detect from 'detect-port';
+import * as child_process from 'child_process';
 
 const request = require("request");
 const expect = chai.expect;
 chai.use(sinonChai);
+
+const MAX_WAIT = 10000;
+const STEP = 1000;
+const DEFAULT_PORT = "8585";
 
 describe("AtlasMap/Commands", function() {
 
@@ -17,149 +22,194 @@ describe("AtlasMap/Commands", function() {
 	let showInformationMessageSpy: sinon.SinonSpy;
 	let showWarningMessageSpy: sinon.SinonSpy;
 	let createOutputChannelSpy: sinon.SinonSpy;
+	let spawnChildProcessSpy: sinon.SinonSpy;
 	let port: string;
 	const keyString: string = "Starting AtlasMap instance at port ";
 
-	before(async function() {
+	beforeEach(function() {
 		sandbox = sinon.createSandbox();
 		executeCommandSpy = sinon.spy(vscode.commands, "executeCommand");
 		showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
 		showWarningMessageSpy = sinon.spy(vscode.window, "showWarningMessage");
 		createOutputChannelSpy = sinon.spy(vscode.window, "createOutputChannel");
-		await vscode.commands.executeCommand("atlasmap.start");
-		await new Promise(resolve => setTimeout(resolve, 15000));
+		spawnChildProcessSpy = sinon.spy(child_process, "spawn");
 	});
 
-	after(function() {
-		executeCommandSpy.restore();
-		showInformationMessageSpy.restore();
-		showWarningMessageSpy.restore();
-		createOutputChannelSpy.restore();
-		sandbox.restore();
-	});
-
-	beforeEach(function() {
-		createOutputChannelSpy.resetHistory();
+	afterEach(function(done) {
+		stopAtlasMapInstance(port)
+			.then( () => {
+				executeCommandSpy.restore();
+				showInformationMessageSpy.restore();
+				showWarningMessageSpy.restore();
+				createOutputChannelSpy.restore();
+				spawnChildProcessSpy.restore();
+				sandbox.restore();
+				done();
+			})
+			.catch( (err) => {
+				console.error(err);
+				done(err);
+			});
 	});
 
 	describe("Start AtlasMap Command Tests", function() {
 	
-		it("test command execution", function() {
-			// atlasmap has been started in the setup of the test suite already - just check the call count and determine the port
-			expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
-			port = determineUsedPort();
-			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-			expect(createOutputChannelSpy.calledOnce);
+		it("test command execution", function(done) {
+			expect(port).to.be.undefined;
+			startAtlasMapInstance()
+				.then( _port => {
+					expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+					port = _port;
+					expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+					expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+					expect(createOutputChannelSpy.calledOnce);
+					done();
+				})
+				.catch( err => {
+					console.error(err);
+					done(err);
+				});
 		});
 
-		it("test multiple instances startup prevention", async function() {
-			expect(port, "Port is not set by previously running test").to.not.be.undefined;
-			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+		it("test multiple instances startup prevention", function(done) {
+			expect(port).to.be.undefined;
+			startAtlasMapInstance()
+				.then( async (_port) => {
+					expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+					port = _port;
+					expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+					expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+					expect(createOutputChannelSpy.calledOnce);
 
-			await vscode.commands.executeCommand("atlasmap.start");
-
-			expect(executeCommandSpy.withArgs("atlasmap.start").callCount, "AtlasMap start command was not issued").to.be.greaterThan(1);
-			expect(showInformationMessageSpy.getCalls()[showInformationMessageSpy.callCount-1].args[0], "No detection message for running instance found!").to.equal("Running AtlasMap instance found at port " + port);
-
-			await vscode.commands.executeCommand("atlasmap.start");
-
-			expect(executeCommandSpy.withArgs("atlasmap.start").callCount, "AtlasMap start command was not issued").to.be.greaterThan(2);
-			expect(showInformationMessageSpy.getCalls()[showInformationMessageSpy.callCount-1].args[0], "No detection message for running instance found!").to.equal("Running AtlasMap instance found at port " + port);
+					await vscode.commands.executeCommand("atlasmap.start");
+					expect(executeCommandSpy.withArgs("atlasmap.start").callCount, "AtlasMap start command was not issued").to.be.greaterThan(1);
+					expect(showInformationMessageSpy.getCalls()[showInformationMessageSpy.callCount-1].args[0], "No detection message for running instance found!").to.equal("Running AtlasMap instance found at port " + port);
+		
+					await vscode.commands.executeCommand("atlasmap.start");
+					expect(executeCommandSpy.withArgs("atlasmap.start").callCount, "AtlasMap start command was not issued").to.be.greaterThan(2);
+					expect(showInformationMessageSpy.getCalls()[showInformationMessageSpy.callCount-1].args[0], "No detection message for running instance found!").to.equal("Running AtlasMap instance found at port " + port);
+		
+					done();
+				})
+				.catch( err => {
+					console.error(err);
+					done(err);
+				});
 		});
 
-		it("test ui availability", async function() {
-			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+		it("test ui availability", function(done) {
+			expect(port).to.be.undefined;
+			startAtlasMapInstance()
+				.then( async (_port) => {
+					expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+					port = _port;
+					expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+					expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+					expect(createOutputChannelSpy.calledOnce);
 
-			let url:string = "http://localhost:" + port;
-			const body = await getWebUI(url);
-			expect(body, "Unexpected html response body").to.contain("AtlasMap");
+					let url:string = "http://localhost:" + port;
+					await getWebUI(url)
+						.then( (body) => {
+							expect(body, "Unexpected html response body").to.contain("AtlasMap");
+							done();
+						})
+						.catch( (err) => {
+							console.error(err);
+							done(err);
+						});
+				})
+				.catch( err => {
+					console.error(err);
+					done(err);
+				});
 		});
 	});
 
 	describe("Stop AtlasMap Command Tests", function() {
 	
-		it("test stop command execution", async function() {
-			executeCommandSpy.resetHistory();
-			await vscode.commands.executeCommand("atlasmap.start");
-			expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+		it("test stop command execution", function(done) {
+			expect(port).to.be.undefined;
+			startAtlasMapInstance()
+				.then( async (_port) => {
+					expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+					port = _port;
+					expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+					expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+					expect(createOutputChannelSpy.calledOnce);
 
-			port = determineUsedPort();
-			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-			expect(createOutputChannelSpy.calledOnce);
-
-			await vscode.commands.executeCommand("atlasmap.stop");
-			expect(executeCommandSpy.withArgs("atlasmap.stop").calledOnce, "AtlasMap stop command was not issued").to.be.true;
-
-			await new Promise(resolve => setTimeout(resolve, 10000));
-
-			await retrieveFreeLocalPort(port)
-				.then( (_port) => {
-					expect("" + _port, "The port used to run AtlasMap seems to be still occupied. Stop command failed?").to.equal(port);
+					stopAtlasMapInstance(port)
+						.then( (result) => {
+							expect(result, "Unable to shutdown the AtlasMap instance! Was it running?").to.be.true;
+							done();
+						})
+						.catch( err => {
+							console.error(err);
+							done(err);
+						});	
 				})
-				.catch( (err) => {
-					expect(err).to.be.null;
+				.catch( err => {
+					console.error(err);
+					done(err);
 				});
 		});
 
-		it("test stopping without AtlasMap running", async function() {
-			// make sure no atlasmap is running
-			await vscode.commands.executeCommand("atlasmap.stop");
-			await new Promise(resolve => setTimeout(resolve, 10000));
-			showWarningMessageSpy.resetHistory();
-
-			// try to stop the not running atlasmap
-			await vscode.commands.executeCommand("atlasmap.stop");
-			expect(showWarningMessageSpy.getCalls()[showWarningMessageSpy.callCount-1].args[0], "No warning message found that no AtlasMap has been detected!").to.equal("Unable to locate running AtlasMap instance");
+		it("test stopping without AtlasMap running", function(done) {
+			expect(port).to.be.undefined;
+			stopAtlasMapInstance(DEFAULT_PORT)
+				.then( (result) => {
+					expect(result, "There is no AtlasMap running, so why does it report back its successfully stopped?").to.be.false;
+					done();
+				})
+				.catch( err => {
+					console.error(err);
+					done(err);
+				});
 		});
 	});
 
 	describe("Combined Open/Stop/Open tests", function() {
 	
-		it("test output channel recreation", async function() {
-			executeCommandSpy.resetHistory();
-			await vscode.commands.executeCommand("atlasmap.start");
-			await new Promise(resolve => setTimeout(resolve, 15000));
-			expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+		it("test output channel recreation", function(done) {
+			expect(port).to.be.undefined;
+			startAtlasMapInstance()
+				.then( (_port) => {
+					expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+					port = _port;
+					expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+					expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+					expect(createOutputChannelSpy.calledOnce);
 
-			port = determineUsedPort();
-			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-			expect(createOutputChannelSpy.withArgs("AtlasMap Server").calledOnce).to.be.true;
-
-			await vscode.commands.executeCommand("atlasmap.stop");
-			expect(executeCommandSpy.withArgs("atlasmap.stop").calledOnce, "AtlasMap stop command was not issued").to.be.true;
-			await new Promise(resolve => setTimeout(resolve, 10000));
-			await vscode.commands.executeCommand("atlasmap.start");
-			await new Promise(resolve => setTimeout(resolve, 15000));
-			expect(executeCommandSpy.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
-
-			port = determineUsedPort();
-			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-			expect(createOutputChannelSpy.withArgs("AtlasMap Server").calledTwice).to.be.true;
-
-			let url:string = "http://localhost:" + port;
-			const body = await getWebUI(url);
-			expect(body, "Unexpected html response body").to.contain("AtlasMap");
+					stopAtlasMapInstance(port)
+						.then( (result) => {
+							expect(result, "Unable to shutdown the AtlasMap instance! Was it running?").to.be.true;
+	
+							startAtlasMapInstance() 
+								.then( (_port) => {
+									expect(executeCommandSpy.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
+									port = _port;
+									expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+									expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+									expect(createOutputChannelSpy.calledTwice);
+									done();
+								})
+								.catch( err => {
+									console.error(err);
+									done(err);
+								});	
+						})
+						.catch( err => {
+							console.error(err);
+							done(err);
+						});
+				})
+				.catch( err => {
+					console.error(err);
+					done(err);
+				});
 		});
 	});
 
-	function retrieveFreeLocalPort(testport: string): Promise<string> {
-		return new Promise((resolve, reject) => {
-			detect(testport)
-				.then(_port => {
-					resolve(_port);
-				})
-				.catch(err => {
-					reject(err);
-				});
-		});
-	}
-
-	function getWebUI(url: string) {
+	function getWebUI(url: string): Promise<string> {
 		return new Promise((resolve, reject) => {
 			request(url, (error: any, response: any, body: any) => {
 				if (error) reject(error);
@@ -172,21 +222,126 @@ describe("AtlasMap/Commands", function() {
 		});
 	}
 
-	function determineUsedPort(): string {
-		let port: string;
-		for (var callIdx = 0; callIdx < showInformationMessageSpy.callCount; callIdx++) {
-			let cal = showInformationMessageSpy.getCall(callIdx);
-			for (var argIdx = 0; argIdx < cal.args.length; argIdx++) {
-				var arg = cal.args[argIdx];
-				if (arg.startsWith(keyString)) {
-					port = arg.substring(keyString.length);
+	function determineUsedPort(): Promise<string> {
+		return new Promise( (resolve, reject) => {
+			let _port: string;
+			for (let call of showInformationMessageSpy.getCalls()) {
+				for (let arg of call.args) {
+					if (arg.startsWith(keyString)) {
+						_port = arg.substring(keyString.length);
+						break;
+					}
+				}
+				if (_port !== undefined) {
 					break;
 				}
 			}
-			if (port !== undefined) {
-				break;
+			resolve(_port);
+		});
+	}
+
+	function isBrowserCalled(url: string): Promise<boolean> {
+		return new Promise( (resolve, reject) => {
+			let found = false;
+			for (let call of showInformationMessageSpy.getCalls()) {
+				for (let arg of call.args) {
+					if (Array.isArray(arg)) {
+						for (let v of arg) {
+							if (v.startsWith(url)) {
+								found = true;
+								break;
+							}
+						}
+					}
+				}
+			}
+			resolve(found);
+		});
+	}
+
+	function startAtlasMapInstance(): Promise<string> {
+		return new Promise<string>(async (resolve, reject) => {
+			await vscode.commands.executeCommand("atlasmap.start");
+			let waitTime = 0;
+			while (!showInformationMessageSpy.called && waitTime < MAX_WAIT) {
+				await waitForTask("WaitForPortNumber")
+				.then( () => {
+					waitTime += STEP;
+				});				
+			}
+			await determineUsedPort()
+				.then( async (_port) => {
+					expect(_port, "Seems we can't determine the used port number").to.not.be.null;
+					expect(_port, "Seems we can't determine the used port number").to.not.be.undefined;
+					expect(_port, "Seems we can't determine the used port number").to.not.be.NaN;
+					
+					const url:string = "http://localhost:" + _port;
+					let called = await isBrowserCalled(url);
+					while(!called) {
+						await waitForTask("OpenBrowser")
+							.then( async () => {
+								called = await isBrowserCalled(url);
+							});
+					}
+
+					await getWebUI(url)
+						.then( body => {
+							expect(body, "Unexpected html response body").to.contain("AtlasMap");
+							resolve(_port);
+						})
+						.catch( err => {
+							reject(err);
+						});
+				})
+				.catch(err => {
+					reject(err);
+				});
+		});
+	}
+
+	function stopAtlasMapInstance(_port: string = DEFAULT_PORT): Promise<boolean> {
+		return new Promise<boolean>( async (resolve, reject) => {
+			await vscode.commands.executeCommand("atlasmap.stop");
+			let waitTime = 0;
+			while (!(hasStopMessageInInfoMessage() || hasUnableToLocateAtlasMapMessageInInfoMessage() || hasUnableToStopAtlasMapMessageInInfoMessage()) && 
+					waitTime < MAX_WAIT) {
+				await waitForTask("AtlasMapShutdown")
+					.then( () => {
+						waitTime += STEP;
+					});
+			}
+			port = undefined;
+			// wait a bit for the port to be really free - not nice but works fine
+			await new Promise(resolve => setTimeout(resolve, 3000));
+			resolve(waitTime < MAX_WAIT);
+		});
+	}
+
+	async function waitForTask(taskName: string = "<unknownTasK>") {
+		console.log("Waiting for task [" + taskName + "] to complete...");
+		await new Promise(resolve => setTimeout(resolve, STEP));
+	}
+	
+	function hasUnableToLocateAtlasMapMessageInInfoMessage(): boolean {
+		return hasStringInInfoMessage("Unable to locate running AtlasMap instance");
+	}
+	
+	function hasUnableToStopAtlasMapMessageInInfoMessage(): boolean {
+		return hasStringInInfoMessage("Unable to stop the running AtlasMap instance");
+	}
+
+	function hasStopMessageInInfoMessage(): boolean {
+		return hasStringInInfoMessage("Stopped AtlasMap instance at port ");
+	}
+
+	function hasStringInInfoMessage(searchString: string): boolean {
+		for (let call of showInformationMessageSpy.getCalls()) {
+			for (let arg of call.args) {
+				if (arg.indexOf(searchString) >= 0) {
+					return true;
+				}
 			}
 		}
-		return port;
+		return false;
 	}
 });
