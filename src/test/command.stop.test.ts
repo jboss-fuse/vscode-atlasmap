@@ -16,12 +16,11 @@ describe("Stop AtlasMap Command Tests", function() {
 	let sandbox: sinon.SinonSandbox;
 	let executeCommandSpy: sinon.SinonSpy;
 	let showInformationMessageSpy: sinon.SinonSpy;
-	let showWarningMessageSpy: sinon.SinonSpy;
 	let createOutputChannelSpy: sinon.SinonSpy;
 	let spawnChildProcessSpy: sinon.SinonSpy;
 	let port: string;
 
-	beforeEach(function() {
+	before(function() {
 		sandbox = sinon.createSandbox();
 		executeCommandSpy = sinon.spy(vscode.commands, "executeCommand");
 		showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
@@ -29,14 +28,23 @@ describe("Stop AtlasMap Command Tests", function() {
 		spawnChildProcessSpy = sinon.spy(child_process, "spawn");
 	});
 
+	after(function() {
+		executeCommandSpy.restore();
+		showInformationMessageSpy.restore();
+		createOutputChannelSpy.restore();
+		spawnChildProcessSpy.restore();
+		sandbox.restore();
+		port =  undefined;
+	});
+
 	afterEach(function(done) {
 		testUtils.stopAtlasMapInstance(port, showInformationMessageSpy)
 			.then( () => {
-				executeCommandSpy.restore();
-				showInformationMessageSpy.restore();
-				createOutputChannelSpy.restore();
-				spawnChildProcessSpy.restore();
-				sandbox.restore();
+				executeCommandSpy.resetHistory();
+				showInformationMessageSpy.resetHistory();
+				createOutputChannelSpy.resetHistory();
+				spawnChildProcessSpy.resetHistory();
+				sandbox.resetHistory();
 				port =  undefined;
 				done();
 			})

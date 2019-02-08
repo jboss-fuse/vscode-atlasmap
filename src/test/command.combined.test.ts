@@ -1,11 +1,11 @@
 "use strict";
 
 import * as chai from "chai";
+import * as child_process from 'child_process';
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
-import * as vscode from "vscode";
-import * as child_process from 'child_process';
 import * as testUtils from "./command.test.utils";
+import * as vscode from "vscode";
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -19,7 +19,7 @@ describe("Combined Start Stop Commands Tests", function() {
 	let spawnChildProcessSpy: sinon.SinonSpy;
 	let port: string;
 
-	beforeEach(function() {
+	before(function() {
 		sandbox = sinon.createSandbox();
 		executeCommandSpy = sinon.spy(vscode.commands, "executeCommand");
 		showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
@@ -27,14 +27,23 @@ describe("Combined Start Stop Commands Tests", function() {
 		spawnChildProcessSpy = sinon.spy(child_process, "spawn");
 	});
 
+	after(function() {
+		executeCommandSpy.restore();
+		showInformationMessageSpy.restore();
+		createOutputChannelSpy.restore();
+		spawnChildProcessSpy.restore();
+		sandbox.restore();
+		port =  undefined;
+	});
+
 	afterEach(function(done) {
 		testUtils.stopAtlasMapInstance(port, showInformationMessageSpy)
 			.then( () => {
-				executeCommandSpy.restore();
-				showInformationMessageSpy.restore();
-				createOutputChannelSpy.restore();
-				spawnChildProcessSpy.restore();
-				sandbox.restore();
+				executeCommandSpy.resetHistory();
+				showInformationMessageSpy.resetHistory();
+				createOutputChannelSpy.resetHistory();
+				spawnChildProcessSpy.resetHistory();
+				sandbox.resetHistory();
 				port =  undefined;
 				done();
 			})

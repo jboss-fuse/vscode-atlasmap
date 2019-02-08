@@ -95,7 +95,7 @@ export function stopAtlasMapInstance(_port: string = DEFAULT_ATLASMAP_PORT, info
 }
 
 export async function waitForTask(taskName: string = "<unknownTasK>") {
-	// console.log("Waiting for task [" + taskName + "] to complete...");
+	console.log("Waiting for task [" + taskName + "] to complete...");
 	await new Promise(resolve => setTimeout(resolve, STEP));
 }
 
