@@ -4,7 +4,6 @@ import * as chai from "chai";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
-import * as detect from 'detect-port';
 import * as child_process from 'child_process';
 
 const request = require("request");
@@ -89,6 +88,9 @@ describe("AtlasMap/Commands", function() {
 					expect(executeCommandSpy.withArgs("atlasmap.start").callCount, "AtlasMap start command was not issued").to.be.greaterThan(2);
 					expect(showInformationMessageSpy.getCalls()[showInformationMessageSpy.callCount-1].args[0], "No detection message for running instance found!").to.equal("Running AtlasMap instance found at port " + port);
 		
+					// wait a bit for the web ui  to be ready - not nice but works fine
+					await new Promise(resolve => setTimeout(resolve, 3000));
+
 					done();
 				})
 				.catch( err => {
@@ -182,7 +184,11 @@ describe("AtlasMap/Commands", function() {
 					stopAtlasMapInstance(port)
 						.then( (result) => {
 							expect(result, "Unable to shutdown the AtlasMap instance! Was it running?").to.be.true;
-	
+
+							//  now reset some spies so the test can succeed
+							showInformationMessageSpy.resetHistory();
+							spawnChildProcessSpy.resetHistory();
+
 							startAtlasMapInstance() 
 								.then( (_port) => {
 									expect(executeCommandSpy.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
@@ -190,6 +196,7 @@ describe("AtlasMap/Commands", function() {
 									expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 									expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
 									expect(createOutputChannelSpy.calledTwice);
+
 									done();
 								})
 								.catch( err => {
@@ -222,41 +229,15 @@ describe("AtlasMap/Commands", function() {
 		});
 	}
 
-	function determineUsedPort(): Promise<string> {
-		return new Promise( (resolve, reject) => {
-			let _port: string;
-			for (let call of showInformationMessageSpy.getCalls()) {
-				for (let arg of call.args) {
-					if (arg.startsWith(keyString)) {
-						_port = arg.substring(keyString.length);
-						break;
-					}
-				}
-				if (_port !== undefined) {
-					break;
+	function determineUsedPort(): string {
+		for (let call of showInformationMessageSpy.getCalls()) {
+			for (let arg of call.args) {
+				if (!Array.isArray(arg) && arg.startsWith(keyString)) {
+					return arg.substring(keyString.length);
 				}
 			}
-			resolve(_port);
-		});
-	}
-
-	function isBrowserCalled(url: string): Promise<boolean> {
-		return new Promise( (resolve, reject) => {
-			let found = false;
-			for (let call of showInformationMessageSpy.getCalls()) {
-				for (let arg of call.args) {
-					if (Array.isArray(arg)) {
-						for (let v of arg) {
-							if (v.startsWith(url)) {
-								found = true;
-								break;
-							}
-						}
-					}
-				}
-			}
-			resolve(found);
-		});
+		}
+		return undefined;
 	}
 
 	function startAtlasMapInstance(): Promise<string> {
@@ -269,31 +250,30 @@ describe("AtlasMap/Commands", function() {
 					waitTime += STEP;
 				});				
 			}
-			await determineUsedPort()
-				.then( async (_port) => {
-					expect(_port, "Seems we can't determine the used port number").to.not.be.null;
-					expect(_port, "Seems we can't determine the used port number").to.not.be.undefined;
-					expect(_port, "Seems we can't determine the used port number").to.not.be.NaN;
-					
-					const url:string = "http://localhost:" + _port;
-					let called = await isBrowserCalled(url);
-					while(!called) {
-						await waitForTask("OpenBrowser")
-							.then( async () => {
-								called = await isBrowserCalled(url);
-							});
-					}
+			let _port = determineUsedPort();
 
-					await getWebUI(url)
-						.then( body => {
-							expect(body, "Unexpected html response body").to.contain("AtlasMap");
-							resolve(_port);
-						})
-						.catch( err => {
-							reject(err);
-						});
+			expect(_port, "Seems we can't determine the used port number").to.not.be.null;
+			expect(_port, "Seems we can't determine the used port number").to.not.be.undefined;
+			expect(_port, "Seems we can't determine the used port number").to.not.be.NaN;
+			
+			const url:string = "http://localhost:" + _port;
+			let called = hasStringInSpy(url, spawnChildProcessSpy);
+			while(!called) {
+				await waitForTask("OpenBrowser")
+					.then( () => {
+						called = hasStringInSpy(url, spawnChildProcessSpy);
+					});
+			}
+
+			// wait a bit for the web ui  to be ready - not nice but works fine
+			await new Promise(resolve => setTimeout(resolve, 3000));
+
+			await getWebUI(url)
+				.then( body => {
+					expect(body, "Unexpected html response body").to.contain("AtlasMap");
+					resolve(_port);
 				})
-				.catch(err => {
+				.catch( err => {
 					reject(err);
 				});
 		});
@@ -303,8 +283,7 @@ describe("AtlasMap/Commands", function() {
 		return new Promise<boolean>( async (resolve, reject) => {
 			await vscode.commands.executeCommand("atlasmap.stop");
 			let waitTime = 0;
-			while (!(hasStopMessageInInfoMessage() || hasUnableToLocateAtlasMapMessageInInfoMessage() || hasUnableToStopAtlasMapMessageInInfoMessage()) && 
-					waitTime < MAX_WAIT) {
+			while (!hasStopMessageInInfoMessage() && waitTime < MAX_WAIT) {
 				await waitForTask("AtlasMapShutdown")
 					.then( () => {
 						waitTime += STEP;
@@ -321,24 +300,24 @@ describe("AtlasMap/Commands", function() {
 		console.log("Waiting for task [" + taskName + "] to complete...");
 		await new Promise(resolve => setTimeout(resolve, STEP));
 	}
-	
-	function hasUnableToLocateAtlasMapMessageInInfoMessage(): boolean {
-		return hasStringInInfoMessage("Unable to locate running AtlasMap instance");
-	}
-	
-	function hasUnableToStopAtlasMapMessageInInfoMessage(): boolean {
-		return hasStringInInfoMessage("Unable to stop the running AtlasMap instance");
-	}
 
 	function hasStopMessageInInfoMessage(): boolean {
-		return hasStringInInfoMessage("Stopped AtlasMap instance at port ");
+		return hasStringInSpy("Stopped AtlasMap instance at port ", showInformationMessageSpy);
 	}
 
-	function hasStringInInfoMessage(searchString: string): boolean {
-		for (let call of showInformationMessageSpy.getCalls()) {
+	function hasStringInSpy(searchString: string, spy: sinon.SinonSpy): boolean {
+		for (let call of spy.getCalls()) {
 			for (let arg of call.args) {
-				if (arg.indexOf(searchString) >= 0) {
-					return true;
+				if (Array.isArray(arg)) {
+					for (let v of arg) {
+						if (v.indexOf(searchString) >= 0) {
+							return true;
+						}
+					}
+				} else {
+					if (arg.indexOf(searchString) >= 0) {
+						return true;
+					}
 				}
 			}
 		}
