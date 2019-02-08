@@ -1,0 +1,123 @@
+"use strict";
+
+import * as chai from "chai";
+import * as sinon from "sinon";
+import * as sinonChai from "sinon-chai";
+import * as vscode from "vscode";
+import { DEFAULT_ATLASMAP_PORT } from '../utils';
+
+const request = require("request");
+
+const expect = chai.expect;
+chai.use(sinonChai);
+
+const MAX_WAIT = 10000;
+const STEP = 1000;
+
+export function getWebUI(url: string): Promise<string> {
+	return new Promise((resolve, reject) => {
+		request(url, (error: any, response: any, body: any) => {
+			if (error) reject(error);
+			if (!response || response.statusCode != 200) {
+				reject('Invalid response');
+			} else {
+				resolve(body);
+			}
+		});
+	});
+}
+
+export function determineUsedPort(spy: sinon.SinonSpy): string {
+	const keyString: string = "Starting AtlasMap instance at port ";
+	for (let call of spy.getCalls()) {
+		for (let arg of call.args) {
+			if (!Array.isArray(arg) && arg.startsWith(keyString)) {
+				return arg.substring(keyString.length);
+			}
+		}
+	}
+	return undefined;
+}
+
+export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, spawnSpy: sinon.SinonSpy): Promise<string> {
+	return new Promise<string>(async (resolve, reject) => {
+		await vscode.commands.executeCommand("atlasmap.start");
+		let waitTime = 0;
+		while (!infoSpy.called && waitTime < MAX_WAIT) {
+			await waitForTask("WaitForPortNumber")
+			.then( () => {
+				waitTime += STEP;
+			});				
+		}
+		let _port = determineUsedPort(infoSpy);
+
+		expect(_port, "Seems we can't determine the used port number").to.not.be.null;
+		expect(_port, "Seems we can't determine the used port number").to.not.be.undefined;
+		expect(_port, "Seems we can't determine the used port number").to.not.be.NaN;
+		
+		const url:string = "http://localhost:" + _port;
+		let called = hasStringInSpy(url, spawnSpy);
+		while(!called) {
+			await waitForTask("OpenBrowser")
+				.then( () => {
+					called = hasStringInSpy(url, spawnSpy);
+				});
+		}
+
+		// wait a bit for the web ui  to be ready - not nice but works fine
+		await new Promise(resolve => setTimeout(resolve, 3000));
+
+		await getWebUI(url)
+			.then( body => {
+				expect(body, "Unexpected html response body").to.contain("AtlasMap");
+				resolve(_port);
+			})
+			.catch( err => {
+				reject(err);
+			});
+	});
+}
+
+export function stopAtlasMapInstance(_port: string = DEFAULT_ATLASMAP_PORT, infoSpy: sinon.SinonSpy): Promise<boolean> {
+	return new Promise<boolean>( async (resolve, reject) => {
+		await vscode.commands.executeCommand("atlasmap.stop");
+		let waitTime = 0;
+		while (!hasStopMessageInInfoMessage(infoSpy) && waitTime < MAX_WAIT) {
+			await waitForTask("AtlasMapShutdown")
+				.then( () => {
+					waitTime += STEP;
+				});
+		}
+		// wait a bit for the port to be really free - not nice but works fine
+		await new Promise(resolve => setTimeout(resolve, 3000));
+		resolve(waitTime < MAX_WAIT);
+	});
+}
+
+export async function waitForTask(taskName: string = "<unknownTasK>") {
+	// console.log("Waiting for task [" + taskName + "] to complete...");
+	await new Promise(resolve => setTimeout(resolve, STEP));
+}
+
+export function hasStopMessageInInfoMessage(infoSpy: sinon.SinonSpy): boolean {
+	return hasStringInSpy("Stopped AtlasMap instance at port ", infoSpy);
+}
+
+export function hasStringInSpy(searchString: string, spy: sinon.SinonSpy): boolean {
+	for (let call of spy.getCalls()) {
+		for (let arg of call.args) {
+			if (Array.isArray(arg)) {
+				for (let v of arg) {
+					if (v.indexOf(searchString) >= 0) {
+						return true;
+					}
+				}
+			} else {
+				if (arg.indexOf(searchString) >= 0) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}

@@ -1,3 +1,5 @@
+"use strict";
+
 import * as assert from 'assert';
 import * as requirements from '../requirements';
 
