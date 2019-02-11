@@ -34,7 +34,7 @@ export function determineUsedPort(spy: sinon.SinonSpy): string {
 		for (let call of spy.getCalls()) {
 			if (!call || !call.args) continue;
 			for (let arg of call.args) {
-				if (arg && !Array.isArray(arg) && arg.startsWith(KEYSTRING)) {
+				if (arg && isString(arg) && arg.startsWith(KEYSTRING)) {
 					return arg.substring(KEYSTRING.length);
 				}
 			}
