@@ -5,6 +5,7 @@ import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
 import { DEFAULT_ATLASMAP_PORT } from '../utils';
+import { isString } from "util";
 
 const request = require("request");
 
@@ -13,6 +14,7 @@ chai.use(sinonChai);
 
 const MAX_WAIT = 10000;
 const STEP = 1000;
+const KEYSTRING: string = "Starting AtlasMap instance at port ";
 
 export function getWebUI(url: string): Promise<string> {
 	return new Promise((resolve, reject) => {
@@ -28,11 +30,13 @@ export function getWebUI(url: string): Promise<string> {
 }
 
 export function determineUsedPort(spy: sinon.SinonSpy): string {
-	const keyString: string = "Starting AtlasMap instance at port ";
-	for (let call of spy.getCalls()) {
-		for (let arg of call.args) {
-			if (!Array.isArray(arg) && arg.startsWith(keyString)) {
-				return arg.substring(keyString.length);
+	if (spy && spy.getCalls()) {
+		for (let call of spy.getCalls()) {
+			if (!call || !call.args) continue;
+			for (let arg of call.args) {
+				if (arg && !Array.isArray(arg) && arg.startsWith(KEYSTRING)) {
+					return arg.substring(KEYSTRING.length);
+				}
 			}
 		}
 	}
@@ -42,30 +46,33 @@ export function determineUsedPort(spy: sinon.SinonSpy): string {
 export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, spawnSpy: sinon.SinonSpy): Promise<string> {
 	return new Promise<string>(async (resolve, reject) => {
 		await vscode.commands.executeCommand("atlasmap.start");
+		
 		let waitTime = 0;
-		while (!infoSpy.called && waitTime < MAX_WAIT) {
+		let _port = determineUsedPort(infoSpy);
+		while (_port === undefined && waitTime < MAX_WAIT) {
 			await waitForTask("WaitForPortNumber")
 			.then( () => {
+				_port = determineUsedPort(infoSpy);
 				waitTime += STEP;
 			});				
-		}
-		let _port = determineUsedPort(infoSpy);
-
+		}		
+		
 		expect(_port, "Seems we can't determine the used port number").to.not.be.null;
 		expect(_port, "Seems we can't determine the used port number").to.not.be.undefined;
 		expect(_port, "Seems we can't determine the used port number").to.not.be.NaN;
 		
 		const url:string = "http://localhost:" + _port;
 		let called = hasStringInSpy(url, spawnSpy);
-		while(!called) {
+		waitTime = 0;
+		while(!called && waitTime < MAX_WAIT) {
 			await waitForTask("OpenBrowser")
 				.then( () => {
 					called = hasStringInSpy(url, spawnSpy);
+					waitTime += STEP;
 				});
 		}
-
 		// wait a bit for the web ui  to be ready - not nice but works fine
-		await new Promise(resolve => setTimeout(resolve, 3000));
+		await new Promise(res => setTimeout(res, 3000));
 
 		await getWebUI(url)
 			.then( body => {
@@ -89,13 +96,13 @@ export function stopAtlasMapInstance(_port: string = DEFAULT_ATLASMAP_PORT, info
 				});
 		}
 		// wait a bit for the port to be really free - not nice but works fine
-		await new Promise(resolve => setTimeout(resolve, 3000));
+		await new Promise(res => setTimeout(res, 3000));
 		resolve(waitTime < MAX_WAIT);
 	});
 }
 
 export async function waitForTask(taskName: string = "<unknownTasK>") {
-	console.log("Waiting for task [" + taskName + "] to complete...");
+	// console.log("Waiting for task [" + taskName + "] to complete...");
 	await new Promise(resolve => setTimeout(resolve, STEP));
 }
 
@@ -104,20 +111,25 @@ export function hasStopMessageInInfoMessage(infoSpy: sinon.SinonSpy): boolean {
 }
 
 export function hasStringInSpy(searchString: string, spy: sinon.SinonSpy): boolean {
-	for (let call of spy.getCalls()) {
-		for (let arg of call.args) {
-			if (Array.isArray(arg)) {
-				for (let v of arg) {
-					if (v.indexOf(searchString) >= 0) {
-						return true;
+	if (searchString && spy && spy.getCalls()) {
+		for (let call of spy.getCalls()) {
+			if (!call || !call.args) continue;
+			for (let arg of call.args) {
+				if (arg) {
+					if (Array.isArray(arg)) {
+						for (let v of arg) {
+							if (v && v.indexOf(searchString) >= 0) {
+								return true;
+							}
+						}
+					} else if (isString(arg)) {
+						if (arg.indexOf(searchString) >= 0) {
+							return true;
+						}
 					}
-				}
-			} else {
-				if (arg.indexOf(searchString) >= 0) {
-					return true;
-				}
+				}				
 			}
 		}
-	}
+	}	
 	return false;
 }
