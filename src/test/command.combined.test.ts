@@ -79,7 +79,6 @@ describe("Combined Start Stop Commands Tests", function() {
 								expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 								expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
 								expect(createOutputChannelSpy.calledTwice);
-
 								done();
 							})
 							.catch( err => {
