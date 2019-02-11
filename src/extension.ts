@@ -72,6 +72,16 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string): Pr
 			.then(requirements => {
 				let javaExecutablePath = path.resolve(requirements.java_home + '/bin/java');
 				atlasMapProcess = child_process.spawn(javaExecutablePath, ['-jar', atlasmapExecutablePath]);
+				atlasMapProcess.on("close", (code, signal) => {
+					if (atlasMapServerOutputChannel) {
+						try {
+							atlasMapServerOutputChannel.dispose();
+						} catch (error) {
+							// we want to ignore possible errors to not break tests
+							// reject(error);
+						}
+					}
+				});
 				atlasMapProcess.stdout.on('data', function (data) {
 					let dec = new TextDecoder("utf-8");
 					let text = dec.decode(data);
@@ -101,14 +111,6 @@ function stopLocalAtlasMapInstance(): Promise<boolean> {
 				atlasMapProcess.kill();
 			} catch (error) {
 				reject(error);
-			}
-		}
-		if (atlasMapServerOutputChannel) {
-			try {
-				atlasMapServerOutputChannel.dispose();
-			} catch (error) {
-				// we want to ignore possible errors to not break tests
-				// reject(error);
 			}
 		}
 		resolve(atlasMapProcess ? atlasMapProcess.killed : true);
