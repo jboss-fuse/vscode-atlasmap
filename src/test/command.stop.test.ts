@@ -1,12 +1,12 @@
 "use strict";
 
 import * as chai from "chai";
+import * as child_process from 'child_process';
+import { DEFAULT_ATLASMAP_PORT } from '../utils';
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
-import * as vscode from "vscode";
-import * as child_process from 'child_process';
 import * as testUtils from "./command.test.utils";
-import { DEFAULT_ATLASMAP_PORT } from '../utils';
+import * as vscode from "vscode";
 
 const expect = chai.expect;
 chai.use(sinonChai);
