@@ -77,8 +77,7 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string): Pr
 						try {
 							atlasMapServerOutputChannel.dispose();
 						} catch (error) {
-							// we want to ignore possible errors to not break tests
-							// reject(error);
+							reject(error);
 						}
 					}
 				});
