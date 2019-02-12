@@ -1,11 +1,11 @@
 "use strict";
 
 import * as chai from "chai";
+import { DEFAULT_ATLASMAP_PORT } from '../utils';
+import { isString } from "util";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
-import { DEFAULT_ATLASMAP_PORT } from '../utils';
-import { isString } from "util";
 
 const request = require("request");
 
