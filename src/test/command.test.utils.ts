@@ -1,7 +1,7 @@
 "use strict";
 
 import * as chai from "chai";
-import { DEFAULT_ATLASMAP_PORT } from '../utils';
+import { DEFAULT_ATLASMAP_PORT, BrowserType, BROWSERTYPE_PREFERENCE_KEY } from '../utils';
 import { isString } from "util";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
@@ -15,9 +15,8 @@ chai.use(sinonChai);
 const MAX_WAIT = 10000;
 const STEP = 1000;
 const KEYSTRING: string = "Starting AtlasMap instance at port ";
-const BROWSERTYPE_KEY = "atlasmap.openInBrowser";
 
-export const BROWSER_TYPES = ["Internal", "External (Default OS Browser)"];
+export const BROWSER_TYPES = [BrowserType.Internal, BrowserType.External];
 
 export function getWebUI(url: string): Promise<string> {
 	return new Promise((resolve, reject) => {
@@ -139,6 +138,6 @@ export function hasStringInSpy(searchString: string, spy: sinon.SinonSpy): boole
 
 export function switchSettingsToType(browserConfig: string) {
 	let config = vscode.workspace.getConfiguration();
-	const setAsGlobal = config.inspect(BROWSERTYPE_KEY).workspaceValue == undefined;
-	config.update(BROWSERTYPE_KEY, browserConfig, setAsGlobal);
+	const setAsGlobal = config.inspect(BROWSERTYPE_PREFERENCE_KEY).workspaceValue == undefined;
+	config.update(BROWSERTYPE_PREFERENCE_KEY, browserConfig, setAsGlobal);
 }

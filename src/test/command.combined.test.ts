@@ -36,6 +36,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			spawnChildProcessSpy.restore();
 			sandbox.restore();
 			port =  undefined;
+			testUtils.switchSettingsToType(undefined);
 		});
 
 		afterEach(function(done) {

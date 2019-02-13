@@ -119,8 +119,8 @@ function stopLocalAtlasMapInstance(): Promise<boolean> {
 
 function openURL(url: string) {
 	let config = vscode.workspace.getConfiguration();
-	let openUrlPref:string = config.get("atlasmap.openInBrowser");
-	if (openUrlPref === "Internal") {
+	let openUrlPref:string = config.get(utils.BROWSERTYPE_PREFERENCE_KEY);
+	if (openUrlPref === utils.BrowserType.Internal) {
 		atlasMapWebView.default.createOrShow(url);		
 	} else {
 		opn(url);
