@@ -15,6 +15,9 @@ chai.use(sinonChai);
 const MAX_WAIT = 10000;
 const STEP = 1000;
 const KEYSTRING: string = "Starting AtlasMap instance at port ";
+const BROWSERTYPE_KEY = "atlasmap.openInBrowser";
+
+export const BROWSER_TYPES = ["Internal", "External (Default OS Browser)"];
 
 export function getWebUI(url: string): Promise<string> {
 	return new Promise((resolve, reject) => {
@@ -132,4 +135,10 @@ export function hasStringInSpy(searchString: string, spy: sinon.SinonSpy): boole
 		}
 	}	
 	return false;
+}
+
+export function switchSettingsToType(browserConfig: string) {
+	let config = vscode.workspace.getConfiguration();
+	const setAsGlobal = config.inspect(BROWSERTYPE_KEY).workspaceValue == undefined;
+	config.update(BROWSERTYPE_KEY, browserConfig, setAsGlobal);
 }
