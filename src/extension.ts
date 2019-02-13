@@ -1,5 +1,6 @@
 "use strict";
 
+import * as atlasMapWebView from './atlasMapWebView';
 import * as child_process from 'child_process';
 import * as opn from 'opn';
 import * as path from 'path';
@@ -37,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 		} else {
 			vscode.window.showInformationMessage("Running AtlasMap instance found at port " + atlasMapLaunchPort);
 			const url = "http://localhost:" + atlasMapLaunchPort;
-			opn(url);
+			openURL(url);
 		}
 	}));
 
@@ -87,7 +88,7 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string): Pr
 					atlasMapServerOutputChannel.append(text);
 					if (text.indexOf("### AtlasMap Data Mapper UI started") > 0) {
 						const url = "http://localhost:" + port;
-						opn(url);
+						openURL(url);
 					}
 				});
 				resolve();
@@ -116,3 +117,12 @@ function stopLocalAtlasMapInstance(): Promise<boolean> {
 	});	
 }
 
+function openURL(url: string) {
+	let config = vscode.workspace.getConfiguration();
+	let openUrlPref:string = config.get("atlasmap.openInBrowser");
+	if (openUrlPref === "Internal") {
+		atlasMapWebView.default.createOrShow(url);		
+	} else {
+		opn(url);
+	}	
+}
