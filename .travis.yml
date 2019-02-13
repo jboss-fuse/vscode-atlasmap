@@ -12,7 +12,6 @@ install:
   - 'npm install'
   # https://github.com/travis-ci/travis-ci/issues/8813
   - 'rm -f ./node_modules/.bin/which'
-  - 'npm run vscode:prepublish'
   - 'vsce package'
 script:
   - 'npm test --silent'
