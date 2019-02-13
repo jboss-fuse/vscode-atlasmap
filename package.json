@@ -59,7 +59,7 @@
 						"Internal",
 						"External (Default OS Browser)"
 					],					
-					"default": "Internal",
+					"default": "External (Default OS Browser)",
 					"description": "Select the preferred browser type to open AtlasMap UI in."
 				}
 			}

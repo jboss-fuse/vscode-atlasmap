@@ -8,6 +8,15 @@
 
 This extension is providing a command to help development of [AtlasMap](http://docs.atlasmap.io/) transformations.
 
+### Preferences: Preferred Browser Type
+
+Inside the VSCode Preferences you can choose what browser type you want to open the AtlasMap UI with.
+
+Possible choices:
+- Internal (This will open the AtlasMap UI inside VSCode in a dedicated view)
+- External (This will open the AtlasMap UI in the default OS browser externally)
+![AtlasMap Preferences](doc/AtlasMapPreferences.png)
+
 ### Start an AtlasMap instance
 
 "AtlasMap: Open AtlasMap" command is starting a local AtlasMap instance and opens a Web View or an external browser pointing to its web UI:
