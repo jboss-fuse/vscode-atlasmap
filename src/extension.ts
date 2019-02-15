@@ -5,9 +5,9 @@ import * as child_process from 'child_process';
 import * as opn from 'opn';
 import * as path from 'path';
 import * as requirements from './requirements';
-import * as vscode from 'vscode';
 import { TextDecoder } from 'util';
 import * as utils from './utils';
+import * as vscode from 'vscode';
 
 let atlasMapServerOutputChannel: vscode.OutputChannel;
 let atlasMapProcess: child_process.ChildProcess;
@@ -112,15 +112,14 @@ function stopLocalAtlasMapInstance(): Promise<boolean> {
 			} catch (error) {
 				reject(error);
 			}
+			atlasMapWebView.default.close();
 		}
 		resolve(atlasMapProcess ? atlasMapProcess.killed : true);
 	});	
 }
 
 function openURL(url: string) {
-	let config = vscode.workspace.getConfiguration();
-	let openUrlPref:string = config.get(utils.BROWSERTYPE_PREFERENCE_KEY);
-	if (openUrlPref === utils.BrowserType.Internal) {
+	if (utils.isUsingInternalView()) {
 		atlasMapWebView.default.createOrShow(url);		
 	} else {
 		opn(url);

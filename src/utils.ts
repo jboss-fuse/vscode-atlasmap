@@ -1,6 +1,7 @@
 "use strict";
 
 import * as detect from 'detect-port';
+import * as vscode from 'vscode';
 
 export const DEFAULT_ATLASMAP_PORT = "8585";
 
@@ -21,4 +22,14 @@ export function retrieveFreeLocalPort(): Promise<string> {
 				reject(err);
 			});
 	});
+}
+
+function getViewPreference(): string {
+	let config = vscode.workspace.getConfiguration();
+	let openUrlPref:string = config.get(BROWSERTYPE_PREFERENCE_KEY);
+	return openUrlPref;
+}
+
+export function isUsingInternalView(): boolean {	
+	return getViewPreference() === BrowserType.Internal;
 }

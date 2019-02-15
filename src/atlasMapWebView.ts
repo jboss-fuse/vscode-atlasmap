@@ -31,6 +31,12 @@ export default class AtlasMapPanel {
 		AtlasMapPanel.currentPanel = new AtlasMapPanel(panel, url);
 	}
 
+	public static close() {
+		if (AtlasMapPanel.currentPanel) {
+			AtlasMapPanel.currentPanel.dispose();
+		}
+	}
+
 	public static revive(panel: vscode.WebviewPanel, url: string) {
 		AtlasMapPanel.currentPanel = new AtlasMapPanel(panel, url);
 	}
