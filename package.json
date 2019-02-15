@@ -49,6 +49,15 @@
 				"category": "AtlasMap"
 			}
 		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "atlasmap.start",
+					"when": "resourceExtname == .adm",
+					"group": "navigation"
+				}
+			]
+		},
 		"configuration": {
 			"type": "object",
 			"title": "AtlasMap Settings",

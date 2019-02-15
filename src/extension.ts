@@ -16,11 +16,16 @@ let atlasMapUIReady: boolean;
 export function activate(context: vscode.ExtensionContext) {
 
 	let atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
-	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', () => {
+
+	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', (ctx) => {
+		let admFilePath: string;
+		if (ctx && ctx.path) {
+			admFilePath = ctx.path;
+		}
 		if (atlasMapLaunchPort === undefined) {
 			utils.retrieveFreeLocalPort()
 				.then( (port) => {
-					launchAtlasMapLocally(atlasmapExecutablePath, port)
+					launchAtlasMapLocally(atlasmapExecutablePath, port, admFilePath)
 						.then( () => {
 							vscode.window.showInformationMessage("Starting AtlasMap instance at port " + port);
 							atlasMapLaunchPort = port;
@@ -63,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 }
 
-function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string): Promise<any> {
+function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string, admFilePath: string = ""): Promise<any> {
 	return new Promise( (resolve, reject) => {
 		showProgressInfo(port);
 		process.env.SERVER_PORT = port;
@@ -72,7 +77,12 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string): Pr
 		requirements.resolveRequirements()
 			.then(requirements => {
 				let javaExecutablePath = path.resolve(requirements.java_home + '/bin/java');
-				atlasMapProcess = child_process.spawn(javaExecutablePath, ['-jar', atlasmapExecutablePath]);
+
+				if (admFilePath !== "") {
+					atlasMapProcess = child_process.spawn(javaExecutablePath, ['-Datlasmap.adm.path=' + admFilePath, '-jar', atlasmapExecutablePath]);
+				} else {
+					atlasMapProcess = child_process.spawn(javaExecutablePath, ['-jar', atlasmapExecutablePath]);
+				}
 				atlasMapProcess.on("close", (code, signal) => {
 					if (atlasMapServerOutputChannel) {
 						try {
