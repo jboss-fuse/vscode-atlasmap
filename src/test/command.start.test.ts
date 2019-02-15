@@ -1,11 +1,13 @@
 "use strict";
 
+import * as atlasMapWebView from "../atlasMapWebView";
 import * as chai from "chai";
 import * as child_process from 'child_process';
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as testUtils from "./command.test.utils";
 import * as vscode from "vscode";
+import { BrowserType } from "../utils";
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -116,6 +118,9 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 					await testUtils.getWebUI(url)
 						.then( (body) => {
 							expect(body, "Unexpected html response body").to.contain("AtlasMap");
+							if (browserConfig === BrowserType.Internal) {
+								expect(atlasMapWebView.default.currentPanel._panel.webview.html).to.contain(url).and.to.contain('<body style="padding: 0">');
+							}
 							done();
 						})
 						.catch( (err) => {
