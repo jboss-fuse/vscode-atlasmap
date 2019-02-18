@@ -6,6 +6,7 @@ import { isString } from "util";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
+import AtlasMapPanel from '../atlasMapWebView';
 
 const request = require("request");
 
@@ -140,4 +141,8 @@ export function switchSettingsToType(browserConfig: string) {
 	let config = vscode.workspace.getConfiguration();
 	const setAsGlobal = config.inspect(BROWSERTYPE_PREFERENCE_KEY).workspaceValue == undefined;
 	config.update(BROWSERTYPE_PREFERENCE_KEY, browserConfig, setAsGlobal);
+}
+
+export function isInternalWebViewClosed(): boolean {
+	return AtlasMapPanel.currentPanel === undefined;
 }
