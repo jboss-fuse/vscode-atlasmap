@@ -58,7 +58,7 @@
 					"enum": [
 						"Internal",
 						"External (Default OS Browser)"
-					],					
+					],
 					"default": "External (Default OS Browser)",
 					"description": "Select the preferred browser type to open AtlasMap UI in."
 				}
@@ -86,7 +86,6 @@
 		"expand-home-dir": "^0.0.3",
 		"fetch": "^1.1.0",
 		"find-java-home": "^0.2.0",
-		"opn": "^5.4.0",
 		"path": "^0.12.7",
 		"path-exists": "^3.0.0",
 		"util": "^0.11.1"
