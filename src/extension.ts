@@ -2,7 +2,6 @@
 
 import * as atlasMapWebView from './atlasMapWebView';
 import * as child_process from 'child_process';
-import * as opn from 'opn';
 import * as path from 'path';
 import * as requirements from './requirements';
 import { TextDecoder } from 'util';
@@ -125,7 +124,7 @@ function openURL(url: string) {
 	if (utils.isUsingInternalView()) {
 		atlasMapWebView.default.createOrShow(url);		
 	} else {
-		opn(url);
+		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(url));
 	}	
 }
 
