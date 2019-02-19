@@ -12,11 +12,11 @@ import * as vscode from 'vscode';
 let atlasMapServerOutputChannel: vscode.OutputChannel;
 let atlasMapProcess: child_process.ChildProcess;
 let atlasMapLaunchPort: string;
+let atlasMapUIReady: boolean;
 
 export function activate(context: vscode.ExtensionContext) {
 
 	let atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
-
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', () => {
 		if (atlasMapLaunchPort === undefined) {
 			utils.retrieveFreeLocalPort()
@@ -66,6 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string): Promise<any> {
 	return new Promise( (resolve, reject) => {
+		showProgressInfo(port);
 		process.env.SERVER_PORT = port;
 		atlasMapServerOutputChannel = vscode.window.createOutputChannel("AtlasMap Server");
 	
@@ -87,8 +88,10 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string): Pr
 					let text = dec.decode(data);
 					atlasMapServerOutputChannel.append(text);
 					if (text.indexOf("### AtlasMap Data Mapper UI started") > 0) {
+						atlasMapUIReady = true;
 						const url = "http://localhost:" + port;
 						openURL(url);
+						atlasMapUIReady = true;
 					}
 				});
 				resolve();
@@ -113,7 +116,9 @@ function stopLocalAtlasMapInstance(): Promise<boolean> {
 				reject(error);
 			}
 			atlasMapWebView.default.close();
+			atlasMapUIReady = false;
 		}
+		atlasMapUIReady = atlasMapProcess ? !atlasMapProcess.killed : false;
 		resolve(atlasMapProcess ? atlasMapProcess.killed : true);
 	});	
 }
@@ -124,4 +129,21 @@ function openURL(url: string) {
 	} else {
 		opn(url);
 	}	
+}
+
+function showProgressInfo(port: string) {
+	const url = "http://localhost:" + port;
+	vscode.window.withProgress(
+		{
+			location: vscode.ProgressLocation.Notification,
+			title: "Waiting for AtlasMap UI at " + url,
+			cancellable: false
+		}, async (progress, token) => {
+			progress.report( {increment: -1} );
+			while (!atlasMapUIReady) {
+				// wait for web ui to become ready
+				await new Promise(resolve => setTimeout(resolve, 1000));
+			}
+			progress.report( {increment: 100} );
+		});
 }
