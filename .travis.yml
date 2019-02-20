@@ -30,9 +30,13 @@ deploy:
 cache:
   directories:
     - "node_modules"
-env: DISPLAY=:99
+env:
+  global:
+    - DISPLAY=:99
+    - MOZ_HEADLESS=1
 addons:
   sonarcloud:
     organization: "jboss-fuse"
     branches:
       - master
+  firefox: latest
