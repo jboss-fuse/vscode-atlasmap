@@ -13,6 +13,9 @@ let atlasMapProcess: child_process.ChildProcess;
 let atlasMapLaunchPort: string;
 let atlasMapUIReady: boolean;
 
+const WAIT_STEP: number = 1000;
+const MAX_WAIT: number = 30000;
+
 export function activate(context: vscode.ExtensionContext) {
 
 	let atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
@@ -22,8 +25,10 @@ export function activate(context: vscode.ExtensionContext) {
 		if (ctx && ctx.path) {
 			admFilePath = ctx.path;
 		}
-		if (atlasMapLaunchPort === undefined) {
-			utils.retrieveFreeLocalPort()
+
+		ensureNoOtherAtlasMapInstanceRunning()
+			.then( () => {
+				utils.retrieveFreeLocalPort()
 				.then( (port) => {
 					launchAtlasMapLocally(atlasmapExecutablePath, port, admFilePath)
 						.then( () => {
@@ -38,34 +43,54 @@ export function activate(context: vscode.ExtensionContext) {
 				.catch( (err) => {
 					vscode.window.showErrorMessage("Unable to start AtlasMap instance");
 					console.error(err);
-				});			
-		} else {
-			vscode.window.showInformationMessage("Running AtlasMap instance found at port " + atlasMapLaunchPort);
-			const url = "http://localhost:" + atlasMapLaunchPort;
-			openURL(url);
-		}
+				});
+			});
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.stop', () => {
 		if (atlasMapProcess === undefined) {
 			vscode.window.showWarningMessage("Unable to locate running AtlasMap instance");
 		} else {
-			stopLocalAtlasMapInstance()
-				.then( (stopped) => {
-					if (stopped) {
-						vscode.window.showInformationMessage("Stopped AtlasMap instance at port " + atlasMapLaunchPort);
-						atlasMapLaunchPort = undefined;
-						atlasMapProcess = undefined;
-					} else {
-						vscode.window.showWarningMessage("Unable to stop the running AtlasMap instance");
-					}
-				})
-				.catch( (err) => {
-					vscode.window.showWarningMessage("Unable to stop the running AtlasMap instance");
-					console.error(err);
-				});
+			handleStopAtlasMap();
 		}
 	}));
+}
+
+async function ensureNoOtherAtlasMapInstanceRunning() {
+	if (atlasMapLaunchPort !== undefined) {
+		// we need to stop a running atlasmap to make the next import work
+		handleStopAtlasMap();
+	}
+
+	let waitTimer:number = 0;
+	while (atlasMapLaunchPort !== undefined && waitTimer < MAX_WAIT) {
+		await new Promise(resolve => setTimeout(resolve, WAIT_STEP));
+		waitTimer += WAIT_STEP;
+	}
+
+	if (atlasMapLaunchPort !== undefined) {
+		// seems we are unable to stop the running instance
+		// now free the port variable and let atlasmap take another port
+		atlasMapLaunchPort = undefined;
+		atlasMapProcess = undefined;
+	}
+}
+
+function handleStopAtlasMap() {
+	stopLocalAtlasMapInstance()
+		.then( (stopped) => {
+			if (stopped) {
+				vscode.window.showInformationMessage("Stopped AtlasMap instance at port " + atlasMapLaunchPort);
+				atlasMapLaunchPort = undefined;
+				atlasMapProcess = undefined;
+			} else {
+				vscode.window.showWarningMessage("Unable to stop the running AtlasMap instance");
+			}
+		})
+		.catch( (err) => {
+			vscode.window.showWarningMessage("Unable to stop the running AtlasMap instance");
+			console.error(err);
+		});
 }
 
 function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string, admFilePath: string = ""): Promise<any> {
