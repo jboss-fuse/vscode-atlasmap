@@ -88,7 +88,6 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string): Pr
 					let text = dec.decode(data);
 					atlasMapServerOutputChannel.append(text);
 					if (text.indexOf("### AtlasMap Data Mapper UI started") > 0) {
-						atlasMapUIReady = true;
 						const url = "http://localhost:" + port;
 						openURL(url);
 						atlasMapUIReady = true;
@@ -116,7 +115,6 @@ function stopLocalAtlasMapInstance(): Promise<boolean> {
 				reject(error);
 			}
 			atlasMapWebView.default.close();
-			atlasMapUIReady = false;
 		}
 		atlasMapUIReady = atlasMapProcess ? !atlasMapProcess.killed : false;
 		resolve(atlasMapProcess ? atlasMapProcess.killed : true);
@@ -133,17 +131,24 @@ function openURL(url: string) {
 
 function showProgressInfo(port: string) {
 	const url = "http://localhost:" + port;
+	vscode.window.setStatusBarMessage(url, 5000);
 	vscode.window.withProgress(
 		{
 			location: vscode.ProgressLocation.Notification,
-			title: "Waiting for AtlasMap UI at " + url,
+			title: "Waiting for " + (utils.isUsingInternalView() ? "internal" : "default system") + " browser to open AtlasMap UI at " + url,
 			cancellable: false
 		}, async (progress, token) => {
 			progress.report( {increment: -1} );
-			while (!atlasMapUIReady) {
+			let waitTime: number = 0;
+			const timerStep: number = 1000;
+			while (!atlasMapUIReady && waitTime < 30000) { // max 30 secs wait
 				// wait for web ui to become ready
-				await new Promise(resolve => setTimeout(resolve, 1000));
+				await new Promise(resolve => setTimeout(resolve, timerStep));
+				waitTime += timerStep;
 			}
 			progress.report( {increment: 100} );
+			if (!atlasMapUIReady) {
+				vscode.window.showErrorMessage("Failed to resolve the AtlasMap web UI.");
+			}
 		});
 }
