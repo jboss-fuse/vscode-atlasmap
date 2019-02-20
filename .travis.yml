@@ -7,6 +7,7 @@ before_install:
   - 'export PATH=./node_modules/.bin:$PATH'
   - 'npm install -g typescript'
   - 'npm install -g vsce'
+  - 'npm install -g wtfnode'
 install:
   - 'npm install --ignore-scripts'
   - 'npm install'
@@ -14,7 +15,7 @@ install:
   - 'rm -f ./node_modules/.bin/which'
   - 'vsce package'
 script:
-  - 'npm test --silent'
+  - 'wtfnode npm test --silent'
 after_success:
   - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then
     sonar-scanner;
