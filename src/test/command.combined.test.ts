@@ -14,7 +14,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 	describe("Combined Start Stop Commands Tests with browser type: " + browserConfig, function() {
 
 		let sandbox: sinon.SinonSandbox;
-		let executeCommandSpy: sinon.SinonSpy;
+		let executeCommandStub: sinon.SinonStub;
 		let showInformationMessageSpy: sinon.SinonSpy;
 		let createOutputChannelSpy: sinon.SinonSpy;
 		let spawnChildProcessSpy: sinon.SinonSpy;
@@ -22,19 +22,23 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		before(function() {
 			sandbox = sinon.createSandbox();
-			executeCommandSpy = sinon.spy(vscode.commands, "executeCommand");
 			showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
 			createOutputChannelSpy = sinon.spy(vscode.window, "createOutputChannel");
 			spawnChildProcessSpy = sinon.spy(child_process, "spawn");
+			executeCommandStub = sinon.stub(vscode.commands, "executeCommand");
+			executeCommandStub.withArgs('vscode.open', sinon.match.any).callsFake((args) => {
+				console.log("vscode.open called, it is stubbed with a no-op. I was called with arguments:" + args);
+			});
+			executeCommandStub.callThrough();
 			testUtils.switchSettingsToType(browserConfig);
 		});
 
 		after(function() {
-			executeCommandSpy.restore();
 			showInformationMessageSpy.restore();
 			createOutputChannelSpy.restore();
 			spawnChildProcessSpy.restore();
 			sandbox.restore();
+			executeCommandStub.restore();
 			port =  undefined;
 			testUtils.switchSettingsToType(undefined);
 		});
@@ -42,7 +46,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 		afterEach(function(done) {
 			testUtils.stopAtlasMapInstance(port, showInformationMessageSpy)
 				.then( () => {
-					executeCommandSpy.resetHistory();
+					executeCommandStub.resetHistory();
 					showInformationMessageSpy.resetHistory();
 					createOutputChannelSpy.resetHistory();
 					spawnChildProcessSpy.resetHistory();
@@ -60,7 +64,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			expect(port).to.be.undefined;
 			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
 				.then( (_port) => {
-					expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 					port = _port;
 					expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 					expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
@@ -77,7 +81,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 							testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
 								.then( (_port) => {
-									expect(executeCommandSpy.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
+									expect(executeCommandStub.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
 									port = _port;
 									expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 									expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;

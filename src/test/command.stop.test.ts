@@ -7,7 +7,6 @@ import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as testUtils from "./command.test.utils";
 import * as vscode from "vscode";
-import AtlasMapPanel from '../atlasMapWebView';
 import { isInternalWebViewClosed } from './command.test.utils';
 
 const expect = chai.expect;
@@ -17,7 +16,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 	describe("Stop AtlasMap Command Tests with browser type: " + browserConfig, function() {
 
 		let sandbox: sinon.SinonSandbox;
-		let executeCommandSpy: sinon.SinonSpy;
+		let executeCommandStub: sinon.SinonStub;
 		let showInformationMessageSpy: sinon.SinonSpy;
 		let createOutputChannelSpy: sinon.SinonSpy;
 		let spawnChildProcessSpy: sinon.SinonSpy;
@@ -25,7 +24,11 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		before(function() {
 			sandbox = sinon.createSandbox();
-			executeCommandSpy = sinon.spy(vscode.commands, "executeCommand");
+			executeCommandStub = sinon.stub(vscode.commands, "executeCommand");
+			executeCommandStub.withArgs('vscode.open', sinon.match.any).callsFake((args) => {
+				console.log("vscode.open called, it is stubbed with a no-op. I was called with arguments:" + args);
+			});
+			executeCommandStub.callThrough();
 			showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
 			createOutputChannelSpy = sinon.spy(vscode.window, "createOutputChannel");
 			spawnChildProcessSpy = sinon.spy(child_process, "spawn");
@@ -33,7 +36,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 		});
 
 		after(function() {
-			executeCommandSpy.restore();
+			executeCommandStub.restore();
 			showInformationMessageSpy.restore();
 			createOutputChannelSpy.restore();
 			spawnChildProcessSpy.restore();
@@ -45,7 +48,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 		afterEach(function(done) {
 			testUtils.stopAtlasMapInstance(port, showInformationMessageSpy)
 				.then( () => {
-					executeCommandSpy.resetHistory();
+					executeCommandStub.resetHistory();
 					showInformationMessageSpy.resetHistory();
 					createOutputChannelSpy.resetHistory();
 					spawnChildProcessSpy.resetHistory();
@@ -63,7 +66,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			expect(port).to.be.undefined;
 			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
 				.then( async (_port) => {
-					expect(executeCommandSpy.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 					port = _port;
 					expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 					expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
