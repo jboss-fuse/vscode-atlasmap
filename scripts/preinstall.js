@@ -1,6 +1,6 @@
 'use strict';
 
-var atlasmap_server_version = "1.39.3";
+var atlasmap_server_version = "1.39.4";
 
 const download = require("mvn-artifact-download").default;
 const fs = require('fs');
