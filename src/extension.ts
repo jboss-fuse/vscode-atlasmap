@@ -22,8 +22,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', (ctx) => {
 		let admFilePath: string;
-		if (ctx && ctx.path) {
-			admFilePath = ctx.path;
+		if (ctx && ctx.fsPath) {
+			admFilePath = ctx.fsPath;
 		}
 
 		ensureNoOtherAtlasMapInstanceRunning()
@@ -103,7 +103,7 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string, adm
 			.then(requirements => {
 				let javaExecutablePath = path.resolve(requirements.java_home + '/bin/java');
 
-				if (admFilePath !== "") {										
+				if (admFilePath !== "") {
 					atlasMapProcess = child_process.spawn(javaExecutablePath, ['-Datlasmap.adm.path=' + admFilePath, '-jar', atlasmapExecutablePath]);
 				} else {
 					atlasMapProcess = child_process.spawn(javaExecutablePath, ['-jar', atlasmapExecutablePath]);
