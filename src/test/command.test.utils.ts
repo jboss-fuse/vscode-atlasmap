@@ -146,3 +146,12 @@ export function switchSettingsToType(browserConfig: string) {
 export function isInternalWebViewClosed(): boolean {
 	return AtlasMapPanel.currentPanel === undefined;
 }
+
+export function createExecuteCommandStubFakingExternalOpenBrowserCall() {
+	let executeCommandStub: sinon.SinonStub = sinon.stub(vscode.commands, "executeCommand");
+	executeCommandStub.withArgs('vscode.open', sinon.match.any).callsFake((args) => {
+		console.log("vscode.open called, it is stubbed with a no-op. I was called with arguments:" + args);
+	});
+	executeCommandStub.callThrough();
+	return executeCommandStub;
+}
