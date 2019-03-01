@@ -41,24 +41,26 @@ export function activate(context: vscode.ExtensionContext) {
 
 		
 		ensureNoOtherAtlasMapInstanceRunning()
-			.then( () => {
-				utils.retrieveFreeLocalPort()
-				.then( (port) => {
-					launchAtlasMapLocally(atlasmapExecutablePath, port, localAdmFile)
-						.then( () => {
-							vscode.window.showInformationMessage("Starting AtlasMap instance at port " + port);
-							atlasMapLaunchPort = port;
-							admFilePath = localAdmFile;
-						})					
-						.catch( (err) => {
-							vscode.window.showErrorMessage("Unable to start AtlasMap instance");
-							console.error(err);
-						});
-				})
-				.catch( (err) => {
-					vscode.window.showErrorMessage("Unable to start AtlasMap instance");
-					console.error(err);
-				});
+			.then( (doLaunch) => {
+				if (doLaunch) {
+					utils.retrieveFreeLocalPort()
+					.then( (port) => {
+						launchAtlasMapLocally(atlasmapExecutablePath, port, localAdmFile)
+							.then( () => {
+								vscode.window.showInformationMessage("Starting AtlasMap instance at port " + port);
+								atlasMapLaunchPort = port;
+								admFilePath = localAdmFile;
+							})					
+							.catch( (err) => {
+								vscode.window.showErrorMessage("Unable to start AtlasMap instance");
+								console.error(err);
+							});
+					})
+					.catch( (err) => {
+						vscode.window.showErrorMessage("Unable to start AtlasMap instance");
+						console.error(err);
+					});
+				}				
 			});
 	}));
 
@@ -75,27 +77,32 @@ function isAtlasMapRunning(): boolean {
 	return atlasMapProcess !== undefined && atlasMapLaunchPort !== undefined;
 }
 
-async function ensureNoOtherAtlasMapInstanceRunning() {
-	if (isAtlasMapRunning()) {
-		// we need to stop a running atlasmap to make the next import work
-		let choice = await vscode.window.showWarningMessage("The is currently a local AtlasMap instance running. We need to restart that instance. Make sure you have saved all your changes in the AtlasMap UI to prevent data loss.", { modal: true }, "Restart");
-		if ("Restart" === choice) {
-			handleStopAtlasMap();
+function ensureNoOtherAtlasMapInstanceRunning(): Promise<boolean> {
+	return new Promise( async (resolve, reject) => {
+		if (isAtlasMapRunning()) {
+			// we need to stop a running atlasmap to make the next import work
+			let choice = await vscode.window.showWarningMessage("There is currently a local AtlasMap instance running. We need to restart that instance. Make sure you have saved all your changes in the AtlasMap UI to prevent data loss.", { modal: true }, "Restart");
+			if ("Restart" === choice) {
+				handleStopAtlasMap();
+
+				let waitTimer:number = 0;
+				while (atlasMapLaunchPort !== undefined && waitTimer < MAX_WAIT) {
+					await new Promise(resolve => setTimeout(resolve, WAIT_STEP));
+					waitTimer += WAIT_STEP;
+				}
+			
+				if (atlasMapLaunchPort !== undefined) {
+					// seems we are unable to stop the running instance
+					// now free the port variable and let atlasmap take another port
+					atlasMapLaunchPort = undefined;
+					atlasMapProcess = undefined;
+				}
+			} else {
+				resolve(false);
+			}
 		}
-	}
-
-	let waitTimer:number = 0;
-	while (atlasMapLaunchPort !== undefined && waitTimer < MAX_WAIT) {
-		await new Promise(resolve => setTimeout(resolve, WAIT_STEP));
-		waitTimer += WAIT_STEP;
-	}
-
-	if (atlasMapLaunchPort !== undefined) {
-		// seems we are unable to stop the running instance
-		// now free the port variable and let atlasmap take another port
-		atlasMapLaunchPort = undefined;
-		atlasMapProcess = undefined;
-	}
+		resolve(true);
+	});
 }
 
 function handleStopAtlasMap() {
