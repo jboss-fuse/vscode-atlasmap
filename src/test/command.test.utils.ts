@@ -149,9 +149,11 @@ export function isInternalWebViewClosed(): boolean {
 
 export function createExecuteCommandStubFakingExternalOpenBrowserCall() {
 	let executeCommandStub: sinon.SinonStub = sinon.stub(vscode.commands, "executeCommand");
-	executeCommandStub.withArgs('vscode.open', sinon.match.any).callsFake((args) => {
-		console.log("vscode.open called, it is stubbed with a no-op. I was called with arguments:" + args);
-	});
+	executeCommandStub
+		.withArgs('vscode.open', sinon.match.has('authority', sinon.match('localhost:')))
+		.callsFake((arg0, arg1) => {
+			console.log("vscode.open called, it is stubbed with a no-op to avoid frozen Travis. It was called with arguments: " + arg0 + " " + arg1);
+		});
 	executeCommandStub.callThrough();
 	return executeCommandStub;
 }
