@@ -24,11 +24,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		before(function() {
 			sandbox = sinon.createSandbox();
-			executeCommandStub = sinon.stub(vscode.commands, "executeCommand");
-			executeCommandStub.withArgs('vscode.open', sinon.match.any).callsFake((args) => {
-				console.log("vscode.open called, it is stubbed with a no-op. I was called with arguments:" + args);
-			});
-			executeCommandStub.callThrough();
+			executeCommandStub = testUtils.createExecuteCommandStubFakingExternalOpenBrowserCall();
 			showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
 			createOutputChannelSpy = sinon.spy(vscode.window, "createOutputChannel");
 			spawnChildProcessSpy = sinon.spy(child_process, "spawn");
