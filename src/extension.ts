@@ -28,6 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// another AtlasMap instance if there is already one running.
 		if (isAtlasMapRunning() && admFilePath === undefined && (ctx === undefined || ctx.fsPath === undefined)) {
 			// no need to start another atlasmap instance - just open it again
+			vscode.window.showInformationMessage("Running AtlasMap instance found at port " + atlasMapLaunchPort);
 			openURL(generateUrl(atlasMapLaunchPort));
 			return;
 		}
