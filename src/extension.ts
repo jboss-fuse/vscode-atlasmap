@@ -124,7 +124,7 @@ function openURL(url: string) {
 	if (utils.isUsingInternalView()) {
 		atlasMapWebView.default.createOrShow(url);		
 	} else {
-		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(url));
+		vscode.env.openExternal(vscode.Uri.parse(url));
 	}	
 }
 
