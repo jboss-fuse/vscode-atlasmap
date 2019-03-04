@@ -9,6 +9,9 @@ import * as vscode from "vscode";
 import AtlasMapPanel from '../atlasMapWebView';
 
 const request = require("request");
+const fileUrl = require('file-url');
+const uri2path = require('file-uri-to-path');
+const fs = require("fs");
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -46,9 +49,10 @@ export function determineUsedPort(spy: sinon.SinonSpy): string {
 	return undefined;
 }
 
-export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, spawnSpy: sinon.SinonSpy): Promise<string> {
+export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, spawnSpy: sinon.SinonSpy, context: any = undefined): Promise<string> {
 	return new Promise<string>(async (resolve, reject) => {
-		await vscode.commands.executeCommand("atlasmap.start");
+		
+		await vscode.commands.executeCommand("atlasmap.start", context);
 		
 		let waitTime = 0;
 		let _port = determineUsedPort(infoSpy);
@@ -156,4 +160,24 @@ export function createExecuteCommandStubFakingExternalOpenBrowserCall() {
 		});
 	executeCommandStub.callThrough();
 	return executeCommandStub;
+}
+
+export function downloadTestADM() {
+	let f = "./mockdocfhir.adm";
+	let url: string = "https://github.com/atlasmap/atlasmap/raw/master/ui/test-resources/adm/mockdocfhir.adm";
+	let FetchStream = require("fetch").FetchStream;
+	let out = fs.createWriteStream(f);
+	new FetchStream(url).pipe(out);
+	return uri2path(fileUrl(f));
+}
+
+export function createBrokenADM() {
+	let f = "./mockdoccorrupted.adm";
+	fs.writeFile(f, "someBrokenADMContent", function(err) {
+		if(err) {
+			return console.log(err);
+		}
+	});
+	
+	return uri2path(fileUrl(f));
 }
