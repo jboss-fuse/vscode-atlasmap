@@ -1,17 +1,17 @@
 "use strict";
 
 import * as chai from "chai";
+import * as fileUrl from "file-url";
+import * as fs from "fs";
 import { DEFAULT_ATLASMAP_PORT, BrowserType, BROWSERTYPE_PREFERENCE_KEY } from '../utils';
 import { isString } from "util";
+import * as request from "request";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
 import AtlasMapPanel from '../atlasMapWebView';
 
-const request = require("request");
-const fileUrl = require('file-url');
 const uri2path = require('file-uri-to-path');
-const fs = require("fs");
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -19,6 +19,8 @@ chai.use(sinonChai);
 const MAX_WAIT = 10000;
 const STEP = 1000;
 const KEYSTRING: string = "Starting AtlasMap instance at port ";
+
+export const ATLASMAP_SERVER_VERSION = process.env.npm_package_config_atlasmapversion;
 
 export const BROWSER_TYPES = [BrowserType.Internal, BrowserType.External];
 
@@ -164,11 +166,16 @@ export function createExecuteCommandStubFakingExternalOpenBrowserCall() {
 
 export function downloadTestADM() {
 	let f = "./mockdocfhir.adm";
-	let url: string = "https://github.com/atlasmap/atlasmap/raw/master/ui/test-resources/adm/mockdocfhir.adm";
+	let tagName: string = generateGitHubTagName();
+	let url: string = "https://github.com/atlasmap/atlasmap/raw/" + tagName + "/ui/test-resources/adm/mockdocfhir.adm";
 	let FetchStream = require("fetch").FetchStream;
 	let out = fs.createWriteStream(f);
 	new FetchStream(url).pipe(out);
 	return uri2path(fileUrl(f));
+}
+
+function generateGitHubTagName(): string {
+	return "atlasmap-" + ATLASMAP_SERVER_VERSION;
 }
 
 export function createBrokenADM() {

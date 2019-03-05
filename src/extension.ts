@@ -16,6 +16,8 @@ let admFilePath: string;
 
 const WAIT_STEP: number = 1000;
 const MAX_WAIT: number = 30000;
+export const WARN_MSG: string = "There is currently a local AtlasMap instance running. We need to restart that instance. Make sure you have saved all your changes in the AtlasMap UI to prevent data loss.";
+export const RESTART_CHOICE: string = "Restart";
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -82,8 +84,8 @@ function ensureNoOtherAtlasMapInstanceRunning(): Promise<boolean> {
 	return new Promise( async (resolve, reject) => {
 		if (isAtlasMapRunning()) {
 			// we need to stop a running atlasmap to make the next import work
-			let choice = await vscode.window.showWarningMessage("There is currently a local AtlasMap instance running. We need to restart that instance. Make sure you have saved all your changes in the AtlasMap UI to prevent data loss.", { modal: true }, "Restart");
-			if ("Restart" === choice) {
+			let choice = await vscode.window.showWarningMessage(WARN_MSG, { modal: true }, RESTART_CHOICE);
+			if (RESTART_CHOICE === choice) {
 				handleStopAtlasMap();
 
 				let waitTimer:number = 0;
