@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { log } from './extension';
 
 /**
  * Manages atlas mapper webview panels
@@ -94,7 +95,7 @@ export default class AtlasMapPanel {
 				var contentWithHrefFullySpecifiedAndCSS = contentWithHrefFullySpecified.replace('<body>', '<body style="padding: 0">');
 				AtlasMapPanel.currentPanel._panel.webview.html = contentWithHrefFullySpecifiedAndCSS;
 			} catch (err) {
-				console.error(err);
+				log(err);
 			}
 		});
 	}
