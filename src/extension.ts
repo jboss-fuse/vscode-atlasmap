@@ -8,6 +8,7 @@ import { TextDecoder } from 'util';
 import * as utils from './utils';
 import * as vscode from 'vscode';
 
+let atlasMapExtensionOutputChannel: vscode.OutputChannel;
 let atlasMapServerOutputChannel: vscode.OutputChannel;
 let atlasMapProcess: child_process.ChildProcess;
 let atlasMapLaunchPort: string;
@@ -56,12 +57,12 @@ export function activate(context: vscode.ExtensionContext) {
 							})					
 							.catch( (err) => {
 								vscode.window.showErrorMessage("Unable to start AtlasMap instance");
-								console.error(err);
+								log(err);
 							});
 					})
 					.catch( (err) => {
 						vscode.window.showErrorMessage("Unable to start AtlasMap instance");
-						console.error(err);
+						log(err);
 					});
 				}				
 			});
@@ -122,7 +123,7 @@ function handleStopAtlasMap() {
 		})
 		.catch( (err) => {
 			vscode.window.showWarningMessage("Unable to stop the running AtlasMap instance");
-			console.error(err);
+			log(err);
 		});
 }
 
@@ -222,4 +223,11 @@ function showProgressInfo(port: string) {
 				vscode.window.showErrorMessage("Failed to resolve the AtlasMap web UI.");
 			}
 		});
+}
+
+export function log(text) {
+	if (!atlasMapExtensionOutputChannel) {
+		atlasMapExtensionOutputChannel = vscode.window.createOutputChannel("AtlasMap Extension");
+	}
+	atlasMapExtensionOutputChannel.append(text);
 }
