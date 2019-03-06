@@ -1,6 +1,7 @@
 "use strict";
 
 import * as chai from "chai";
+import * as download from "download";
 import * as fileUrl from "file-url";
 import * as fs from "fs";
 import { DEFAULT_ATLASMAP_PORT, BrowserType, BROWSERTYPE_PREFERENCE_KEY } from '../utils';
@@ -19,8 +20,6 @@ chai.use(sinonChai);
 const MAX_WAIT = 10000;
 const STEP = 1000;
 const KEYSTRING: string = "Starting AtlasMap instance at port ";
-
-export const ATLASMAP_SERVER_VERSION = process.env.npm_package_config_atlasmapversion;
 
 export const BROWSER_TYPES = [BrowserType.Internal, BrowserType.External];
 
@@ -164,27 +163,43 @@ export function createExecuteCommandStubFakingExternalOpenBrowserCall() {
 	return executeCommandStub;
 }
 
-export function downloadTestADM() {
+export async function downloadTestADM() {
 	let f = "./mockdocfhir.adm";
+	return await download(generateGithubDownloadUrl())
+		.then( data => {
+			fs.writeFileSync(f, data);
+			return uri2path(fileUrl(f));
+		})
+		.catch( err => {
+			return undefined;
+		});
+}
+
+export function generateGithubDownloadUrl(): string {
 	let tagName: string = generateGitHubTagName();
 	let url: string = "https://github.com/atlasmap/atlasmap/raw/" + tagName + "/ui/test-resources/adm/mockdocfhir.adm";
-	let FetchStream = require("fetch").FetchStream;
-	let out = fs.createWriteStream(f);
-	new FetchStream(url).pipe(out);
-	return uri2path(fileUrl(f));
+	return url;
 }
 
 function generateGitHubTagName(): string {
-	return "atlasmap-" + ATLASMAP_SERVER_VERSION;
+	return "atlasmap-" + determineAtlasMapVersion();
+}
+
+function determineAtlasMapVersion(): string {
+	let atlasmapVersion: string = process.env.npm_package_config_atlasmapversion;
+	if (!atlasmapVersion) {
+		let pjson = require('../../package.json');
+		atlasmapVersion = pjson.config.atlasmapversion;
+	}
+	return atlasmapVersion;
 }
 
 export function createBrokenADM() {
 	let f = "./mockdoccorrupted.adm";
-	fs.writeFile(f, "someBrokenADMContent", function(err) {
-		if(err) {
-			return console.log(err);
-		}
-	});
-	
+	try {
+		fs.writeFileSync(f, "someBrokenADMContent");
+	} catch ( err ) {
+		return undefined;	
+	}
 	return uri2path(fileUrl(f));
 }

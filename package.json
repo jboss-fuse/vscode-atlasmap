@@ -6,7 +6,7 @@
 	"preview": true,
 	"config": {
 		"atlasmapversion": "1.39.4"
-	},	
+	},
 	"bugs": "https://github.com/jboss-fuse/vscode-atlasmap/issues",
 	"homepage": "https://github.com/jboss-fuse/vscode-atlasmap",
 	"repository": {
@@ -110,6 +110,7 @@
 		"@types/sinon-chai": "^3.2.1",
 		"assert": "^1.4.1",
 		"chai": "^4.2.0",
+		"download": "^7.1.0",
 		"file-uri-to-path": "^1.0.0",
 		"file-url": "^2.0.2",
 		"fs": "^0.0.1-security",
