@@ -27,7 +27,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 		let testADMFileWorking: string;
 		let testADMFileBroken: string;
 
-		before(function() {
+		before(async function() {
 			sandbox = sinon.createSandbox();
 			executeCommandStub = testUtils.createExecuteCommandStubFakingExternalOpenBrowserCall();
 			showWarningMessageStub = sinon.stub(vscode.window, "showWarningMessage");
@@ -39,7 +39,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			createOutputChannelSpy = sinon.spy(vscode.window, "createOutputChannel");
 			spawnChildProcessSpy = sinon.spy(child_process, "spawn");
 			testUtils.switchSettingsToType(browserConfig);
-			testADMFileWorking = testUtils.downloadTestADM();
+			testADMFileWorking = await testUtils.downloadTestADM();
 			testADMFileBroken = testUtils.createBrokenADM();
 		});
 
@@ -51,12 +51,16 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			spawnChildProcessSpy.restore();
 			sandbox.restore();
 			testUtils.switchSettingsToType(undefined);
-			fs.unlink(testADMFileWorking, (err) => {
-				if (err) throw err;
-			});
-			fs.unlink(testADMFileBroken, (err) => {
-				if (err) throw err;
-			});
+			if (testADMFileWorking) {
+				fs.unlink(testADMFileWorking, (err) => {
+					if (err) throw err;
+				});
+			}
+			if (testADMFileBroken) {
+				fs.unlink(testADMFileBroken, (err) => {
+					if (err) throw err;
+				});
+			}			
 		});
 
 		afterEach(function(done) {
@@ -155,6 +159,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test import of ADM file with stopped server", function(done) {
 			expect(port).to.be.undefined;
+			expect(testADMFileWorking, "Unable to download the tagged test adm file from " + testUtils.generateGithubDownloadUrl()).to.not.be.undefined;
 			let context = { fsPath: testADMFileWorking };
 			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy, context)
 				.then( async (_port) => {
@@ -186,6 +191,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test import of ADM file with running server", function(done) {
 			expect(port).to.be.undefined;
+			expect(testADMFileWorking, "Unable to download the tagged test adm file from " + testUtils.generateGithubDownloadUrl()).to.not.be.undefined;
 			let context = { fsPath: testADMFileWorking };
 			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy, context)
 				.then( async (_port) => {
@@ -245,6 +251,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test import of corrupted ADM file with stopped server", function(done) {
 			expect(port).to.be.undefined;
+			expect(testADMFileBroken).to.not.be.undefined;
 			let context = { fsPath: testADMFileBroken };
 			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy, context)
 				.then( async (_port) => {
