@@ -22,7 +22,7 @@ Possible choices:
 "AtlasMap: Open AtlasMap" command is starting a local AtlasMap instance and opens a Web View or an external browser pointing to its web UI:
 ![Open AtlasMap command in palette](doc/OpenAtlasMapCommand.png)
 
-AtlasMap is started on port 8585 by default. If this port is occupied another free port will be choosen automatically.
+AtlasMap is started on port 8585 by default. If this port is occupied another free port will be chosen automatically.
 To check if it has been started correctly, you can go to Output view and check for the "AtlasMap Server" output:
 ![AtlasMap Server output](doc/AtlasMapServerOutput.png)
 
