@@ -16,7 +16,14 @@
 * Select *Run AtlasMap extension*
 * Click on the green arrow OR press *F5* to launch the extension
 
-When testing new version of the AtlasMap, just replace the jar in *./jars* folder respecting the name *atlasmap-standalone.jar* or launch it separately on port *8585*.
+When testing new version of the AtlasMap, just replace the jar in *./jars* folder respecting the name *atlasmap-standalone.jar* and relaunch the *Run AtlasMap extension*.
+
+## Debug the Webview API
+
+After calling the "Open AtlasMap" and that the AtlasMap panel is opened, some commands to debug are available in the same VS Code instance you launched the "Open AtlasMap command":
+
+* in palette (Ctrl+Shift+P), use "Developer: Open Webview Developer Tools"
+* to have the console and some stack you will need to call from the palette (Ctrl+Shift+P) "Developer: Reload Web
 
 ## How to provide a new version on VS Code Marketplace
 
