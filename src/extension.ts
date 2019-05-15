@@ -137,10 +137,12 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string, adm
 			.then(requirements => {
 				let javaExecutablePath = path.resolve(requirements.java_home + '/bin/java');
 
+				let atlasMapWSFolder = path.resolve(utils.getAtlasMapWorkingFolder());
+
 				if (admFilePath !== "") {
-					atlasMapProcess = child_process.spawn(javaExecutablePath, ['-Datlasmap.adm.path=' + admFilePath, '-jar', atlasmapExecutablePath]);
+					atlasMapProcess = child_process.spawn(javaExecutablePath, ['-Datlasmap.workspace=' + atlasMapWSFolder, '-Datlasmap.adm.path=' + admFilePath, '-jar', atlasmapExecutablePath]);
 				} else {
-					atlasMapProcess = child_process.spawn(javaExecutablePath, ['-jar', atlasmapExecutablePath]);
+					atlasMapProcess = child_process.spawn(javaExecutablePath, ['-Datlasmap.workspace=' + atlasMapWSFolder, '-jar', atlasmapExecutablePath]);
 				}
 				atlasMapProcess.on("close", (code, signal) => {
 					if (atlasMapServerOutputChannel) {
