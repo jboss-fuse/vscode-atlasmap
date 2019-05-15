@@ -73,6 +73,11 @@
 					],
 					"default": "Internal",
 					"description": "Select the preferred browser type to open AtlasMap UI in."
+				},
+				"atlasmap.defaultWorkspace": {
+					"type": "string",
+					"default": ".atlasmap_data",
+					"description": "Select the default AtlasMap runtime working folder to be used. Specify only the folder name as it will be created at the root level of your workspace."
 				}
 			}
 		}
