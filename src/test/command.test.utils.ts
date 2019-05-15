@@ -4,12 +4,13 @@ import * as chai from "chai";
 import * as download from "download";
 import * as fileUrl from "file-url";
 import * as fs from "fs";
-import { DEFAULT_ATLASMAP_PORT, BrowserType, BROWSERTYPE_PREFERENCE_KEY } from '../utils';
+import { DEFAULT_ATLASMAP_PORT, BrowserType, BROWSERTYPE_PREFERENCE_KEY, getAtlasMapWorkingFolder } from '../utils';
 import { isString } from "util";
 import * as request from "request";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
+import * as utils from "../utils";
 import AtlasMapPanel from '../atlasMapWebView';
 
 const uri2path = require('file-uri-to-path');
@@ -81,6 +82,12 @@ export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, spawnSpy: sinon.S
 		}
 		// wait a bit for the web ui  to be ready - not nice but works fine
 		await new Promise(res => setTimeout(res, 3000));
+
+		// check if the workfolder has been created
+		let wsPath = utils.getAtlasMapWorkingFolder();
+		if (!fs.existsSync(wsPath)) {
+			reject("Path not found: " + wsPath);
+		}
 
 		await getWebUI(url)
 			.then( body => {
