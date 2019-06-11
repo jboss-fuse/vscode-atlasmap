@@ -5,7 +5,7 @@
 	"publisher": "jboss-fuse",
 	"preview": true,
 	"config": {
-		"atlasmapversion": "1.40.0-alpha2"
+		"atlasmapversion": "1.40.0-beta1"
 	},
 	"bugs": "https://github.com/jboss-fuse/vscode-atlasmap/issues",
 	"homepage": "https://github.com/jboss-fuse/vscode-atlasmap",
