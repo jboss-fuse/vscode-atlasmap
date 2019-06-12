@@ -2,7 +2,7 @@
 	"name": "atlasmap-viewer",
 	"description": "Opens a browser for AtlasMap",
 	"version": "0.0.1",
-	"publisher": "jboss-fuse",
+	"publisher": "camel-tooling",
 	"preview": true,
 	"config": {
 		"atlasmapversion": "1.40.0-beta1"
