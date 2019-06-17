@@ -5,7 +5,7 @@
 	"publisher": "camel-tooling",
 	"preview": true,
 	"config": {
-		"atlasmapversion": "1.40.0-beta1"
+		"atlasmapversion": "1.40.0"
 	},
 	"bugs": "https://github.com/jboss-fuse/vscode-atlasmap/issues",
 	"homepage": "https://github.com/jboss-fuse/vscode-atlasmap",
