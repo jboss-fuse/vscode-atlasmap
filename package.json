@@ -2,7 +2,7 @@
 	"name": "atlasmap-viewer",
 	"description": "Opens a browser for AtlasMap",
 	"version": "0.0.2",
-	"publisher": "camel-tooling",
+	"publisher": "redhat",
 	"icon": "icons/icon128.png",
 	"preview": true,
 	"config": {
