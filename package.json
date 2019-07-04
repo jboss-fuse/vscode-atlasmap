@@ -123,6 +123,7 @@
 		"gulp": "^4.0.2",
 		"gulp-tslint": "^8.1.4",
 		"mocha": "^6.1.4",
+		"mocha-jenkins-reporter": "^0.4.1",
 		"mvn-artifact-download": "^4.0.0",
 		"request": "^2.88.0",
 		"sinon": "^7.3.2",
