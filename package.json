@@ -1,7 +1,7 @@
 {
 	"name": "atlasmap-viewer",
 	"description": "Opens a browser for AtlasMap",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"publisher": "camel-tooling",
 	"preview": true,
 	"config": {
