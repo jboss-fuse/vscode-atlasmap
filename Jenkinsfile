@@ -3,7 +3,7 @@
 node('rhel7'){
 	stage('Checkout repo') {
 		deleteDir()
-		git url: 'https://github.com/jboss-fuse/vscode-atlasmap'
+		git url: 'https://github.com/jboss-fuse/vscode-atlasmap', branch:'112-testJob'
 	}
 
 	stage('Install requirements') {
@@ -33,13 +33,13 @@ node('rhel7'){
 
 	stage('Package') {
         def packageJson = readJSON file: 'package.json'
-        sh "vsce package -o vscode-apache-camel-${packageJson.version}-${env.BUILD_NUMBER}.vsix"
+        sh "vsce package -o vscode-atlasmap-${packageJson.version}-${env.BUILD_NUMBER}.vsix"
 	}
 
 	if(params.UPLOAD_LOCATION) {
 		stage('Snapshot') {
 			def filesToPush = findFiles(glob: '**.vsix')
-			sh "rsync -Pzrlt --rsh=ssh --protocol=28 ${filesToPush[0].path} ${UPLOAD_LOCATION}/snapshots/vscode-apache-camel/"
+			sh "rsync -Pzrlt --rsh=ssh --protocol=28 ${filesToPush[0].path} ${UPLOAD_LOCATION}/snapshots/vscode-atlasmap/"
             stash name:'vsix', includes:filesToPush[0].path
 		}
     }
@@ -61,7 +61,7 @@ node('rhel7'){
 
             stage "Promote the build to stable"
             def vsix = findFiles(glob: '**.vsix')
-            sh "rsync -Pzrlt --rsh=ssh --protocol=28 ${vsix[0].path} ${UPLOAD_LOCATION}/stable/vscode-apache-camel/"
+            sh "rsync -Pzrlt --rsh=ssh --protocol=28 ${vsix[0].path} ${UPLOAD_LOCATION}/stable/vscode-atlasmap/"
         }
 	}
 }
