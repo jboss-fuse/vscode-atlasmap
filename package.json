@@ -3,6 +3,7 @@
 	"description": "Opens a browser for AtlasMap",
 	"version": "0.0.2",
 	"publisher": "camel-tooling",
+	"icon": "icons/icon128.png",
 	"preview": true,
 	"config": {
 		"atlasmapversion": "1.40.0-beta1"
