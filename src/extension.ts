@@ -14,6 +14,7 @@ let atlasMapProcess: child_process.ChildProcess;
 let atlasMapLaunchPort: string;
 let atlasMapUIReady: boolean;
 let admFilePath: string;
+let storagePath: string;
 
 const WAIT_STEP: number = 1000;
 const MAX_WAIT: number = 30000;
@@ -22,6 +23,7 @@ export const RESTART_CHOICE: string = "Restart";
 
 export function activate(context: vscode.ExtensionContext) {
 
+	storagePath = context.storagePath;
 	let atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
 
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', (ctx) => {
@@ -137,7 +139,7 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string, adm
 			.then(requirements => {
 				let javaExecutablePath = path.resolve(requirements.java_home + '/bin/java');
 
-				let atlasMapWSFolder = path.resolve(utils.getAtlasMapWorkingFolder());
+				let atlasMapWSFolder = path.resolve(storagePath, utils.ATLASMAP_WS_FOLDER_FALLBACK);
 
 				if (admFilePath !== "") {
 					atlasMapProcess = child_process.spawn(javaExecutablePath, ['-Datlasmap.workspace=' + atlasMapWSFolder, '-Datlasmap.adm.path=' + admFilePath, '-jar', atlasmapExecutablePath]);
