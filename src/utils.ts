@@ -11,7 +11,6 @@ export enum BrowserType {
 }
 
 export const BROWSERTYPE_PREFERENCE_KEY = "atlasmap.openInBrowser";
-export const ATLASMAP_WS_FOLDER_PREFERENCE_KEY = "atlasmap.defaultWorkspace";
 export const ATLASMAP_WS_FOLDER_FALLBACK = ".atlasmapdata";
 
 export function retrieveFreeLocalPort(): Promise<string> {
@@ -30,15 +29,6 @@ function getViewPreference(): string {
 	let config = vscode.workspace.getConfiguration();
 	let openUrlPref:string = config.get(BROWSERTYPE_PREFERENCE_KEY);
 	return openUrlPref;
-}
-
-export function getAtlasMapWorkingFolder(): string {
-	let config = vscode.workspace.getConfiguration();
-	let atlasMapWSFolderName:string = config.get(ATLASMAP_WS_FOLDER_PREFERENCE_KEY);
-	if (!atlasMapWSFolderName) {
-		atlasMapWSFolderName = ATLASMAP_WS_FOLDER_FALLBACK;
-	}
-	return vscode.workspace.rootPath + "/" + atlasMapWSFolderName;
 }
 
 export function isUsingInternalView(): boolean {	
