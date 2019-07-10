@@ -33,11 +33,14 @@ After calling the "Open AtlasMap" and that the AtlasMap panel is opened, some co
     * Run 'npm install' so that the package-lock.json is updated
     * Push changes in a PR
     * Wait for PR to be merged
+* Check that someone listed as _submitter_ in Jenkinsfile is available
 * Create a tag
 * Push the tag to vscode-atlasmap repository, it will trigger a build after few minutes
 * Check build is working fine on [Travis CI](https://travis-ci.org/jboss-fuse/vscode-atlasmap)
 * Start build on [Jenkins CI](https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/VS%20Code/job/vscode-atlasmap-release) with _publishToMarketPlace_ parameter checked
-* When the build is waiting on step _Publish to Marketplace_, go to the console log of the build and click "Approve"
+* Wait the build is waiting on step _Publish to Marketplace_
+* Ensure you are logged in
+* Go to the console log of the build and click "Proceed"
 * Wait few minutes and check that it has been published on VS Code Marketplace
 * Keep build forever for later reference and edit build information to indicate the version
 * Prepare next iteration:
