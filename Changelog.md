@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 0.0.3
+
+- Upgrade to AtlasMap 1.41.1
+
 ## 0.0.2
 
 - Allows to open an _*.adm_ file in AtlasMap UI via contextual menu
