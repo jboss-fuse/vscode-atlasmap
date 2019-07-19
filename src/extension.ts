@@ -23,7 +23,14 @@ export const RESTART_CHOICE: string = "Restart";
 
 export function activate(context: vscode.ExtensionContext) {
 
-	storagePath = context.storagePath;
+	//Use globalStoragePath instead of storagePath when workspace is not opened
+	if (context.storagePath == undefined){
+		storagePath = context.globalStoragePath;
+	} else {
+		storagePath = context.storagePath;
+	}
+	
+	
 	let atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
 
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', (ctx) => {
