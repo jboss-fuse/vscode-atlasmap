@@ -1,9 +1,11 @@
 language: node_js
 node_js: "10.15.0"
-os: linux
+os:
+  - linux
+  - osx
 before_install:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then sh -e /etc/init.d/xvfb start; fi
+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok ) & fi
   - 'export PATH=./node_modules/.bin:$PATH'
   - 'npm install -g typescript'
   - 'npm install -g vsce'
@@ -16,7 +18,7 @@ install:
 script:
   - 'npm test --silent'
 after_success:
-  - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then
+  - if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" && "${TRAVIS_OS_NAME}" = "linux" ]]; then
     sonar-scanner;
     fi
 cache:
@@ -28,3 +30,4 @@ addons:
     organization: "jboss-fuse"
     branches:
       - master
+    
