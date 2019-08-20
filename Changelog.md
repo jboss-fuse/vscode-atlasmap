@@ -3,6 +3,7 @@
 ## 0.0.3
 
 - Upgrade to AtlasMap 1.41.1
+- Update to naming approved by Red Hat legal
 
 ## 0.0.2
 
