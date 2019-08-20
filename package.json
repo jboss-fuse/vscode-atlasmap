@@ -1,6 +1,6 @@
 {
 	"name": "atlasmap-viewer",
-	"displayName": "AtlasMap Data Transformation editor",
+	"displayName": "AtlasMap Data Transformation editor by Red Hat",
 	"description": "Opens a browser for AtlasMap Data Transformation editor",
 	"version": "0.0.3",
 	"publisher": "redhat",
