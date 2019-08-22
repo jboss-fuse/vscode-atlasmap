@@ -126,6 +126,6 @@
 		"sinon-chai": "^3.3.0",
 		"tslint": "^5.17.0",
 		"typescript": "^3.5.2",
-		"vscode": "^1.1.34"
+		"vscode": "^1.1.36"
 	}
 }
