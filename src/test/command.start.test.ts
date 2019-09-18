@@ -81,51 +81,51 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 				});
 		});
 
-		it("Test Start Command invocation without running AtlasMap instance", function(done) {
-			expect(port).to.be.undefined;
-			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
-				.then( _port => {
-					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
-					port = _port;
-					expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-					expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-					expect(createOutputChannelSpy.calledOnce);
-					done();
-				})
-				.catch( err => {
-					console.error(err);
-					done(err);
-				});
-		});
+		// it("Test Start Command invocation without running AtlasMap instance", function(done) {
+		// 	expect(port).to.be.undefined;
+		// 	testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
+		// 		.then( _port => {
+		// 			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+		// 			port = _port;
+		// 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+		// 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+		// 			expect(createOutputChannelSpy.calledOnce);
+		// 			done();
+		// 		})
+		// 		.catch( err => {
+		// 			console.error(err);
+		// 			done(err);
+		// 		});
+		// });
 
-		it("Test Start Command invocation with running AtlasMap instance (DO NOT SPAWN MORE THAN ONE ATLASMAP)", function(done) {
-			expect(port).to.be.undefined;
-			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
-				.then( async (_port) => {
-					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
-					port = _port;
-					expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-					expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-					expect(createOutputChannelSpy.calledOnce);
+		// it("Test Start Command invocation with running AtlasMap instance (DO NOT SPAWN MORE THAN ONE ATLASMAP)", function(done) {
+		// 	expect(port).to.be.undefined;
+		// 	testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
+		// 		.then( async (_port) => {
+		// 			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+		// 			port = _port;
+		// 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+		// 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+		// 			expect(createOutputChannelSpy.calledOnce);
 
-					await vscode.commands.executeCommand("atlasmap.start");
-					expect(executeCommandStub.withArgs("atlasmap.start").callCount, "AtlasMap start command was not issued").to.be.greaterThan(1);
-					expect(showInformationMessageSpy.getCalls()[showInformationMessageSpy.callCount-1].args[0], "No detection message for running instance found!").to.equal("Running AtlasMap instance found at port " + port);
+		// 			await vscode.commands.executeCommand("atlasmap.start");
+		// 			expect(executeCommandStub.withArgs("atlasmap.start").callCount, "AtlasMap start command was not issued").to.be.greaterThan(1);
+		// 			expect(showInformationMessageSpy.getCalls()[showInformationMessageSpy.callCount-1].args[0], "No detection message for running instance found!").to.equal("Running AtlasMap instance found at port " + port);
 
-					await vscode.commands.executeCommand("atlasmap.start");
-					expect(executeCommandStub.withArgs("atlasmap.start").callCount, "AtlasMap start command was not issued").to.be.greaterThan(2);
-					expect(showInformationMessageSpy.getCalls()[showInformationMessageSpy.callCount-1].args[0], "No detection message for running instance found!").to.equal("Running AtlasMap instance found at port " + port);
+		// 			await vscode.commands.executeCommand("atlasmap.start");
+		// 			expect(executeCommandStub.withArgs("atlasmap.start").callCount, "AtlasMap start command was not issued").to.be.greaterThan(2);
+		// 			expect(showInformationMessageSpy.getCalls()[showInformationMessageSpy.callCount-1].args[0], "No detection message for running instance found!").to.equal("Running AtlasMap instance found at port " + port);
 
-					// wait a bit for the web ui  to be ready - not nice but works fine
-					await new Promise(resolve => setTimeout(resolve, 3000));
+		// 			// wait a bit for the web ui  to be ready - not nice but works fine
+		// 			await new Promise(resolve => setTimeout(resolve, 3000));
 
-					done();
-				})
-				.catch( err => {
-					console.error(err);
-					done(err);
-				});
-		});
+		// 			done();
+		// 		})
+		// 		.catch( err => {
+		// 			console.error(err);
+		// 			done(err);
+		// 		});
+		// });
 
 		it("Test Web UI availability after startup of server", function(done) {
 			expect(port).to.be.undefined;
