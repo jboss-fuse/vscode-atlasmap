@@ -54,6 +54,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 				})
 				.catch( (err) => {
 					console.error(err);
+					chai.assert.fail(err);
 					done(err);
 				});
 		});
@@ -79,11 +80,13 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 						})
 						.catch( err => {
 							console.error(err);
+							chai.assert.fail(err);
 							done(err);
 						});	
 				})
 				.catch( err => {
 					console.error(err);
+					chai.assert.fail(err);
 					done(err);
 				});
 		});
@@ -98,6 +101,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 				})
 				.catch( err => {
 					console.error(err);
+					chai.assert.fail(err);
 					done(err);
 				});
 		});

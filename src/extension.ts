@@ -9,7 +9,7 @@ import * as utils from './utils';
 import * as vscode from 'vscode';
 
 let atlasMapExtensionOutputChannel: vscode.OutputChannel;
-let atlasMapServerOutputChannel: vscode.OutputChannel;
+export let atlasMapServerOutputChannel: vscode.OutputChannel;
 let atlasMapProcess: child_process.ChildProcess;
 let atlasMapLaunchPort: string;
 let atlasMapUIReady: boolean;
@@ -132,7 +132,7 @@ function handleStopAtlasMap() {
 		})
 		.catch( (err) => {
 			vscode.window.showWarningMessage("Unable to stop the running AtlasMap instance");
-			log(err);
+			log("Unable to stop the running AtlasMap instance\n"+ err);
 		});
 }
 
@@ -171,6 +171,7 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string, adm
 						openURL(url);
 						atlasMapUIReady = true;
 					}
+					console.log(text);
 				});
 				resolve();
 			})
@@ -196,6 +197,7 @@ function stopLocalAtlasMapInstance(): Promise<boolean> {
 				atlasMapProcess.kill();
 			} catch (error) {
 				reject(error);
+				console.log("error when calling kill\n"+error);
 			}
 			atlasMapWebView.default.close();
 		}

@@ -10,9 +10,8 @@ import * as request from "request";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
-import * as utils from "../utils";
 import AtlasMapPanel from '../atlasMapWebView';
-import { AssertionError } from "assert";
+import * as extension from '../extension';
 
 const uri2path = require('file-uri-to-path');
 
@@ -105,7 +104,7 @@ export function stopAtlasMapInstance(_port: string = DEFAULT_ATLASMAP_PORT, info
 					waitTime += STEP;
 				});
 		}
-		if(!hasStopMessageInInfoMessage(infoSpy)) {
+		if(waitTime >= MAX_WAIT) {
 			Promise.reject(new Error('AtlasMap instance not shutdowned in '+ MAX_WAIT + 'ms'));
 		}
 		// wait a bit for the port to be really free - not nice but works fine
