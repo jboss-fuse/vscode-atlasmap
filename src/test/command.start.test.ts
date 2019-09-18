@@ -184,6 +184,8 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 							console.error(err);
 							done(err);
 						});
+					//await all requests sent by AtlasMap are received by the server how to do it in a smarter way??
+					await new Promise(res => setTimeout(res, 3000));
 				})
 				.catch( err => {
 					console.error(err);
