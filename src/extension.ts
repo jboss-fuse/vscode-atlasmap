@@ -193,13 +193,13 @@ function generateUrl(port: string): string {
 function stopLocalAtlasMapInstance(): Promise<boolean> {
 	return new Promise( (resolve, reject) => {
 		if (atlasMapProcess) {
+			atlasMapWebView.default.close();
 			try {
 				atlasMapProcess.kill();
 			} catch (error) {
 				console.log("error when calling kill\n"+error);
 				reject(error);
 			}
-			atlasMapWebView.default.close();
 		}
 		atlasMapUIReady = atlasMapProcess ? !atlasMapProcess.killed : false;
 		resolve(atlasMapProcess ? atlasMapProcess.killed : true);
