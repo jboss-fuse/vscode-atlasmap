@@ -196,8 +196,8 @@ function stopLocalAtlasMapInstance(): Promise<boolean> {
 			try {
 				atlasMapProcess.kill();
 			} catch (error) {
-				reject(error);
 				console.log("error when calling kill\n"+error);
+				reject(error);
 			}
 			atlasMapWebView.default.close();
 		}
