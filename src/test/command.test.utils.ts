@@ -18,7 +18,7 @@ const uri2path = require('file-uri-to-path');
 const expect = chai.expect;
 chai.use(sinonChai);
 
-const MAX_WAIT = 10000;
+const MAX_WAIT = 30000;
 const STEP = 1000;
 const KEYSTRING: string = "Starting AtlasMap instance at port ";
 
@@ -76,7 +76,7 @@ export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, spawnSpy: sinon.S
 		while(!called && waitTime < MAX_WAIT) {
 			await waitForTask("OpenBrowser")
 				.then( () => {
-					called = hasStringInSpy(url, spawnSpy);
+					called = hasStringInSpy(url, spawnSpy); // cannot be true, spawn is never called with the url as parameter
 					waitTime += STEP;
 				});
 		}
