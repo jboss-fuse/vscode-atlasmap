@@ -19,7 +19,6 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 		let executeCommandStub: sinon.SinonStub;
 		let showInformationMessageSpy: sinon.SinonSpy;
 		let createOutputChannelSpy: sinon.SinonSpy;
-		let spawnChildProcessSpy: sinon.SinonSpy;
 		let port: string;
 
 		before(function() {
@@ -27,7 +26,6 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			executeCommandStub = testUtils.createExecuteCommandStubFakingExternalOpenBrowserCall();
 			showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
 			createOutputChannelSpy = sinon.spy(vscode.window, "createOutputChannel");
-			spawnChildProcessSpy = sinon.spy(child_process, "spawn");
 			testUtils.switchSettingsToType(browserConfig);
 		});
 
@@ -35,7 +33,6 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			executeCommandStub.restore();
 			showInformationMessageSpy.restore();
 			createOutputChannelSpy.restore();
-			spawnChildProcessSpy.restore();
 			sandbox.restore();
 			port =  undefined;
 			testUtils.switchSettingsToType(undefined);
@@ -47,7 +44,6 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 					executeCommandStub.resetHistory();
 					showInformationMessageSpy.resetHistory();
 					createOutputChannelSpy.resetHistory();
-					spawnChildProcessSpy.resetHistory();
 					sandbox.resetHistory();
 					port =  undefined;
 					done();
@@ -60,7 +56,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test Stop Command invocation with running AtlasMap instance", function(done) {
 			expect(port).to.be.undefined;
-			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
+			testUtils.startAtlasMapInstance(showInformationMessageSpy)
 				.then( async (_port) => {
 					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 					port = _port;
