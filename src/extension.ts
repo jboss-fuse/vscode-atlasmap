@@ -12,7 +12,7 @@ let atlasMapExtensionOutputChannel: vscode.OutputChannel;
 let atlasMapServerOutputChannel: vscode.OutputChannel;
 let atlasMapProcess: child_process.ChildProcess;
 let atlasMapLaunchPort: string;
-let atlasMapUIReady: boolean;
+export let atlasMapUIReady: boolean;
 let admFilePath: string;
 let storagePath: string;
 
