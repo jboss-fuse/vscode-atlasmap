@@ -233,22 +233,22 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 										done();
 									})
 									.catch( (err) => {
-										console.error(err);
+										console.error("### Error get second Web UI"+err);
 										done(err);
 									});
 							})
 							.catch( err => {
-								console.error(err);
+								console.error("### Error second start atlasmap"+err);
 								done(err);
 							});
 						})
 						.catch( (err) => {
-							console.error(err);
+							console.error("### Error get first Web UI"+err);
 							done(err);
 						});
 				})
 				.catch( err => {
-					console.error(err);
+					console.error("### Error first start atlasmap"+err);
 					done(err);
 				});
 		});
