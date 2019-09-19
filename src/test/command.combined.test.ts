@@ -17,14 +17,12 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 		let executeCommandStub: sinon.SinonStub;
 		let showInformationMessageSpy: sinon.SinonSpy;
 		let createOutputChannelSpy: sinon.SinonSpy;
-		let spawnChildProcessSpy: sinon.SinonSpy;
 		let port: string;
 
 		before(function() {
 			sandbox = sinon.createSandbox();
 			showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
 			createOutputChannelSpy = sinon.spy(vscode.window, "createOutputChannel");
-			spawnChildProcessSpy = sinon.spy(child_process, "spawn");
 			executeCommandStub = testUtils.createExecuteCommandStubFakingExternalOpenBrowserCall();
 			testUtils.switchSettingsToType(browserConfig);
 		});
@@ -32,7 +30,6 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 		after(function() {
 			showInformationMessageSpy.restore();
 			createOutputChannelSpy.restore();
-			spawnChildProcessSpy.restore();
 			sandbox.restore();
 			executeCommandStub.restore();
 			port =  undefined;
@@ -45,7 +42,6 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 					executeCommandStub.resetHistory();
 					showInformationMessageSpy.resetHistory();
 					createOutputChannelSpy.resetHistory();
-					spawnChildProcessSpy.resetHistory();
 					sandbox.resetHistory();
 					port =  undefined;
 					done();
@@ -58,7 +54,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test AtlasMap Server Output Channel Reinstantiation", function(done) {
 			expect(port).to.be.undefined;
-			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
+			testUtils.startAtlasMapInstance(showInformationMessageSpy)
 				.then( (_port) => {
 					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 					port = _port;
@@ -73,9 +69,8 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 							//  now reset some spies so the test can succeed
 							showInformationMessageSpy.resetHistory();
-							spawnChildProcessSpy.resetHistory();
 
-							testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
+							testUtils.startAtlasMapInstance(showInformationMessageSpy)
 								.then( (_port) => {
 									expect(executeCommandStub.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
 									port = _port;

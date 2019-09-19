@@ -52,7 +52,7 @@ export function determineUsedPort(spy: sinon.SinonSpy): string {
 	return undefined;
 }
 
-export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, spawnSpy: sinon.SinonSpy, context: any = undefined): Promise<string> {
+export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, context: any = undefined): Promise<string> {
 	return new Promise<string>(async (resolve, reject) => {
 		
 		await vscode.commands.executeCommand("atlasmap.start", context);
