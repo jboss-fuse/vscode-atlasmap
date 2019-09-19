@@ -11,6 +11,7 @@ import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
 import * as utils from "../utils";
+import * as extension from "../extension";
 import AtlasMapPanel from '../atlasMapWebView';
 
 const uri2path = require('file-uri-to-path');
@@ -70,19 +71,18 @@ export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, spawnSpy: sinon.S
 		expect(_port, "Seems we can't determine the used port number").to.not.be.undefined;
 		expect(_port, "Seems we can't determine the used port number").to.not.be.NaN;
 		
-		const url:string = "http://localhost:" + _port;
-		let called = hasStringInSpy(url, spawnSpy);
 		waitTime = 0;
-		while(!called && waitTime < MAX_WAIT) {
-			await waitForTask("OpenBrowser")
+		while(!extension.atlasMapUIReady && waitTime < MAX_WAIT) {
+			await waitForTask("AtlasMap UI started")
 				.then( () => {
-					called = hasStringInSpy(url, spawnSpy);
 					waitTime += STEP;
 				});
 		}
-		// wait a bit for the web ui  to be ready - not nice but works fine
-		await new Promise(res => setTimeout(res, 3000));
+		if (!extension.atlasMapUIReady) {
+			reject(new Error("AtlasMap UI not started"));
+		}
 
+		const url:string = "http://localhost:" + _port;
 		await getWebUI(url)
 			.then( body => {
 				expect(body, "Unexpected html response body").to.contain("AtlasMap");
