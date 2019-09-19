@@ -22,7 +22,6 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 		let showWarningMessageStub: sinon.SinonStub;
 		let showInformationMessageSpy: sinon.SinonSpy;
 		let createOutputChannelSpy: sinon.SinonSpy;
-		let spawnChildProcessSpy: sinon.SinonSpy;
 		let port: string;
 		let testADMFileWorking: string;
 		let testADMFileBroken: string;
@@ -37,7 +36,6 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			showWarningMessageStub.callThrough();
 			showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
 			createOutputChannelSpy = sinon.spy(vscode.window, "createOutputChannel");
-			spawnChildProcessSpy = sinon.spy(child_process, "spawn");
 			testUtils.switchSettingsToType(browserConfig);
 			testADMFileWorking = await testUtils.downloadTestADM();
 			testADMFileBroken = testUtils.createBrokenADM();
@@ -48,7 +46,6 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			showWarningMessageStub.restore();
 			showInformationMessageSpy.restore();
 			createOutputChannelSpy.restore();
-			spawnChildProcessSpy.restore();
 			sandbox.restore();
 			testUtils.switchSettingsToType(undefined);
 			if (testADMFileWorking) {
@@ -70,7 +67,6 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 					showWarningMessageStub.resetHistory();
 					showInformationMessageSpy.resetHistory();
 					createOutputChannelSpy.resetHistory();
-					spawnChildProcessSpy.resetHistory();
 					sandbox.resetHistory();
 					port =  undefined;
 					done();
@@ -83,7 +79,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test Start Command invocation without running AtlasMap instance", function(done) {
 			expect(port).to.be.undefined;
-			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
+			testUtils.startAtlasMapInstance(showInformationMessageSpy)
 				.then( _port => {
 					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 					port = _port;
@@ -100,7 +96,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test Start Command invocation with running AtlasMap instance (DO NOT SPAWN MORE THAN ONE ATLASMAP)", function(done) {
 			expect(port).to.be.undefined;
-			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
+			testUtils.startAtlasMapInstance(showInformationMessageSpy)
 				.then( async (_port) => {
 					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 					port = _port;
@@ -129,7 +125,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test Web UI availability after startup of server", function(done) {
 			expect(port).to.be.undefined;
-			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy)
+			testUtils.startAtlasMapInstance(showInformationMessageSpy)
 				.then( async (_port) => {
 					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 					port = _port;
@@ -161,7 +157,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			expect(port).to.be.undefined;
 			expect(testADMFileWorking, "Unable to download the tagged test adm file from " + testUtils.generateGithubDownloadUrl()).to.not.be.undefined;
 			let context = { fsPath: testADMFileWorking };
-			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy, context)
+			testUtils.startAtlasMapInstance(showInformationMessageSpy, context)
 				.then( async (_port) => {
 					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 					port = _port;
@@ -193,7 +189,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			expect(port).to.be.undefined;
 			expect(testADMFileWorking, "Unable to download the tagged test adm file from " + testUtils.generateGithubDownloadUrl()).to.not.be.undefined;
 			let context = { fsPath: testADMFileWorking };
-			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy, context)
+			testUtils.startAtlasMapInstance(showInformationMessageSpy, context)
 				.then( async (_port) => {
 					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 					port = _port;
@@ -210,7 +206,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 							}
 
 
-							testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy, context)
+							testUtils.startAtlasMapInstance(showInformationMessageSpy, context)
 							.then( async (_port) => {
 								expect(showWarningMessageStub.withArgs(WARN_MSG).calledOnce, "There was no warning dialog shown when starting another instance with an ADM import specified.").to.be.true;
 								expect(executeCommandStub.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
@@ -253,7 +249,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			expect(port).to.be.undefined;
 			expect(testADMFileBroken).to.not.be.undefined;
 			let context = { fsPath: testADMFileBroken };
-			testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy, context)
+			testUtils.startAtlasMapInstance(showInformationMessageSpy, context)
 				.then( async (_port) => {
 					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 					port = _port;
