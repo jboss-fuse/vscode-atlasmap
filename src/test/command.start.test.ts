@@ -213,9 +213,10 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 								expect(atlasMapWebView.default.currentPanel._panel.webview.html, "HTML doesn't contain url or the body tag with zero padding").to.contain(url).and.to.contain('<body style="padding: 0">');
 							}
 
-
+							console.log("#### second start will be called...");
 							testUtils.startAtlasMapInstance(showInformationMessageSpy, spawnChildProcessSpy, context)
 							.then( async (_port) => {
+								console.log("#### second start finished...");
 								expect(showWarningMessageStub.withArgs(WARN_MSG).calledOnce, "There was no warning dialog shown when starting another instance with an ADM import specified.").to.be.true;
 								expect(executeCommandStub.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
 								port = _port;
@@ -233,17 +234,17 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 										done();
 									})
 									.catch( (err) => {
-										console.error("### Error get second Web UI"+err);
+										console.error("#### Error get second Web UI"+err);
 										done(err);
 									});
 							})
 							.catch( err => {
-								console.error("### Error second start atlasmap"+err);
+								console.error("#### Error second start atlasmap"+err);
 								done(err);
 							});
 						})
 						.catch( (err) => {
-							console.error("### Error get first Web UI"+err);
+							console.error("#### Error get first Web UI"+err);
 							done(err);
 						});
 				})

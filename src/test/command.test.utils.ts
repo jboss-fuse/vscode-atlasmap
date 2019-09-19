@@ -80,6 +80,7 @@ export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, spawnSpy: sinon.S
 					waitTime += STEP;
 				});
 		}
+		console.log("#### value of 'called', if false, there is a problem:"+called);
 		// wait a bit for the web ui  to be ready - not nice but works fine
 		await new Promise(res => setTimeout(res, 3000));
 
@@ -89,6 +90,7 @@ export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, spawnSpy: sinon.S
 				resolve(_port);
 			})
 			.catch( err => {
+				console.log("#### getwWebUI error inside start test utils"+err);
 				reject(err);
 			});
 	});
