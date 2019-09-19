@@ -18,7 +18,7 @@ const uri2path = require('file-uri-to-path');
 const expect = chai.expect;
 chai.use(sinonChai);
 
-const MAX_WAIT = 10000;
+const MAX_WAIT = 20000;
 const STEP = 1000;
 const KEYSTRING: string = "Starting AtlasMap instance at port ";
 
