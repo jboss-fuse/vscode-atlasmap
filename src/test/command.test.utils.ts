@@ -98,6 +98,8 @@ export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, spawnSpy: sinon.S
 
 export function stopAtlasMapInstance(_port: string = DEFAULT_ATLASMAP_PORT, infoSpy: sinon.SinonSpy): Promise<boolean> {
 	return new Promise<boolean>( async (resolve, reject) => {
+
+		await request.post("http://localhost:"+_port+"/v2/atlas/mapping/RESET");
 		//await all requests sent by AtlasMap are received by the server how to do it in a smarter way??
 		await new Promise(res => setTimeout(res, 3000));
 
