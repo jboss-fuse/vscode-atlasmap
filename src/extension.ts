@@ -240,7 +240,7 @@ export function log(text) {
 	if (!atlasMapExtensionOutputChannel) {
 		atlasMapExtensionOutputChannel = vscode.window.createOutputChannel("AtlasMap Extension");
 	}
-	atlasMapExtensionOutputChannel.append(text);
+	atlasMapExtensionOutputChannel.append(text.toString());
 }
 
 /* Used for testing purpose only*/
