@@ -72,7 +72,7 @@ export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, context: any = un
 		expect(_port, "Seems we can't determine the used port number").to.not.be.NaN;
 		
 		waitTime = 0;
-		while(!extension.atlasMapUIReady && waitTime < MAX_WAIT) {
+		while(!extension.atlasMapUIReady && !AtlasMapPanel.currentPanel && waitTime < MAX_WAIT) {
 			await waitForTask("AtlasMap UI started")
 				.then( () => {
 					waitTime += STEP;
