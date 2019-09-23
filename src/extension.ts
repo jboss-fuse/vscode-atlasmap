@@ -242,3 +242,11 @@ export function log(text) {
 	}
 	atlasMapExtensionOutputChannel.append(text);
 }
+
+/* Used for testing purpose only*/
+export function disposeExtensionOutputChannel() {
+	if (atlasMapExtensionOutputChannel) {
+		atlasMapExtensionOutputChannel.dispose();
+		atlasMapExtensionOutputChannel = undefined;
+	}
+}
