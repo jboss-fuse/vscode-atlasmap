@@ -93,7 +93,9 @@ export default class AtlasMapPanel {
 				var content =  body.toString();
 				var contentWithHrefFullySpecified = content.replace('href="/"', 'href="'+url+'/"');
 				var contentWithHrefFullySpecifiedAndCSS = contentWithHrefFullySpecified.replace('<body>', '<body style="padding: 0">');
-				AtlasMapPanel.currentPanel._panel.webview.html = contentWithHrefFullySpecifiedAndCSS;
+				if (AtlasMapPanel.currentPanel) {
+					AtlasMapPanel.currentPanel._panel.webview.html = contentWithHrefFullySpecifiedAndCSS;
+				}
 			} catch (err) {
 				log(err);
 			}
