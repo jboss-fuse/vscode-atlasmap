@@ -241,8 +241,8 @@ export function log(text) {
 		console.log("Creating Outputchannel");
 		atlasMapExtensionOutputChannel = vscode.window.createOutputChannel("AtlasMap Extension");
 	}
-	console.log("logging "+text);
-	atlasMapExtensionOutputChannel.append(text);
+	console.log("logging "+text.toString());
+	atlasMapExtensionOutputChannel.append(text.toString());
 }
 
 /* Used for testing purpose only*/
