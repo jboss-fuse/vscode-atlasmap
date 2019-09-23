@@ -80,17 +80,17 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 									done();
 								})
 								.catch( err => {
-									console.error(err);
+									console.error(err.toString());
 									done(err);
 								});	
 						})
 						.catch( err => {
-							console.error(err);
+							console.error(err.toString());
 							done(err);
 						});
 				})
 				.catch( err => {
-					console.error(err);
+					console.error(err.toString());
 					done(err);
 				});
 		});
