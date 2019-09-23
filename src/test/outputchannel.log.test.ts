@@ -1,7 +1,7 @@
 "use strict";
 
 import * as chai from "chai";
-import { log } from "../extension";
+import { log, disposeExtensionOutputChannel } from "../extension";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as testUtils from "./command.test.utils";
@@ -18,6 +18,7 @@ describe("Test Extension OutputChannel", function() {
 	before(function() {
 		sandbox = sinon.createSandbox();
 		createOutputChannelSpy = sinon.spy(vscode.window, "createOutputChannel");
+		disposeExtensionOutputChannel();
 	});
 
 	after(function() {
