@@ -238,7 +238,9 @@ function showProgressInfo(port: string) {
 
 export function log(text) {
 	if (!atlasMapExtensionOutputChannel) {
+		console.log("Creating Outputchannel");
 		atlasMapExtensionOutputChannel = vscode.window.createOutputChannel("AtlasMap Extension");
 	}
+	console.log("logging "+text);
 	atlasMapExtensionOutputChannel.append(text);
 }
