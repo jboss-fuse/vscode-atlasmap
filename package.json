@@ -123,7 +123,7 @@
 		"mocha-jenkins-reporter": "^0.4.2",
 		"mvn-artifact-download": "^4.0.0",
 		"request": "^2.88.0",
-		"sinon": "^7.4.2",
+		"sinon": "^7.5.0",
 		"sinon-chai": "^3.3.0",
 		"tslint": "^5.20.0",
 		"typescript": "^3.6.3",
