@@ -119,7 +119,7 @@
 		"fs": "^0.0.1-security",
 		"gulp": "^4.0.2",
 		"gulp-tslint": "^8.1.4",
-		"mocha": "^6.2.0",
+		"mocha": "^6.2.1",
 		"mocha-jenkins-reporter": "^0.4.2",
 		"mvn-artifact-download": "^4.0.0",
 		"request": "^2.88.0",
