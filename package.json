@@ -128,6 +128,6 @@
 		"tslint": "^5.20.0",
 		"typescript": "^3.6.3",
 		"vscode": "^1.1.36",
-		"vscode-extension-tester": "^1.3.0"
+		"vscode-extension-tester": "^2.0.2"
 	}
 }
