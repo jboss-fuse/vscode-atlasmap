@@ -10,8 +10,10 @@ import * as vscode from 'vscode';
 
 let atlasMapExtensionOutputChannel: vscode.OutputChannel;
 let atlasMapServerOutputChannel: vscode.OutputChannel;
-let atlasMapProcess: child_process.ChildProcess;
-let atlasMapLaunchPort: string;
+/*Export for test purpose*/
+export let atlasMapProcess: child_process.ChildProcess;
+/*Export for test purpose*/
+export let atlasMapLaunchPort: string;
 export let atlasMapUIReady: boolean;
 let admFilePath: string;
 let storagePath: string;
@@ -84,6 +86,12 @@ export function activate(context: vscode.ExtensionContext) {
 			handleStopAtlasMap();
 		}
 	}));
+}
+
+export function deactivate(context: vscode.ExtensionContext) {
+	if (isAtlasMapRunning()) {
+		stopLocalAtlasMapInstance();
+	}
 }
 
 function isAtlasMapRunning(): boolean {
