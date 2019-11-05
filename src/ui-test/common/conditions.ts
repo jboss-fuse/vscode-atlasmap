@@ -1,4 +1,4 @@
-import { Workbench, Notification, NotificationType } from 'vscode-extension-tester';
+import { Workbench, NotificationType } from 'vscode-extension-tester';
 import { views } from './constants';
 
 export async function getNotificationWithMessage(message: string) {
@@ -20,6 +20,16 @@ export async function getNotificationWithMessage(message: string) {
 
 export async function whilegetNotificationWithMessage(message: string) {
 	return !(await getNotificationWithMessage(message));
+}
+
+export async function notificationCenterIsOpened(): Promise<boolean | undefined> {
+	try {
+		const center = await new Workbench().openNotificationsCenter();
+		return await center.isDisplayed();
+	} catch (err) {
+		//do not print err
+		return false;
+	}
 }
 
 export async function atlasMapWindowExists(): Promise<boolean | undefined> {

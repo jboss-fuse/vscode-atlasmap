@@ -1,5 +1,6 @@
-import { Workbench, EditorView } from 'vscode-extension-tester';
+import { Workbench, EditorView, WebDriver, VSBrowser } from 'vscode-extension-tester';
 import { commands, views } from './constants';
+import { notificationCenterIsOpened } from './conditions';
 
 export async function startAtlasMap() {
 	await new Workbench().executeCommand(commands.START_ATLASMAP);
@@ -14,8 +15,10 @@ export async function atlasMapTabIsAccessible() {
 }
 
 export async function clearNotifications() {
+	let driver = VSBrowser.instance.driver as WebDriver;
 	try {
 		const center = await new Workbench().openNotificationsCenter();
+		await driver.wait(() => { return notificationCenterIsOpened(); }, 10000);
 		await center.clearAllNotifications();
 	} catch (err) {
 		console.log(err);
