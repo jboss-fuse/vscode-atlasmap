@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 const expect = chai.expect;
 chai.use(sinonChai);
 
-describe("Ensure Atlasmap shutdowned on extension deactivation", function () {
+describe("Ensure Atlasmap is shut down upon extension deactivation", function () {
 
 	let sandbox: sinon.SinonSandbox;
 	let showInformationMessageSpy: sinon.SinonSpy;
@@ -24,7 +24,7 @@ describe("Ensure Atlasmap shutdowned on extension deactivation", function () {
 		vscode.extensions.getExtension('redhat.atlasmap-viewer').activate();
 	});
 
-	it("Test started instance stopped on deactivation", function (done) {
+	it("Test that the running instance is stopped on deactivation", function (done) {
 		testUtils.startAtlasMapInstance(showInformationMessageSpy).then(() => {
 			let atlasMapProcess = extension.atlasMapProcess;
 			expect(atlasMapProcess.killed).to.be.false;
