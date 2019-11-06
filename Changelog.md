@@ -3,6 +3,7 @@
 ## 0.0.4
 
 - Upgrade to AtlasMap 1.42.10
+- Fix resource leak when closing VS Code on Mac
 
 ## 0.0.3
 
