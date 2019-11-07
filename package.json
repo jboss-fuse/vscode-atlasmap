@@ -29,7 +29,7 @@
 	],
 	"license": "Apache-2.0",
 	"engines": {
-		"vscode": "^1.31.0"
+		"vscode": "^1.39.0"
 	},
 	"keywords": [
 		"atlasmap",
@@ -89,8 +89,7 @@
 		"watch": "tsc -w -p ./",
 		"clean": "rm -rf out || rmdir out /s /q",
 		"preinstall": "node ./scripts/preinstall.js",
-		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "npm run clean && npm run compile && node ./node_modules/vscode/bin/test",
+		"test": "node ./out/test/runTest.js",
 		"update-deps": "npm update",
 		"ui-test": "npm run compile && extest setup-and-run out/ui-test/all.js",
 		"tslint": "gulp tslint"
@@ -107,10 +106,12 @@
 	},
 	"devDependencies": {
 		"@types/chai": "^4.2.4",
+		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.7",
 		"@types/node": "^12.12.5",
 		"@types/sinon": "^7.5.0",
 		"@types/sinon-chai": "^3.2.3",
+		"@types/vscode": "^1.39.0",
 		"assert": "^2.0.0",
 		"chai": "^4.2.0",
 		"download": "^7.1.0",
@@ -127,7 +128,7 @@
 		"sinon-chai": "^3.3.0",
 		"tslint": "^5.20.0",
 		"typescript": "^3.6.4",
-		"vscode": "^1.1.36",
-		"vscode-extension-tester": "^2.0.4"
+		"vscode-extension-tester": "^2.0.4",
+		"vscode-test": "^1.2.2"
 	}
 }
