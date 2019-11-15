@@ -138,7 +138,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 						.then( (body) => {
 							expect(body, "Unexpected html response body").to.contain("AtlasMap");
 							if (browserConfig === BrowserType.Internal) {
-								expect(atlasMapWebView.default.currentPanel._panel.webview.html).to.contain(url).and.to.contain('<body style="padding: 0">');
+								expect(atlasMapWebView.default.currentPanel._panel.webview.html).to.contain('<body style="padding: 0">');
 							}
 							done();
 						})
@@ -170,7 +170,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 						.then( (body) => {
 							expect(body, "Unexpected html response body").to.contain("AtlasMap");
 							if (browserConfig === BrowserType.Internal) {
-								expect(atlasMapWebView.default.currentPanel._panel.webview.html, "HTML doesn't contain url or the body tag with zero padding").to.contain(url).and.to.contain('<body style="padding: 0">');
+								expect(atlasMapWebView.default.currentPanel._panel.webview.html, "HTML doesn't contain url or the body tag with zero padding").to.contain('<body style="padding: 0">');
 							}
 							done();
 						})
@@ -202,7 +202,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 						.then( (body) => {
 							expect(body, "Unexpected html response body").to.contain("AtlasMap");
 							if (browserConfig === BrowserType.Internal) {
-								expect(atlasMapWebView.default.currentPanel._panel.webview.html, "HTML doesn't contain url or the body tag with zero padding").to.contain(url).and.to.contain('<body style="padding: 0">');
+								expect(atlasMapWebView.default.currentPanel._panel.webview.html, "HTML doesn't contain url or the body tag with zero padding").to.contain('<body style="padding: 0">');
 							}
 
 
@@ -220,7 +220,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 									.then( (body) => {
 										expect(body, "Unexpected html response body").to.contain("AtlasMap");
 										if (browserConfig === BrowserType.Internal) {
-											expect(atlasMapWebView.default.currentPanel._panel.webview.html, "HTML doesn't contain url or the body tag with zero padding").to.contain(url).and.to.contain('<body style="padding: 0">');
+											expect(atlasMapWebView.default.currentPanel._panel.webview.html, "HTML doesn't contain url or the body tag with zero padding").to.contain('<body style="padding: 0">');
 										}
 										done();
 									})
@@ -262,7 +262,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 						.then( (body) => {
 							expect(body, "Unexpected html response body").to.contain("AtlasMap");
 							if (browserConfig === BrowserType.Internal) {
-								expect(atlasMapWebView.default.currentPanel._panel.webview.html, "HTML doesn't contain url or the body tag with zero padding").to.contain(url).and.to.contain('<body style="padding: 0">');
+								expect(atlasMapWebView.default.currentPanel._panel.webview.html, "HTML doesn't contain url or the body tag with zero padding").to.contain('<body style="padding: 0">');
 							}
 							done();
 						})
