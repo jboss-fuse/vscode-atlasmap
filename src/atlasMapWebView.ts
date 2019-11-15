@@ -95,8 +95,7 @@ export default class AtlasMapPanel {
 			fetchUrl(externalURIAsString, function(error, meta, body) {
 				try {
 					var content =  body.toString();
-					var contentWithHrefFullySpecified = content.replace('href="/"', 'href="'+externalURIAsString+'"');
-					var contentWithHrefFullySpecifiedAndCSS = contentWithHrefFullySpecified.replace('<body>', '<body style="padding: 0">');
+					var contentWithHrefFullySpecifiedAndCSS = content.replace('<body>', '<body style="padding: 0">');
 					if (AtlasMapPanel.currentPanel) {
 						AtlasMapPanel.currentPanel._panel.webview.html = contentWithHrefFullySpecifiedAndCSS;
 					}
