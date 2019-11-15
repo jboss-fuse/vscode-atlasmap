@@ -87,19 +87,24 @@ export default class AtlasMapPanel {
 		this.loadWebContent(url);
 	}
 
-	private loadWebContent(url: string) {
-		var fetchUrl = require("fetch").fetchUrl;
-		fetchUrl(url, function(error, meta, body) {
-			try {
-				var content =  body.toString();
-				var contentWithHrefFullySpecified = content.replace('href="/"', 'href="'+url+'/"');
-				var contentWithHrefFullySpecifiedAndCSS = contentWithHrefFullySpecified.replace('<body>', '<body style="padding: 0">');
-				if (AtlasMapPanel.currentPanel) {
-					AtlasMapPanel.currentPanel._panel.webview.html = contentWithHrefFullySpecifiedAndCSS;
+	private loadWebContent(localUrl: string) {
+		const externalURIPromise = vscode.env.asExternalUri(vscode.Uri.parse(localUrl));
+		externalURIPromise.then((externalURI) => {
+			var fetchUrl = require("fetch").fetchUrl;
+			const externalURIAsString = externalURI.toString();
+			fetchUrl(externalURIAsString, function(error, meta, body) {
+				try {
+					var content =  body.toString();
+					var contentWithHrefFullySpecified = content.replace('href="/"', 'href="'+externalURIAsString+'"');
+					var contentWithHrefFullySpecifiedAndCSS = contentWithHrefFullySpecified.replace('<body>', '<body style="padding: 0">');
+					if (AtlasMapPanel.currentPanel) {
+						AtlasMapPanel.currentPanel._panel.webview.html = contentWithHrefFullySpecifiedAndCSS;
+					}
+				} catch (err) {
+					log(err);
 				}
-			} catch (err) {
-				log(err);
-			}
+			});
+
 		});
 	}
 }
