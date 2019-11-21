@@ -26,7 +26,8 @@ export default class AtlasMapPanel {
 
 		// Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(AtlasMapPanel.viewType, "AtlasMap", column || vscode.ViewColumn.One, {
-			enableScripts: true
+			enableScripts: true,
+			retainContextWhenHidden: true
 		});
 
 		AtlasMapPanel.currentPanel = new AtlasMapPanel(panel, url);
