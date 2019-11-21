@@ -87,23 +87,24 @@ export default class AtlasMapPanel {
 		this.loadWebContent(url);
 	}
 
-	private loadWebContent(localUrl: string) {
-		const externalURIPromise = vscode.env.asExternalUri(vscode.Uri.parse(localUrl));
-		externalURIPromise.then((externalURI) => {
-			var fetchUrl = require("fetch").fetchUrl;
-			const externalURIAsString = externalURI.toString();
-			fetchUrl(externalURIAsString, function(error, meta, body) {
-				try {
-					var content =  body.toString();
-					var contentWithHrefFullySpecifiedAndCSS = content.replace('<body>', '<body style="padding: 0">');
-					if (AtlasMapPanel.currentPanel) {
-						AtlasMapPanel.currentPanel._panel.webview.html = contentWithHrefFullySpecifiedAndCSS;
-					}
-				} catch (err) {
-					log(err);
-				}
-			});
-
-		});
+	private async loadWebContent(localUrl: string) {
+		const fullWebServerUri = await vscode.env.asExternalUri(vscode.Uri.parse(localUrl));
+		if (AtlasMapPanel.currentPanel) {
+			const webview = AtlasMapPanel.currentPanel._panel.webview;
+			const cspSource = webview.cspSource;
+			webview.html =
+`<!DOCTYPE html>
+	<head>
+		<meta
+   		     http-equiv="Content-Security-Policy"
+    		content="default-src 'none'; frame-src ${fullWebServerUri} ${cspSource} https:; img-src ${cspSource} https:; script-src ${cspSource}; style-src ${cspSource};"
+    	/>
+	</head>
+	<body>
+		<!-- All content from the web server must be in an iframe -->
+		<iframe src="${fullWebServerUri}" width="100%" height="900">
+	</body>
+</html>`;
+		}
 	}
 }
