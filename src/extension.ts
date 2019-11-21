@@ -157,9 +157,14 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string, adm
 				let atlasMapWSFolder = path.resolve(storagePath, utils.ATLASMAP_WS_FOLDER_FALLBACK);
 
 				if (admFilePath !== "") {
-					atlasMapProcess = child_process.spawn(javaExecutablePath, ['-Datlasmap.workspace=' + atlasMapWSFolder, '-Datlasmap.adm.path=' + admFilePath, '-jar', atlasmapExecutablePath]);
+					atlasMapProcess = child_process.spawn(javaExecutablePath,
+						['-Datlasmap.workspace=' + atlasMapWSFolder,
+						'-Datlasmap.adm.path=' + admFilePath,
+						'-jar', atlasmapExecutablePath]);
 				} else {
-					atlasMapProcess = child_process.spawn(javaExecutablePath, ['-Datlasmap.workspace=' + atlasMapWSFolder, '-jar', atlasmapExecutablePath]);
+					atlasMapProcess = child_process.spawn(javaExecutablePath,
+						['-Datlasmap.workspace=' + atlasMapWSFolder,
+						'-jar', atlasmapExecutablePath]);
 				}
 				atlasMapProcess.on("close", (code, signal) => {
 					if (atlasMapServerOutputChannel) {
@@ -220,8 +225,8 @@ function openURL(url: string) {
 	}	
 }
 
-function showProgressInfo(port: string) {
-	const url = "http://localhost:" + port;
+async function showProgressInfo(port: string) {
+	const url = (await vscode.env.asExternalUri(vscode.Uri.parse("http://localhost:" + port))).toString();
 	vscode.window.setStatusBarMessage(url, 5000);
 	vscode.window.withProgress(
 		{
