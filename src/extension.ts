@@ -156,14 +156,18 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string, adm
 
 				let atlasMapWSFolder = path.resolve(storagePath, utils.ATLASMAP_WS_FOLDER_FALLBACK);
 
+				//const fullWebServerUri = vscode.env.asExternalUri(vscode.Uri.parse(generateUrl(port)));
+
 				if (admFilePath !== "") {
 					atlasMapProcess = child_process.spawn(javaExecutablePath,
 						['-Datlasmap.workspace=' + atlasMapWSFolder,
 						'-Datlasmap.adm.path=' + admFilePath,
+						'-Datlasmap.disable.frame.options=true',
 						'-jar', atlasmapExecutablePath]);
 				} else {
 					atlasMapProcess = child_process.spawn(javaExecutablePath,
 						['-Datlasmap.workspace=' + atlasMapWSFolder,
+						'-Datlasmap.disable.frame.options=true',
 						'-jar', atlasmapExecutablePath]);
 				}
 				atlasMapProcess.on("close", (code, signal) => {
