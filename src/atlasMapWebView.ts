@@ -97,12 +97,16 @@ export default class AtlasMapPanel {
 	<head>
 		<meta
    		     http-equiv="Content-Security-Policy"
-    		content="default-src 'none'; frame-src ${fullWebServerUri} ${cspSource} https:; img-src ${cspSource} https:; script-src ${cspSource}; style-src ${cspSource};"
+			content="default-src 'self' ${fullWebServerUri} *;
+			frame-src ${fullWebServerUri} ${cspSource} https:;
+			img-src ${fullWebServerUri} ${cspSource} https:;
+			script-src ${fullWebServerUri} ${cspSource};
+			style-src ${fullWebServerUri} ${cspSource};"
     	/>
 	</head>
 	<body>
 		<!-- All content from the web server must be in an iframe -->
-		<iframe src="${fullWebServerUri}" width="100%" height="900">
+		<iframe src="${fullWebServerUri}" width="100%" height="900" sandbox="allow-scripts allow-same-origin" Content-Security-Policy: frame-ancestors ${fullWebServerUri} ${cspSource};>
 	</body>
 </html>`;
 		}
