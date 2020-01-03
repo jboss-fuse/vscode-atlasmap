@@ -34,6 +34,7 @@ node('rhel7'){
 	stage('Package') {
         def packageJson = readJSON file: 'package.json'
         sh "vsce package -o vscode-atlasmap-${packageJson.version}-${env.BUILD_NUMBER}.vsix"
+        sh "npm pack && mv vscode-atlasmap-${packageJson.version}.tgz vscode-atlasmap-${packageJson.version}-${env.BUILD_NUMBER}.tgz"
 	}
 
 	if(params.UPLOAD_LOCATION) {
@@ -41,6 +42,9 @@ node('rhel7'){
 			def filesToPush = findFiles(glob: '**.vsix')
 			sh "rsync -Pzrlt --rsh=ssh --protocol=28 ${filesToPush[0].path} ${UPLOAD_LOCATION}/snapshots/vscode-atlasmap/"
             stash name:'vsix', includes:filesToPush[0].path
+            def tgzFilesToPush = findFiles(glob: '**.tgz')
+            stash name:'tgz', includes:tgzFilesToPush[0].path
+            sh "rsync -Pzrlt --rsh=ssh --protocol=28 ${tgzFilesToPush[0].path} ${UPLOAD_LOCATION}/snapshots/vscode-atlasmap/"
 		}
     }
 }
@@ -53,6 +57,7 @@ node('rhel7'){
 
 		stage("Publish to Marketplace") {
             unstash 'vsix'
+            unstash 'tgz'
             withCredentials([[$class: 'StringBinding', credentialsId: 'vscode_java_marketplace', variable: 'TOKEN']]) {
                 def vsix = findFiles(glob: '**.vsix')
                 sh 'vsce publish -p ${TOKEN} --packagePath' + " ${vsix[0].path}"
@@ -62,6 +67,8 @@ node('rhel7'){
             stage "Promote the build to stable"
             def vsix = findFiles(glob: '**.vsix')
             sh "rsync -Pzrlt --rsh=ssh --protocol=28 ${vsix[0].path} ${UPLOAD_LOCATION}/stable/vscode-atlasmap/"
+            def tgz = findFiles(glob: '**.tgz')
+            sh "rsync -Pzrlt --rsh=ssh --protocol=28 ${tgz[0].path} ${UPLOAD_LOCATION}/stable/vscode-atlasmap/"
         }
 	}
 }
