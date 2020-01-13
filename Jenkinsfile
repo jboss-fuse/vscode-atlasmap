@@ -34,7 +34,7 @@ node('rhel7'){
 	stage('Package') {
         def packageJson = readJSON file: 'package.json'
         sh "vsce package -o vscode-atlasmap-${packageJson.version}-${env.BUILD_NUMBER}.vsix"
-        sh "npm pack && mv vscode-atlasmap-${packageJson.version}.tgz vscode-atlasmap-${packageJson.version}-${env.BUILD_NUMBER}.tgz"
+        sh "npm pack && mv atlasmap-viewer-${packageJson.version}.tgz vscode-atlasmap-${packageJson.version}-${env.BUILD_NUMBER}.tgz"
 	}
 
 	if(params.UPLOAD_LOCATION) {
