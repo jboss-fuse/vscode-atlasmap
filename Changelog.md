@@ -2,6 +2,8 @@
 
 ## 0.0.5
 
+- Upgrade to AtlasMap 1.43.2
+
 ## 0.0.4
 
 - Upgrade to AtlasMap 1.42.10
