@@ -101,12 +101,12 @@ export default class AtlasMapPanel {
 			frame-src ${fullWebServerUri} ${cspSource} https:;
 			img-src ${fullWebServerUri} ${cspSource} https:;
 			script-src ${fullWebServerUri} ${cspSource};
-			style-src ${fullWebServerUri} ${cspSource};"
+			style-src ${fullWebServerUri} 'unsafe-inline' ${cspSource};"
     	/>
 	</head>
 	<body>
 		<!-- All content from the web server must be in an iframe -->
-		<iframe src="${fullWebServerUri}" width="100%" height="900" sandbox="allow-scripts allow-same-origin" Content-Security-Policy: frame-ancestors ${fullWebServerUri} ${cspSource};>
+		<iframe src="${fullWebServerUri}" width="100%" height="900" style="border:0" sandbox="allow-scripts allow-same-origin" Content-Security-Policy: frame-ancestors ${fullWebServerUri} ${cspSource};>
 	</body>
 </html>`;
 		}
