@@ -32,7 +32,6 @@ export function activate(context: vscode.ExtensionContext) {
 		storagePath = context.storagePath;
 	}
 	
-	
 	let atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
 
 	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', (ctx) => {
@@ -53,7 +52,6 @@ export function activate(context: vscode.ExtensionContext) {
 		} else {
 			localAdmFile = undefined;
 		}
-
 		
 		ensureNoOtherAtlasMapInstanceRunning()
 			.then( (doLaunch) => {
@@ -153,10 +151,7 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string, adm
 		requirements.resolveRequirements()
 			.then(requirements => {
 				let javaExecutablePath = path.resolve(requirements.java_home + '/bin/java');
-
 				let atlasMapWSFolder = path.resolve(storagePath, utils.ATLASMAP_WS_FOLDER_FALLBACK);
-
-				//const fullWebServerUri = vscode.env.asExternalUri(vscode.Uri.parse(generateUrl(port)));
 
 				if (admFilePath !== "") {
 					atlasMapProcess = child_process.spawn(javaExecutablePath,
