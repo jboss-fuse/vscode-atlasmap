@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import { log } from './extension';
 
 /**
  * Manages atlas mapper webview panels
