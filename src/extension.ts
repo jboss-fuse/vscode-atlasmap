@@ -1,6 +1,6 @@
 "use strict";
 
-import * as atlasMapWebView from './atlasMapWebView';
+import * as atlasMapWebView from './AtlasMapPanel';
 import * as child_process from 'child_process';
 import * as path from 'path';
 import * as requirements from './requirements';

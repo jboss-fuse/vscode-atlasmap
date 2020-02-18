@@ -12,7 +12,7 @@ import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
 import * as utils from "../utils";
 import * as extension from "../extension";
-import AtlasMapPanel from '../atlasMapWebView';
+import AtlasMapPanel from '../AtlasMapPanel';
 
 const uri2path = require('file-uri-to-path');
 
