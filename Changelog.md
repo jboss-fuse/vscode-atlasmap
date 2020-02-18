@@ -3,7 +3,7 @@
 ## 0.0.5
 
 - Internal modification to allow integration in Eclipse Theia and Eclipse Che, and remote environment in general.
-- Upgrade to AtlasMap 1.43.3
+- Upgrade to AtlasMap 1.43.4
 
 ## 0.0.4
 
