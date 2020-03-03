@@ -105,7 +105,7 @@
 		"util": "^0.12.2"
 	},
 	"devDependencies": {
-		"@types/chai": "^4.2.9",
+		"@types/chai": "^4.2.10",
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.7",
 		"@types/node": "^13.7.6",
