@@ -1,5 +1,7 @@
 # ChangeLog
 
+## 0.0.6
+
 ## 0.0.5
 
 - Internal modification to allow integration in Eclipse Theia and Eclipse Che, and remote environment in general.
