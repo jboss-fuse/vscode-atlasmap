@@ -2,12 +2,12 @@
 
 import * as atlasMapWebView from "../AtlasMapPanel";
 import * as chai from "chai";
-import * as child_process from 'child_process';
 import * as fs from "fs";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as testUtils from "./command.test.utils";
 import * as vscode from "vscode";
+import { ATLASMAP_TITLE_TEXT } from './command.test.utils';
 import { BrowserType } from "../utils";
 import { RESTART_CHOICE, WARN_MSG } from '../extension';
 
@@ -136,7 +136,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 					let url:string = "http://localhost:" + port;
 					await testUtils.getWebUI(url)
 						.then( (body) => {
-							expect(body, "Unexpected html response body").to.contain("AtlasMap");
+							expect(body.toLowerCase(), "Unexpected html response body").to.contain(ATLASMAP_TITLE_TEXT);
 							if (browserConfig === BrowserType.Internal) {
 								checkBorderStyleAvailable();
 							}
@@ -168,7 +168,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 					let url:string = "http://localhost:" + port;
 					await testUtils.getWebUI(url)
 						.then( (body) => {
-							expect(body, "Unexpected html response body").to.contain("AtlasMap");
+							expect(body.toLowerCase(), "Unexpected html response body").to.contain(ATLASMAP_TITLE_TEXT);
 							if (browserConfig === BrowserType.Internal) {
 								checkBorderStyleAvailable();
 							}
@@ -200,7 +200,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 					let url:string = "http://localhost:" + port;
 					await testUtils.getWebUI(url)
 						.then( (body) => {
-							expect(body, "Unexpected html response body").to.contain("AtlasMap");
+							expect(body.toLowerCase(), "Unexpected html response body").to.contain(ATLASMAP_TITLE_TEXT);
 							if (browserConfig === BrowserType.Internal) {
 								checkBorderStyleAvailable();
 							}
@@ -218,7 +218,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 								let url:string = "http://localhost:" + port;
 								await testUtils.getWebUI(url)
 									.then( (body) => {
-										expect(body, "Unexpected html response body").to.contain("AtlasMap");
+										expect(body.toLowerCase(), "Unexpected html response body").to.contain(ATLASMAP_TITLE_TEXT);
 										if (browserConfig === BrowserType.Internal) {
 											checkBorderStyleAvailable();
 										}
@@ -260,7 +260,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 					let url:string = "http://localhost:" + port;
 					await testUtils.getWebUI(url)
 						.then( (body) => {
-							expect(body, "Unexpected html response body").to.contain("AtlasMap");
+							expect(body.toLowerCase(), "Unexpected html response body").to.contain(ATLASMAP_TITLE_TEXT);
 							if (browserConfig === BrowserType.Internal) {
 								checkBorderStyleAvailable();
 							}

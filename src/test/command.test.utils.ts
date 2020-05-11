@@ -19,6 +19,8 @@ const uri2path = require('file-uri-to-path');
 const expect = chai.expect;
 chai.use(sinonChai);
 
+export const ATLASMAP_TITLE_TEXT: string = 'atlasmap';
+
 const MAX_WAIT = 20000;
 const STEP = 1000;
 const KEYSTRING: string = "Starting AtlasMap instance at port ";
@@ -85,7 +87,7 @@ export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, context: any = un
 		const url:string = "http://localhost:" + _port;
 		await getWebUI(url)
 			.then( body => {
-				expect(body, "Unexpected html response body").to.contain("AtlasMap");
+				expect(body.toLowerCase(), "Unexpected html response body").to.contain(ATLASMAP_TITLE_TEXT);
 				resolve(_port);
 			})
 			.catch( err => {
@@ -178,7 +180,7 @@ export async function downloadTestADM() {
 
 export function generateGithubDownloadUrl(): string {
 	let tagName: string = generateGitHubTagName();
-	let url: string = "https://github.com/atlasmap/atlasmap/raw/" + tagName + "/ui/test-resources/adm/mockdocfhir.adm";
+	let url: string = "https://github.com/atlasmap/atlasmap/raw/" + tagName + "/examples/camel-example-atlasmap-blueprint/src/main/resources/atlasmap-mapping.adm";
 	return url;
 }
 
