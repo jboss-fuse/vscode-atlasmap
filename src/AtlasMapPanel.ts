@@ -105,6 +105,7 @@ export default class AtlasMapPanel {
 		<style>
 			html, body {
 				height: 100%;
+				padding: 0;
 			}
 		</style>
 	</head>
