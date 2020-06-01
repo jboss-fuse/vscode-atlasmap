@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (isAtlasMapRunning() && admFilePath === undefined && (ctx === undefined || ctx.fsPath === undefined)) {
 			// no need to start another atlasmap instance - just open it again
 			vscode.window.showInformationMessage("Running AtlasMap instance found at port " + atlasMapLaunchPort);
-			openURL(generateUrl(atlasMapLaunchPort));
+			openURL(generateUrl(atlasMapLaunchPort), context);
 			return;
 		}
 
@@ -58,7 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
 				if (doLaunch) {
 					utils.retrieveFreeLocalPort()
 					.then( (port) => {
-						launchAtlasMapLocally(atlasmapExecutablePath, port, localAdmFile)
+						launchAtlasMapLocally(context, atlasmapExecutablePath, port, localAdmFile)
 							.then( () => {
 								vscode.window.showInformationMessage("Starting AtlasMap instance at port " + port);
 								atlasMapLaunchPort = port;
@@ -142,7 +142,7 @@ function handleStopAtlasMap() {
 		});
 }
 
-function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string, admFilePath: string = ""): Promise<any> {
+function launchAtlasMapLocally(context: vscode.ExtensionContext, atlasmapExecutablePath: string, port: string, admFilePath: string = ""): Promise<any>{
 	return new Promise( (resolve, reject) => {
 		showProgressInfo(port);
 		process.env.SERVER_PORT = port;
@@ -180,7 +180,7 @@ function launchAtlasMapLocally(atlasmapExecutablePath: string, port: string, adm
 					atlasMapServerOutputChannel.append(text);
 					if (text.indexOf("### AtlasMap Data Mapper UI started") > 0) {
 						const url = generateUrl(port);
-						openURL(url);
+						openURL(url, context);
 						atlasMapUIReady = true;
 					}
 				});
@@ -216,9 +216,9 @@ function stopLocalAtlasMapInstance(): Promise<boolean> {
 	});	
 }
 
-function openURL(url: string) {
+function openURL(url: string, context: vscode.ExtensionContext) {
 	if (utils.isUsingInternalView()) {
-		atlasMapWebView.default.createOrShow(url);		
+		atlasMapWebView.default.createOrShow(url, context);		
 	} else {
 		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(url));
 	}	
