@@ -114,6 +114,7 @@ export default class AtlasMapPanel {
 					http-equiv="Content-Security-Policy"
 					content="
 						default-src 'self' 'unsafe-inline' 'unsafe-hashes' 'unsafe-eval' ${fullWebServerUri} ${cspSource};
+						img-src 'self' ${fullWebServerUri} ${cspSource} data:;
 					" />
 			`;
 
