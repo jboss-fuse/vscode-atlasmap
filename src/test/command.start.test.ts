@@ -57,7 +57,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 				fs.unlink(testADMFileBroken, (err) => {
 					if (err) throw err;
 				});
-			}			
+			}
 		});
 
 		afterEach(function(done) {
@@ -214,7 +214,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 								expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 								expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
 								expect(createOutputChannelSpy.calledTwice);
-			
+
 								let url:string = "http://localhost:" + port;
 								await testUtils.getWebUI(url)
 									.then( (body) => {
@@ -282,6 +282,6 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 
 function checkBorderStyleAvailable() {
-	expect(atlasMapWebView.default.currentPanel._panel.webview.html, "HTML doesn't contain url the zero border size").to.contain('style="border:0"');
+	expect(atlasMapWebView.default.currentPanel._panel.webview.html, "HTML doesn't contain url the <title>AtlasMap Data Mapper UI</title>").to.contain('<title>AtlasMap Data Mapper UI</title>');
 }
 
