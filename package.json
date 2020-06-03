@@ -7,7 +7,7 @@
 	"icon": "icons/icon128.png",
 	"preview": true,
 	"config": {
-		"atlasmapversion": "1.43.4"
+		"atlasmapversion": "2.0.3"
 	},
 	"bugs": "https://github.com/jboss-fuse/vscode-atlasmap/issues",
 	"homepage": "https://github.com/jboss-fuse/vscode-atlasmap",
