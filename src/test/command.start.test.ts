@@ -13,6 +13,7 @@ import { RESTART_CHOICE, WARN_MSG } from '../extension';
 
 const expect = chai.expect;
 chai.use(sinonChai);
+const waitUntil = require('async-wait-until');
 
 testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 	describe("Start AtlasMap Command Tests with browser type: " + browserConfig, function() {
@@ -138,7 +139,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 						.then( (body) => {
 							expect(body, "Unexpected html response body").to.contain("AtlasMap");
 							if (browserConfig === BrowserType.Internal) {
-								checkBorderStyleAvailable();
+								checkContainsAtlasMapTitle();
 							}
 							done();
 						})
@@ -170,7 +171,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 						.then( (body) => {
 							expect(body, "Unexpected html response body").to.contain("AtlasMap");
 							if (browserConfig === BrowserType.Internal) {
-								checkBorderStyleAvailable();
+								checkContainsAtlasMapTitle();
 							}
 							done();
 						})
@@ -202,7 +203,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 						.then( (body) => {
 							expect(body, "Unexpected html response body").to.contain("AtlasMap");
 							if (browserConfig === BrowserType.Internal) {
-								checkBorderStyleAvailable();
+								checkContainsAtlasMapTitle();
 							}
 
 
@@ -220,7 +221,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 									.then( (body) => {
 										expect(body, "Unexpected html response body").to.contain("AtlasMap");
 										if (browserConfig === BrowserType.Internal) {
-											checkBorderStyleAvailable();
+											checkContainsAtlasMapTitle();
 										}
 										done();
 									})
@@ -262,7 +263,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 						.then( (body) => {
 							expect(body, "Unexpected html response body").to.contain("AtlasMap");
 							if (browserConfig === BrowserType.Internal) {
-								checkBorderStyleAvailable();
+								checkContainsAtlasMapTitle();
 							}
 							done();
 						})
@@ -280,8 +281,10 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 	});
 });
 
-
-function checkBorderStyleAvailable() {
-	expect(atlasMapWebView.default.currentPanel._panel.webview.html, "HTML doesn't contain url the <title>AtlasMap Data Mapper UI</title>").to.contain('<title>AtlasMap Data Mapper UI</title>');
+function checkContainsAtlasMapTitle() {
+	const expectedAtlasMapTitle = '<title>AtlasMap Data Mapper UI</title>';
+	waitUntil(() => atlasMapWebView.default.currentPanel._panel.webview.html.includes(expectedAtlasMapTitle));
+	expect(
+		atlasMapWebView.default.currentPanel._panel.webview.html,
+		`HTML doesn't contain url the ${expectedAtlasMapTitle}`).to.contain(expectedAtlasMapTitle);
 }
-
