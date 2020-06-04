@@ -2,9 +2,11 @@
 
 ## 0.0.6
 
+- Upgrade to AtlasMap 2.0.3, which has a new UI based on React instead of Angular
+
 ## 0.0.5
 
-- Internal modification to allow integration in Eclipse Theia and Eclipse Che, and remote environment in general.
+- Internal modification to allow integration in Eclipse Theia and Eclipse Che, and remote environment in general
 - Upgrade to AtlasMap 1.43.4
 
 ## 0.0.4
