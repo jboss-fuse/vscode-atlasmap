@@ -1,57 +1,90 @@
-import { Notification, VSBrowser, WebDriver, EditorView } from 'vscode-extension-tester';
+import {
+	clearNotifications,
+	closeEditor,
+	startAtlasMap,
+	startAtlasMapCommand,
+	stopAtlasMap,
+	stopAtlasMapCommand
+} from './common/utils';
+import { atlasMapWindowExists, getNotificationWithMessage } from './common/conditions';
+import { EditorView, VSBrowser, WebDriver } from 'vscode-extension-tester';
 import { expect } from 'chai';
-import { getNotificationWithMessage, whilegetNotificationWithMessage, atlasMapWindowExists } from './common/conditions';
 import { notifications, views } from './common/constants';
-import { startAtlasMap, stopAtlasMap, atlasMapTabIsAccessible, clearNotifications } from './common/utils';
 
+interface Timeouts {
+	beforeEach: number;
+	before: number;
+	after: number;
+	firstStart: number;
+	secondStart: number;
+	firstStop: number;
+	secondStop: number;
+}
+
+const timeouts: Timeouts = {
+	beforeEach: 30000,
+	before: 30000,
+	after: 30000,
+	firstStart: 40000,
+	secondStart: 40000,
+	firstStop: 40000,
+	secondStop: 30000,
+}
+
+function determineWaitTimeout(context: Mocha.Context): number {
+	return context.timeout() - 2000;
+}
 
 export function basicTests() {
 	let driver: WebDriver;
 
+	// increase timeouts on windows platform
+	if (process.platform === 'win32') {
+		for (const key of Object.keys(timeouts)) {
+			timeouts[key] = timeouts[key] * 10;
+		}
+	}
+
 	describe('Start/Stop AtlasMap and verify correct notifications', () => {
-		beforeEach(async () => {
+		beforeEach(async function () {
+			this.timeout(timeouts.beforeEach);
 			driver = VSBrowser.instance.driver;
-			await clearNotifications();
+			await clearNotifications(determineWaitTimeout(this));
+		});
+
+		before(async function () {
+			this.timeout(timeouts.before)
+			await VSBrowser.instance.waitForWorkbench();
+		});
+
+		after(async function () {
+			this.timeout(timeouts.after);
+			await clearNotifications(determineWaitTimeout(this));
 		});
 
 		it('Start Command should show a notification with the correct text', async function () {
-			this.timeout(30000);
-			await startAtlasMap();
-			driver.sleep(1000);
-			const notificationStarting = await driver.wait(() => { return getNotificationWithMessage(notifications.ATLASMAP_STARTING); }, 20000) as Notification;
-			expect(await notificationStarting.getMessage()).contains(notifications.ATLASMAP_STARTING);
-			await driver.wait(() => { return whilegetNotificationWithMessage(notifications.ATLASMAP_WAITING); }, 20000);
-			await atlasMapTabIsAccessible();
-			await new EditorView().closeEditor(views.ATLASMAP_TITLE);
+			this.timeout(timeouts.firstStart);
+			await startAtlasMap(determineWaitTimeout(this)).catch((e) => expect.fail(`Could not start atlas map. Reason: ${e}`));
+			await driver.wait(() => atlasMapWindowExists(), determineWaitTimeout(this), 'Atlas map editor does not exist');
+			await closeEditor(views.ATLASMAP_TITLE, determineWaitTimeout(this)).catch(expect.fail);
 		});
 
 		it('Second Start Command should open AtlasMap window', async function () {
-			this.timeout(20000);
-			await startAtlasMap();
-			await driver.wait(() => { return atlasMapWindowExists(); }, 10000);
-			await atlasMapTabIsAccessible();
+			this.timeout(timeouts.secondStart);
+			await startAtlasMapCommand(determineWaitTimeout(this));
+			await driver.wait(() => atlasMapWindowExists(), determineWaitTimeout(this), 'Atlas map editor does not exist');
 		});
 
 		it('Stop Command should show a notification with the correct text', async function () {
-			this.timeout(30000);
-			driver.sleep(1000);
-			await new EditorView().openEditor('Welcome'); // workaround focus issue
-			await stopAtlasMap();
-			driver.sleep(1000);
-			const notification = await driver.wait(() => { return getNotificationWithMessage(notifications.ATLASMAP_STOPPED); }, 20000);
-			expect(await notification.getMessage()).contains(notifications.ATLASMAP_STOPPED);
+			this.timeout(timeouts.firstStop);
+			await stopAtlasMap(determineWaitTimeout(this)).catch(expect.fail);
+			await driver.wait(async () => !(await atlasMapWindowExists()), determineWaitTimeout(this), 'Atlas map editor exist');
 		});
 
 		it('Second Stop Command should show a notification with the correct text', async function () {
-			this.timeout(30000);
-			await stopAtlasMap();
-			const notification = await driver.wait(() => { return getNotificationWithMessage(notifications.ATLASMAP_UNABLE_LOCATE); }, 10000) as Notification;
-			expect(await notification.getMessage()).contains(notifications.ATLASMAP_UNABLE_LOCATE);
-		});
-
-		afterEach(async () => {
-			await clearNotifications();
+			this.timeout(timeouts.secondStop);
+			await stopAtlasMapCommand(determineWaitTimeout(this));
+			await driver.wait(() => getNotificationWithMessage(notifications.ATLASMAP_UNABLE_LOCATE).catch(() => undefined), determineWaitTimeout(this)).catch(expect.fail);
 		});
 	});
-
 }
