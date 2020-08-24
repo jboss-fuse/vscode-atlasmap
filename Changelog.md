@@ -1,5 +1,7 @@
 # ChangeLog
 
+## 0.0.7
+
 ## 0.0.6
 
 - Upgrade to AtlasMap 2.0.5, which has a new UI based on React instead of Angular
