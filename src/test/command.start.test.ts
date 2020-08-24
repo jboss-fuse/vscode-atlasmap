@@ -10,6 +10,7 @@ import * as testUtils from "./command.test.utils";
 import * as vscode from "vscode";
 import { BrowserType } from "../utils";
 import { RESTART_CHOICE, WARN_MSG } from '../extension';
+import AtlasMapPanel from '../AtlasMapPanel';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -284,7 +285,8 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 function checkContainsAtlasMapTitle() {
 	const expectedAtlasMapTitle = '<title>AtlasMap Data Mapper UI</title>';
 	waitUntil(() => {
-		const loaded: boolean = atlasMapWebView.default.currentPanel._panel.webview.html.includes(expectedAtlasMapTitle);
+		const currentWebview: AtlasMapPanel = atlasMapWebView.default.currentPanel;
+		const loaded: boolean = currentWebview !== undefined && currentWebview._panel.webview.html.includes(expectedAtlasMapTitle);
 		if(loaded) {
 			console.log('waitUntil in checkContainsAtlasMapTitle has found a loaded title');
 		}
