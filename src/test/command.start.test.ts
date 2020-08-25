@@ -285,14 +285,16 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 function checkContainsAtlasMapTitle() {
 	const expectedAtlasMapTitle = '<title>AtlasMap Data Mapper UI</title>';
 	waitUntil(() => {
-		const currentWebview: AtlasMapPanel = atlasMapWebView.default.currentPanel;
-		const loaded: boolean = currentWebview !== undefined && currentWebview._panel.webview.html.includes(expectedAtlasMapTitle);
+		const currentWebviewInConditionalWait: AtlasMapPanel = atlasMapWebView.default.currentPanel;
+		const loaded: boolean = currentWebviewInConditionalWait !== undefined && currentWebviewInConditionalWait._panel.webview.html.includes(expectedAtlasMapTitle);
 		if(loaded) {
 			console.log('waitUntil in checkContainsAtlasMapTitle has found a loaded title');
 		}
 		return loaded;
 	});
+	const currentWebview: AtlasMapPanel = atlasMapWebView.default.currentPanel;
+	expect(currentWebview).to.not.be.undefined;
 	expect(
-		atlasMapWebView.default.currentPanel._panel.webview.html,
+		currentWebview._panel.webview.html,
 		`HTML doesn't contain url the ${expectedAtlasMapTitle}`).to.contain(expectedAtlasMapTitle);
 }
