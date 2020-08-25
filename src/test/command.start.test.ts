@@ -291,7 +291,7 @@ function checkContainsAtlasMapTitle() {
 			console.log('waitUntil in checkContainsAtlasMapTitle has found a loaded title');
 		}
 		return loaded;
-	});
+	}, 10000, 500);
 	console.log('command.start.test.checkContainsAtlasMapTitle: Will check content of webview');
 	const currentWebview: AtlasMapPanel = atlasMapWebView.default.currentPanel;
 	expect(currentWebview).to.not.be.undefined;
