@@ -292,6 +292,7 @@ function checkContainsAtlasMapTitle() {
 		}
 		return loaded;
 	});
+	console.log('command.start.test.checkContainsAtlasMapTitle: Will check content of webview');
 	const currentWebview: AtlasMapPanel = atlasMapWebView.default.currentPanel;
 	expect(currentWebview).to.not.be.undefined;
 	expect(
