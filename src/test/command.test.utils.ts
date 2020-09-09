@@ -52,46 +52,39 @@ export function determineUsedPort(spy: sinon.SinonSpy): string {
 	return undefined;
 }
 
-export function startAtlasMapInstance(infoSpy: sinon.SinonSpy, context: any = undefined): Promise<string> {
-	return new Promise<string>(async (resolve, reject) => {
-		
-		await vscode.commands.executeCommand("atlasmap.start", context);
-		
-		let waitTime = 0;
-		let _port = determineUsedPort(infoSpy);
-		while (_port === undefined && waitTime < MAX_WAIT) {
-			await waitForTask("WaitForPortNumber")
-			.then( () => {
-				_port = determineUsedPort(infoSpy);
-				waitTime += STEP;
-			});				
-		}		
-		
-		expect(_port, "Seems we can't determine the used port number").to.not.be.null;
-		expect(_port, "Seems we can't determine the used port number").to.not.be.undefined;
-		expect(_port, "Seems we can't determine the used port number").to.not.be.NaN;
-		
-		waitTime = 0;
-		while(!extension.atlasMapUIReady && !AtlasMapPanel.currentPanel && waitTime < MAX_WAIT) {
-			await waitForTask("AtlasMap UI started")
-				.then( () => {
-					waitTime += STEP;
-				});
-		}
-		if (!extension.atlasMapUIReady) {
-			reject(new Error("AtlasMap UI not started"));
-		}
+export async function startAtlasMapInstance(infoSpy: sinon.SinonSpy, context: any = undefined): Promise<string> {
+	await vscode.commands.executeCommand("atlasmap.start", context);
+	
+	let waitTime: number = 0;
+	let _port: string = determineUsedPort(infoSpy);
+	while (_port === undefined && waitTime < MAX_WAIT) {
+		await waitForTask("WaitForPortNumber");
+		_port = determineUsedPort(infoSpy);
+		waitTime += STEP;
+	}		
+	
+	expect(_port, "Seems we can't determine the used port number").to.not.be.null;
+	expect(_port, "Seems we can't determine the used port number").to.not.be.undefined;
+	expect(_port, "Seems we can't determine the used port number").to.not.be.NaN;
+	
+	waitTime = 0;
+	while(!extension.atlasMapUIReady && !AtlasMapPanel.currentPanel && waitTime < MAX_WAIT) {
+		await waitForTask("AtlasMap UI started");
+		waitTime += STEP;
+	}
 
-		const url:string = "http://localhost:" + _port;
-		await getWebUI(url)
-			.then( body => {
-				expect(body, "Unexpected html response body").to.contain("AtlasMap");
-				resolve(_port);
-			})
-			.catch( err => {
-				reject(err);
-			});
-	});
+	if (!extension.atlasMapUIReady) {
+		return Promise.reject(new Error("AtlasMap UI not started"));
+	}
+
+	const url:string = "http://localhost:" + _port;
+	try {
+		const body: string = await getWebUI(url);
+		expect(body, "Unexpected html response body").to.contain("AtlasMap");
+	} catch (error) {
+		return Promise.reject(error);
+	}
+	return _port;
 }
 
 export function stopAtlasMapInstance(_port: string = DEFAULT_ATLASMAP_PORT, infoSpy: sinon.SinonSpy): Promise<boolean> {
