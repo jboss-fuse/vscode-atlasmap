@@ -154,36 +154,22 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 				});
 		});
 
-		it("Test import of ADM file with stopped server", function(done) {
+		it("Test import of ADM file with stopped server", async function() {
 			expect(port).to.be.undefined;
 			expect(testADMFileWorking, "Unable to download the tagged test adm file from " + testUtils.generateGithubDownloadUrl()).to.not.be.undefined;
-			let context = { fsPath: testADMFileWorking };
-			testUtils.startAtlasMapInstance(showInformationMessageSpy, context)
-				.then( async (_port) => {
-					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
-					port = _port;
-					expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-					expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-					expect(createOutputChannelSpy.calledOnce);
+			const context = { fsPath: testADMFileWorking };
+			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, context);
+			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+			expect(createOutputChannelSpy.calledOnce);
 
-					let url:string = "http://localhost:" + port;
-					await testUtils.getWebUI(url)
-						.then( (body) => {
-							expect(body, "Unexpected html response body").to.contain("AtlasMap");
-							if (browserConfig === BrowserType.Internal) {
-								checkContainsAtlasMapTitle();
-							}
-							done();
-						})
-						.catch( (err) => {
-							console.error(err);
-							done(err);
-						});
-				})
-				.catch( err => {
-					console.error(err);
-					done(err);
-				});
+			const url:string = "http://localhost:" + port;
+			const body: string = await testUtils.getWebUI(url);
+			expect(body, "Unexpected html response body").to.contain("AtlasMap");
+			if (browserConfig === BrowserType.Internal) {
+				checkContainsAtlasMapTitle();
+			}
 		});
 
 		it("Test import of ADM file with running server", function(done) {
@@ -283,8 +269,8 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 function checkContainsAtlasMapTitle() {
 	const expectedAtlasMapTitle = '<title>AtlasMap Data Mapper UI</title>';
-	waitUntil(() => atlasMapWebView.default.currentPanel._panel.webview.html.includes(expectedAtlasMapTitle));
+	waitUntil(() => atlasMapWebView.default?.currentPanel?._panel.webview?.html?.includes(expectedAtlasMapTitle));
 	expect(
-		atlasMapWebView.default.currentPanel._panel.webview.html,
+		atlasMapWebView.default?.currentPanel?._panel?.webview?.html,
 		`HTML doesn't contain url the ${expectedAtlasMapTitle}`).to.contain(expectedAtlasMapTitle);
 }
