@@ -5,25 +5,55 @@ import * as download from "download";
 import * as fileUrl from "file-url";
 import * as fs from "fs";
 import { DEFAULT_ATLASMAP_PORT, BrowserType, BROWSERTYPE_PREFERENCE_KEY } from '../utils';
-import { isString } from "util";
 import * as request from "request";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
-import * as utils from "../utils";
 import * as extension from "../extension";
 import AtlasMapPanel from '../AtlasMapPanel';
+import { assert } from "sinon";
 
 const uri2path = require('file-uri-to-path');
 
+const waitUntil = require('async-wait-until');
 const expect = chai.expect;
 chai.use(sinonChai);
 
 const MAX_WAIT = 20000;
 const STEP = 1000;
 const KEYSTRING: string = "Starting AtlasMap instance at port ";
+const extensionId = 'redhat.atlasmap-viewer';
 
 export const BROWSER_TYPES = [BrowserType.Internal, BrowserType.External];
+export const ACTIVATION_TIMEOUT = 45000;
+
+export async function ensureExtensionActivated() {
+	const ext = vscode.extensions.getExtension(extensionId);
+	if (ext) {
+		await waitInCaseExtensionIsActivating(ext);
+		if(!ext.isActive) {
+			await forceActivation(ext);
+		}
+	} else {
+		assert.fail("AtlasMap extension is undefined and cannot be activated");
+	}
+	return ext;
+}
+
+async function forceActivation(ext: vscode.Extension<any>) {
+	await ext.activate();
+	await waitUntil(() => {
+		return ext.isActive;
+	}, ACTIVATION_TIMEOUT, 'Extension is not active even after calling activate explicitily.');
+}
+
+async function waitInCaseExtensionIsActivating(ext: vscode.Extension<any>) {
+	await waitUntil(() => {
+		return ext.isActive;
+	}, ACTIVATION_TIMEOUT).catch(() => {
+		console.log('Extension has not started automatically, we will force call to activate it.');
+	});
+}
 
 export function getWebUI(url: string): Promise<string> {
 	return new Promise((resolve, reject) => {
@@ -43,7 +73,7 @@ export function determineUsedPort(spy: sinon.SinonSpy): string {
 		for (let call of spy.getCalls()) {
 			if (!call || !call.args) continue;
 			for (let arg of call.args) {
-				if (arg && isString(arg) && arg.startsWith(KEYSTRING)) {
+				if (arg && typeof(arg) === 'string' && arg.startsWith(KEYSTRING)) {
 					return arg.substring(KEYSTRING.length);
 				}
 			}
@@ -87,20 +117,16 @@ export async function startAtlasMapInstance(infoSpy: sinon.SinonSpy, context: an
 	return _port;
 }
 
-export function stopAtlasMapInstance(_port: string = DEFAULT_ATLASMAP_PORT, infoSpy: sinon.SinonSpy): Promise<boolean> {
-	return new Promise<boolean>( async (resolve, reject) => {
-		await vscode.commands.executeCommand("atlasmap.stop");
-		let waitTime = 0;
-		while (!hasStopMessageInInfoMessage(infoSpy) && waitTime < MAX_WAIT) {
-			await waitForTask("AtlasMapShutdown")
-				.then( () => {
-					waitTime += STEP;
-				});
-		}
-		// wait a bit for the port to be really free - not nice but works fine
-		await new Promise(res => setTimeout(res, 3000));
-		resolve(waitTime < MAX_WAIT);
-	});
+export async function stopAtlasMapInstance(_port: string = DEFAULT_ATLASMAP_PORT, infoSpy: sinon.SinonSpy): Promise<boolean> {
+	await vscode.commands.executeCommand("atlasmap.stop");
+	let waitTime = 0;
+	while (!hasStopMessageInInfoMessage(infoSpy) && waitTime < MAX_WAIT) {
+		await waitForTask("AtlasMapShutdown");
+		waitTime += STEP;
+	}
+	// wait a bit for the port to be really free - not nice but works fine
+	await new Promise(res => setTimeout(res, 3000));
+	return (waitTime < MAX_WAIT);
 }
 
 export async function waitForTask(taskName: string = "<unknownTasK>") {
@@ -124,7 +150,7 @@ export function hasStringInSpy(searchString: string, spy: sinon.SinonSpy): boole
 								return true;
 							}
 						}
-					} else if (isString(arg)) {
+					} else if (typeof(arg) === 'string') {
 						if (arg.indexOf(searchString) >= 0) {
 							return true;
 						}
@@ -136,10 +162,10 @@ export function hasStringInSpy(searchString: string, spy: sinon.SinonSpy): boole
 	return false;
 }
 
-export function switchSettingsToType(browserConfig: string) {
+export async function switchSettingsToType(browserConfig: string) {
 	let config = vscode.workspace.getConfiguration();
 	const setAsGlobal = config.inspect(BROWSERTYPE_PREFERENCE_KEY).workspaceValue == undefined;
-	config.update(BROWSERTYPE_PREFERENCE_KEY, browserConfig, setAsGlobal);
+	await config.update(BROWSERTYPE_PREFERENCE_KEY, browserConfig, setAsGlobal);
 }
 
 export function isInternalWebViewClosed(): boolean {
@@ -165,13 +191,14 @@ export async function downloadTestADM() {
 			return uri2path(fileUrl(f));
 		})
 		.catch( err => {
+			console.error(err);
 			return undefined;
 		});
 }
 
 export function generateGithubDownloadUrl(): string {
-	let tagName: string = generateGitHubTagName();
-	let url: string = "https://github.com/atlasmap/atlasmap/raw/" + tagName + "/ui/test-resources/adm/mockdocfhir.adm";
+	const tagName: string = generateGitHubTagName();
+	const url: string = "https://github.com/atlasmap/atlasmap/raw/" + tagName + "/ui/test-resources/adm/mockdocfhir.adm";
 	return url;
 }
 
@@ -182,17 +209,18 @@ function generateGitHubTagName(): string {
 function determineAtlasMapVersion(): string {
 	let atlasmapVersion: string = process.env.npm_package_config_atlasmapversion;
 	if (!atlasmapVersion) {
-		let pjson = require('../../package.json');
+		const pjson = require('../../package.json');
 		atlasmapVersion = pjson.config.atlasmapversion;
 	}
 	return atlasmapVersion;
 }
 
 export function createBrokenADM() {
-	let f = "./mockdoccorrupted.adm";
+	const f = "./mockdoccorrupted.adm";
 	try {
 		fs.writeFileSync(f, "someBrokenADMContent");
-	} catch ( err ) {
+	} catch (err) {
+		console.error(err);
 		return undefined;	
 	}
 	return uri2path(fileUrl(f));

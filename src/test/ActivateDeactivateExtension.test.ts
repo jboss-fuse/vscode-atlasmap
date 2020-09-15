@@ -4,6 +4,7 @@ import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as testUtils from "./command.test.utils";
 import * as vscode from "vscode";
+import { fail } from "assert";
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -18,28 +19,27 @@ describe("Ensure Atlasmap is shut down upon extension deactivation", function ()
 		showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
 	});
 
-	afterEach(function () {
+	afterEach( async () => {
 		showInformationMessageSpy.restore();
 		sandbox.restore();
-		vscode.extensions.getExtension('redhat.atlasmap-viewer').activate();
+		await vscode.extensions.getExtension('redhat.atlasmap-viewer').activate();
 	});
 
-	it("Test that the running instance is stopped on deactivation", function (done) {
-		testUtils.startAtlasMapInstance(showInformationMessageSpy).then(() => {
-			let atlasMapProcess = extension.atlasMapProcess;
+	it("Test that the running instance is stopped on deactivation", async () => {
+		try {
+			await testUtils.startAtlasMapInstance(showInformationMessageSpy);
+			const atlasMapProcess = extension.atlasMapProcess;
 			expect(atlasMapProcess.killed).to.be.false;
-			extension.deactivate(null);
+			await extension.deactivate(null);
 			expect(atlasMapProcess.killed).to.be.true;
-			done();
-		}).catch((error) => {
-			done(error);
-		}).finally(() => {
+		} catch (error) {
+			fail(error);
+		} finally {
 			testUtils.stopAtlasMapInstance(extension.atlasMapLaunchPort, showInformationMessageSpy);
-		});
+		}
 	});
 
-	it("Test deactivate doesn't cause trouble when no AtlasMap instance launched", function (done) {
-		extension.deactivate(null);
-		done();
+	it("Test deactivate doesn't cause trouble when no AtlasMap instance launched", async () => {
+		await extension.deactivate(null);
 	});
 });

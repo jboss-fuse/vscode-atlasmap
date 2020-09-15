@@ -26,7 +26,8 @@ describe("Test Extension OutputChannel", function() {
 		sandbox.restore();
 	});
 
-	it("Test output channel creation on new log entry", function() {
+	it("Test output channel creation on new log entry", async () => {
+		await testUtils.ensureExtensionActivated();
 		expect(createOutputChannelSpy.called).to.be.false;
 		log("This is a test!");
 		expect(createOutputChannelSpy.called).to.be.true;
