@@ -142,7 +142,7 @@ function handleStopAtlasMap() {
 		});
 }
 
-function launchAtlasMapLocally(context: vscode.ExtensionContext, atlasmapExecutablePath: string, port: string, admFilePath: string = ""): Promise<any>{
+function launchAtlasMapLocally(context: vscode.ExtensionContext, atlasmapExecutablePath: string, port: string, admPath: string = ""): Promise<any>{
 	return new Promise( (resolve, reject) => {
 		showProgressInfo(port);
 		process.env.SERVER_PORT = port;
@@ -153,10 +153,10 @@ function launchAtlasMapLocally(context: vscode.ExtensionContext, atlasmapExecuta
 				let javaExecutablePath = path.resolve(reqs.java_home + '/bin/java');
 				let atlasMapWSFolder = path.resolve(storagePath, utils.ATLASMAP_WS_FOLDER_FALLBACK);
 
-				if (admFilePath !== "") {
+				if (admPath !== "") {
 					atlasMapProcess = child_process.spawn(javaExecutablePath,
 						['-Datlasmap.workspace=' + atlasMapWSFolder,
-						'-Datlasmap.adm.path=' + admFilePath,
+						'-Datlasmap.adm.path=' + admPath,
 						'-Datlasmap.disable.frame.options=true',
 						'-jar', atlasmapExecutablePath]);
 				} else {
