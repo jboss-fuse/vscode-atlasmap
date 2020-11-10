@@ -106,7 +106,7 @@ function ensureNoOtherAtlasMapInstanceRunning(): Promise<boolean> {
 
 				let waitTimer:number = 0;
 				while (atlasMapLaunchPort !== undefined && waitTimer < MAX_WAIT) {
-					await new Promise(resolve => setTimeout(resolve, WAIT_STEP));
+					await new Promise(res => setTimeout(res, WAIT_STEP));
 					waitTimer += WAIT_STEP;
 				}
 			
@@ -149,8 +149,8 @@ function launchAtlasMapLocally(context: vscode.ExtensionContext, atlasmapExecuta
 		atlasMapServerOutputChannel = vscode.window.createOutputChannel("AtlasMap Server");
 	
 		requirements.resolveRequirements()
-			.then(requirements => {
-				let javaExecutablePath = path.resolve(requirements.java_home + '/bin/java');
+			.then(reqs => {
+				let javaExecutablePath = path.resolve(reqs.java_home + '/bin/java');
 				let atlasMapWSFolder = path.resolve(storagePath, utils.ATLASMAP_WS_FOLDER_FALLBACK);
 
 				if (admFilePath !== "") {
@@ -178,7 +178,7 @@ function launchAtlasMapLocally(context: vscode.ExtensionContext, atlasmapExecuta
 					let dec = new TextDecoder("utf-8");
 					let text = dec.decode(data);
 					atlasMapServerOutputChannel.append(text);
-					if (text.indexOf("### AtlasMap Data Mapper UI started") > 0) {
+					if (text.includes("### AtlasMap Data Mapper UI started")) {
 						const url = generateUrl(port);
 						openURL(url, context);
 						atlasMapUIReady = true;
