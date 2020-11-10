@@ -152,10 +152,8 @@ export default class AtlasMapPanel {
 			 */
 			AtlasMapPanel.currentPanel._panel.webview.onDidReceiveMessage(
 				message => {
-					switch (message.command) {
-						case onScriptsCommand:
-							webview.html = (message.html as string).replace("<head>", "<head>" + commonHead);
-							break;
+					if (message.command === onScriptsCommand) {
+						webview.html = (message.html as string).replace("<head>", "<head>" + commonHead);
 					}
 				},
 				undefined,
