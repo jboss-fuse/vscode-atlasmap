@@ -35,10 +35,11 @@
 		"atlasmap",
 		"data",
 		"transformation",
-		"mapper"
+		"mapper",
+		"Testy Change for CircleCI testing"
 	],
 	"categories": [
-		"Other"
+		"Other"		
 	],
 	"main": "./out/extension",
 	"contributes": {
