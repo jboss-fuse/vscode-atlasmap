@@ -1,20 +1,18 @@
 version: 2.1
 
-workflows:
-  version: 2
-  build:
-    jobs:
-      - build:
-          filters:
-            branches:
-              ignore: /^dependabot.*$/
-          context: sonarcloud
+common_env: &common_env
+  DOCKER_VERSION: 17.12.1-ce
 
+job_default: &job_defaults
+  working_directory: ~/vscode-atlasmap
+  docker:
+    - image: circleci/node:lts-browsers
+  
 jobs:
   build:
-    working_directory: ~/vscode-atlasmap
-    docker:
-      - image: circleci/node:lts-browsers
+    <<: *job_defaults
+    environment:
+      <<: *common_env
     steps:
       - checkout
       - restore_cache:
@@ -40,10 +38,46 @@ jobs:
       - run:
           name: test UI
           command: npm run ui-test
-      - sonarcloud/scan 
       - save_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
             - ~/.npm
+  sonar:
+    <<: *job_defaults
+    environment:
+      <<: *common_env
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: install-typescript
+          command: sudo npm install -g typescript
+      - run:
+          name: npm-ci
+          command: npm ci
+      - sonarcloud/scan
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
+
 orbs:
   sonarcloud: sonarsource/sonarcloud@1.0.2
+
+workflows:
+  version: 2
+  vscode-atlasmap:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: /^dependabot.*$/
+      - sonar:
+          context: sonarcloud
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build
