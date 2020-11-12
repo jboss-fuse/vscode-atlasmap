@@ -62,10 +62,7 @@ workflows:
   version: 2
   vscode-atlasmap:
     jobs:
-      - build:
-          filters:
-            branches:
-              ignore: /^dependabot.*$/
+      - build
       - sonar:
           context: sonarcloud
           filters:
