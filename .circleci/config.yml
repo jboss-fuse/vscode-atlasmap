@@ -1,8 +1,5 @@
 version: 2.1
 
-common_env: &common_env
-  DOCKER_VERSION: 17.12.1-ce
-
 job_default: &job_defaults
   working_directory: ~/vscode-atlasmap
   docker:
@@ -11,8 +8,6 @@ job_default: &job_defaults
 jobs:
   build:
     <<: *job_defaults
-    environment:
-      <<: *common_env
     steps:
       - checkout
       - restore_cache:
@@ -44,8 +39,6 @@ jobs:
             - ~/.npm
   sonar:
     <<: *job_defaults
-    environment:
-      <<: *common_env
     steps:
       - checkout
       - restore_cache:
