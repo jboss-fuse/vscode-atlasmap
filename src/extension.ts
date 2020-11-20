@@ -142,7 +142,7 @@ function handleStopAtlasMap() {
 		});
 }
 
-function launchAtlasMapLocally(context: vscode.ExtensionContext, atlasmapExecutablePath: string, port: string, admPath: string = ""): Promise<any>{
+function launchAtlasMapLocally(context: vscode.ExtensionContext, atlasmapExecutablePath: string, port: string, admPath: string = ""): Promise<void>{
 	return new Promise( (resolve, reject) => {
 		showProgressInfo(port);
 		process.env.SERVER_PORT = port;
