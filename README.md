@@ -1,7 +1,6 @@
 # AtlasMap in VS Code
 
 [![GitHub tag](https://img.shields.io/github/tag/jboss-fuse/vscode-atlasmap.svg?style=plastic)](https://github.com/jboss-fuse/vscode-atlasmap/tags)
-[![Travis](https://travis-ci.com/jboss-fuse/vscode-atlasmap.svg?branch=master)](https://travis-ci.com/jboss-fuse/vscode-atlasmap)
 [![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/jboss-fuse/vscode-atlasmap)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vscode-atlasmap&metric=alert_status)](https://sonarcloud.io/dashboard?id=vscode-atlasmap)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://opensource.org/licenses/Apache-2.0)
