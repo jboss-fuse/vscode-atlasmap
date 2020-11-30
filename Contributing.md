@@ -36,7 +36,7 @@ After calling the "Open AtlasMap" and that the AtlasMap panel is opened, some co
 * Check that someone listed as _submitter_ in Jenkinsfile is available
 * Create a tag
 * Push the tag to vscode-atlasmap repository, it will trigger a build after few minutes
-* Check build is working fine on [Travis CI](https://travis-ci.org/jboss-fuse/vscode-atlasmap)
+* Check build is working fine on [Circle CI](https://app.circleci.com/pipelines/github/jboss-fuse/vscode-atlasmap)
 * Start build on [Jenkins CI](https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/VS%20Code/job/vscode-atlasmap-release) with _publishToMarketPlace_ parameter checked
 * Wait the build is waiting on step _Publish to Marketplace_
 * Ensure you are logged in

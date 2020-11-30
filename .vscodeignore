@@ -1,7 +1,7 @@
 **/*.ts
 *.vsix
+.circleci/**
 .gitignore
-.travis.yml
 .vscode/**
 gulpfile.js
 sonar-project.properties
