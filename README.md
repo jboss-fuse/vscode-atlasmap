@@ -54,17 +54,12 @@ Bear in mind, however, the following caveats:
 -   The AtlasMap documentation assumes it will be run in a standalone environment as opposed to being
     embedded within VS Code, so some of the information may not apply. In particular, you can ignore the first step, "1. Quickly get
     started using AtlasMap standalone".
--   The look & feel of AtlasMap has changed since the documentation was last updated and some of its screenshots have not yet been
-    updated. You'll notice, for instance, some of the toolbar buttons and icons have changed and/or are displayed in different
-    locations. In particular, note that some of the import/export functionality is now under the `AtlasMap` dropdown menu.
 -   This extension does not provide any type of runtime environment with which to execute mappings created by
     AtlasMap. Mappings will need to be exported once completed to an Apache Camel application, using the `camel-atlasmap` endpoint,
     as described in the [AtlasMap documentation](http://docs.atlasmap.io/#running-atlasmap-with-apache-camel).
 -   Although the [documentation](https://docs.atlasmap.io/#exporting-mappings-to-an-atlasmap-catalog-file) states that
-    exported mappings are always exported to the Downloads folder, it now presents a file dialog to export to any accessible folder
-    on the file system. Also, the option to export to a catalog is now under the `AtlasMap` menu rather than via a toolbar
-    button.
--   There is no relationship established between AtlasMap and your VS Code projects. File dialogs presented by AtlasMap allow for
-    importing from or exporting to anywhere on your file system.
--   Also be aware, AtlasMap requires quite a bit of horizontal real-estate, so you may need to expand the width of your VS Code
+    exported mappings are always exported to the Downloads folder, within VS Code AtlasMap presents a file dialog allowing you to choose to which folder you wish to export mapping catalogs.
+-   There is no relationship established between AtlasMap and your VS Code projects. File dialogs presented by
+    AtlasMap allow for importing from or exporting to anywhere on your file system.
+-   AtlasMap requires quite a bit of horizontal real-estate, so you may need to expand the width of your VS Code
     window.
