@@ -10,10 +10,10 @@ import * as testUtils from "./command.test.utils";
 import * as vscode from "vscode";
 import { BrowserType } from "../utils";
 import { RESTART_CHOICE, WARN_MSG } from '../extension';
+import { waitUntil } from 'async-wait-until';
 
 const expect = chai.expect;
 chai.use(sinonChai);
-const waitUntil = require('async-wait-until');
 
 testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 	describe("Start AtlasMap Command Tests with browser type: " + browserConfig, function() {
