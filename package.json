@@ -113,7 +113,7 @@
 		"@types/sinon-chai": "^3.2.5",
 		"@types/vscode": "^1.53.0",
 		"assert": "^2.0.0",
-		"async-wait-until": "^1.2.6",
+		"async-wait-until": "^2.0.3",
 		"chai": "^4.3.0",
 		"download": "^8.0.0",
 		"file-uri-to-path": "^2.0.0",
