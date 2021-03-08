@@ -2,7 +2,7 @@
 	"name": "atlasmap-viewer",
 	"displayName": "AtlasMap Data Transformation editor by Red Hat",
 	"description": "Opens a browser for AtlasMap Data Transformation editor",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"publisher": "redhat",
 	"icon": "icons/icon128.png",
 	"preview": true,
