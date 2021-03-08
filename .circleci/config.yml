@@ -46,6 +46,28 @@ jobs:
             equal: [master, << pipeline.git.branch >>]
           steps:
             - sonarcloud/scan
+      - run:
+          name: DebugEnv
+          command: |
+            echo $CHAT_WEBHOOK_URL
+            echo "Test 2 : ${CHAT_WEBHOOK_URL}"
+      - run:
+          name: Chat Notification Fail
+          when: on_fail
+          command: >
+            curl --header "Content-Type: application/json"
+            --request POST
+            --data "{\"cards\":[{\"header\":{\"title\":\"Oops. Build ${CIRCLE_BUILD_NUM} failed.\",\"subtitle\":\"${CIRCLE_PROJECT_REPONAME}\",\"imageUrl\":\"https://png.pngtree.com/svg/20170406/icon_failed__1325447.png\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"${CIRCLE_SHA1}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}}]}]}]}]}"
+            $CHAT_WEBHOOK_URL
+
+      - run:
+          name: Chat Notification Success
+          when: on_success
+          command: >
+            curl --header "Content-Type: application/json"
+            --request POST
+            --data "{\"cards\":[{\"header\":{\"title\":\"Build ${CIRCLE_BUILD_NUM} passed.\",\"subtitle\":\"${CIRCLE_PROJECT_REPONAME}\",\"imageUrl\":\"https://png.pngtree.com/svg/20170510/success_404253.png\",\"imageStyle\":\"IMAGE\"},\"sections\":[{\"widgets\":[{\"keyValue\":{\"topLabel\":\"${CIRCLE_TAG}\",\"content\":\"${CIRCLE_SHA1}\"}}]},{\"widgets\":[{\"buttons\":[{\"textButton\":{\"text\":\"DETAILS\",\"onClick\":{\"openLink\":{\"url\":\"${CIRCLE_BUILD_URL}\"}}}}]}]}]}]}"
+            $CHAT_WEBHOOK_URL
 
 orbs:
   sonarcloud: sonarsource/sonarcloud@1.0.2
@@ -55,4 +77,6 @@ workflows:
   vscode-atlasmap:
     jobs:
       - build:
-          context: sonarcloud
+          context: 
+            - sonarcloud
+            - gchat
