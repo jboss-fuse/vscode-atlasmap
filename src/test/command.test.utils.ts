@@ -2,7 +2,7 @@
 
 import * as chai from "chai";
 import * as download from "download";
-import * as fileUrl from "file-url";
+import fileUrl from 'file-url';
 import * as fs from "fs";
 import { DEFAULT_ATLASMAP_PORT, BrowserType, BROWSERTYPE_PREFERENCE_KEY } from '../utils';
 import { isString } from "util";
