@@ -178,7 +178,7 @@ function launchAtlasMapLocally(context: vscode.ExtensionContext, atlasmapExecuta
 					let dec = new TextDecoder("utf-8");
 					let text = dec.decode(data);
 					atlasMapServerOutputChannel.append(text);
-					if (text.includes("### AtlasMap Data Mapper UI started")) {
+					if (text.includes("### AtlasMap Data Mapper UI") && text.includes("started at port:")) {
 						const url = generateUrl(port);
 						openURL(url, context);
 						atlasMapUIReady = true;
