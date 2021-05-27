@@ -35,7 +35,6 @@ export function basicTests() {
 		it('Stop Command should show a notification with the correct text', async function () {
 			this.timeout(30000);
 			driver.sleep(1000);
-			await new EditorView().openEditor('Welcome'); // workaround focus issue
 			await stopAtlasMap();
 			driver.sleep(1000);
 			const notification = await driver.wait(() => { return getNotificationWithMessage(notifications.ATLASMAP_STOPPED); }, 20000);
