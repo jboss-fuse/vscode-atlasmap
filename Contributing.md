@@ -30,7 +30,7 @@ After calling the "Open AtlasMap" and that the AtlasMap panel is opened, some co
 * Check that the version in package.json has not been published yet
     * If already published:
         * Upgrade the version in package.json
-        * Run 'npm install' so that the package-lock.json is updated
+        * Upgrade the version in package-lock.json
         * Push changes in a PR
         * Wait for PR to be merged
 * Check that someone listed as _submitter_ in Jenkinsfile is available
@@ -47,7 +47,7 @@ After calling the "Open AtlasMap" and that the AtlasMap panel is opened, some co
 * Keep build forever for later reference and edit build information to indicate the version
 * Prepare next iteration:
     * Upgrade the version in package.json
-    * Run 'npm install' so that the package-lock.json is updated
+    * Upgrade the version in package-lock.json
     * Push changes in a PR
     * Follow PR until it is approved/merged
   
