@@ -8,4 +8,4 @@ target
 .scannerwork
 *.log
 test-resources/
-
+test-extensions
