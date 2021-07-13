@@ -2,7 +2,7 @@
 
 ## 0.0.8
 
-- Upgrade to AtlasMap 2.2.2
+- Upgrade to AtlasMap 2.2.3
 
 ## 0.0.7
 
