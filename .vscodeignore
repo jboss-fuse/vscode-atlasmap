@@ -9,3 +9,4 @@ tsconfig.json
 tslint.json
 Contributing.md
 test-resources
+test-extensions
