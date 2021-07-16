@@ -1,55 +1,74 @@
-import { Notification, VSBrowser, WebDriver, EditorView } from 'vscode-extension-tester';
-import { expect } from 'chai';
-import { getNotificationWithMessage, whilegetNotificationWithMessage, atlasMapWindowExists } from './common/conditions';
+import { VSBrowser, WebDriver, EditorView, until, InputBox } from 'vscode-extension-tester';
+import { atlasMapWindowExists } from './common/conditions';
 import { notifications, views } from './common/constants';
 import { startAtlasMap, stopAtlasMap, atlasMapTabIsAccessible, clearNotifications } from './common/utils';
+import { Workbench, NotificationsCenter, NotificationPredicates } from "vscode-uitests-tooling";
 
 
 export function basicTests() {
 	let driver: WebDriver;
 
-	describe('Start/Stop AtlasMap and verify correct notifications', () => {
-		beforeEach(async () => {
+	describe('Start/Stop AtlasMap and verify correct notifications', function () {
+		this.timeout(30000);
+		let notificationCenter: NotificationsCenter;
+
+		beforeEach(async function () {
 			driver = VSBrowser.instance.driver;
-			await clearNotifications();
+			await clearNotifications(this.timeout() - 1000);
+			notificationCenter = await new Workbench().openNotificationsCenter(this.timeout() - 1000);
+		});
+
+		afterEach(async function () {
+			await notificationCenter?.close(this.timeout() - 1000);
 		});
 
 		it('Start Command should show a notification with the correct text', async function () {
-			this.timeout(30000);
 			await startAtlasMap();
-			driver.sleep(1000);
-			const notificationStarting = await driver.wait(() => { return getNotificationWithMessage(notifications.ATLASMAP_STARTING); }, 20000) as Notification;
-			expect(await notificationStarting.getMessage()).contains(notifications.ATLASMAP_STARTING);
-			await driver.wait(() => { return whilegetNotificationWithMessage(notifications.ATLASMAP_WAITING); }, 20000);
-			await atlasMapTabIsAccessible();
+			await driver.wait(until.elementIsNotVisible(new InputBox()));
+
+			const notificationStarting = notificationCenter.getNotification(
+				NotificationPredicates.containsMessage(notifications.ATLASMAP_STARTING),
+				this.timeout() - 1000,
+				`Could not find notification with message "${notifications.ATLASMAP_STARTING}".`
+			);
+
+			const notificationWaiting = await notificationCenter.getNotification(
+				NotificationPredicates.containsMessage(notifications.ATLASMAP_WAITING),
+				this.timeout() - 1000,
+				`Could not find notification with message "${notifications.ATLASMAP_WAITING}".`
+			);
+
+			await driver.wait(until.stalenessOf(notificationWaiting), this.timeout() - 1000);
+			await notificationStarting;
+
+			const editor = await atlasMapTabIsAccessible();
 			await new EditorView().closeEditor(views.ATLASMAP_TITLE);
+			await driver.wait(until.stalenessOf(editor), this.timeout() - 1000);
 		});
 
 		it('Second Start Command should open AtlasMap window', async function () {
-			this.timeout(20000);
 			await startAtlasMap();
-			await driver.wait(() => { return atlasMapWindowExists(); }, 10000);
+			await driver.wait(atlasMapWindowExists, this.timeout() - 1000);
 			await atlasMapTabIsAccessible();
 		});
 
 		it('Stop Command should show a notification with the correct text', async function () {
-			this.timeout(30000);
-			driver.sleep(1000);
 			await stopAtlasMap();
-			driver.sleep(1000);
-			const notification = await driver.wait(() => { return getNotificationWithMessage(notifications.ATLASMAP_STOPPED); }, 20000);
-			expect(await notification.getMessage()).contains(notifications.ATLASMAP_STOPPED);
+
+			await notificationCenter.getNotification(
+				NotificationPredicates.containsMessage(notifications.ATLASMAP_STOPPED),
+				this.timeout() - 1000,
+				`Could not find notification with message "${notifications.ATLASMAP_STARTING}".`
+			);
 		});
 
 		it('Second Stop Command should show a notification with the correct text', async function () {
-			this.timeout(30000);
 			await stopAtlasMap();
-			const notification = await driver.wait(() => { return getNotificationWithMessage(notifications.ATLASMAP_UNABLE_LOCATE); }, 10000) as Notification;
-			expect(await notification.getMessage()).contains(notifications.ATLASMAP_UNABLE_LOCATE);
-		});
-
-		afterEach(async () => {
-			await clearNotifications();
+			await notificationCenter.getNotification(
+				NotificationPredicates.containsMessage(notifications.ATLASMAP_UNABLE_LOCATE),
+				this.timeout() - 1000,
+				`Could not find notification with message "${notifications.ATLASMAP_STARTING}".`
+			);
 		});
 	});
 
