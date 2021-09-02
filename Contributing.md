@@ -29,8 +29,7 @@ After calling the "Open AtlasMap" and that the AtlasMap panel is opened, some co
 
 * Check that the version in package.json has not been published yet
     * If already published:
-        * Upgrade the version in package.json
-        * Run 'npm install' so that the package-lock.json is updated
+        * Run `npm version --no-git-tag-version patch`
         * Push changes in a PR
         * Wait for PR to be merged
 * Check that someone listed as _submitter_ in Jenkinsfile is available
@@ -46,8 +45,7 @@ After calling the "Open AtlasMap" and that the AtlasMap panel is opened, some co
 * Wait few minutes and check that it has been published on [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=redhat.atlasmap-viewer) and [Open VSX Marketplace](https://open-vsx.org/extension/redhat/atlasmap-viewer)
 * Keep build forever for later reference and edit build information to indicate the version
 * Prepare next iteration:
-    * Upgrade the version in package.json
-    * Run 'npm install' so that the package-lock.json is updated
+    * Run `npm version --no-git-tag-version patch`
     * Push changes in a PR
     * Follow PR until it is approved/merged
   
