@@ -7,6 +7,7 @@ import * as requirements from './requirements';
 import { TextDecoder } from 'util';
 import * as utils from './utils';
 import * as vscode from 'vscode';
+import { getRedHatService, TelemetryEvent, TelemetryService } from "@redhat-developer/vscode-redhat-telemetry";
 
 let atlasMapExtensionOutputChannel: vscode.OutputChannel;
 let atlasMapServerOutputChannel: vscode.OutputChannel;
@@ -17,14 +18,20 @@ export let atlasMapLaunchPort: string;
 export let atlasMapUIReady: boolean;
 let admFilePath: string;
 let storagePath: string;
+export let telemetryService: TelemetryService = null;
 
 const WAIT_STEP: number = 1000;
 const MAX_WAIT: number = 30000;
 export const WARN_MSG: string = "There is currently a local AtlasMap instance running. We need to restart that instance. Make sure you have saved all your changes in the AtlasMap UI to prevent data loss.";
 export const RESTART_CHOICE: string = "Restart";
 
-export function activate(context: vscode.ExtensionContext) {
+const COMMAND_ID_START_ATLASMAP = 'atlasmap.start';
+const COMMAND_ID_STOP_ATLASMAP = 'atlasmap.stop';
 
+export async function activate(context: vscode.ExtensionContext) {
+	const redhatService = await getRedHatService(context);  
+	telemetryService = await redhatService.getTelemetryService();
+	telemetryService.sendStartupEvent();
 	//Use globalStoragePath instead of storagePath when workspace is not opened
 	if (context.storagePath == undefined){
 		storagePath = context.globalStoragePath;
@@ -34,8 +41,8 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	let atlasmapExecutablePath = context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
 
-	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.start', (ctx) => {
-
+	context.subscriptions.push(vscode.commands.registerCommand(COMMAND_ID_START_ATLASMAP, (ctx) => {
+		sendCommandEvent(COMMAND_ID_START_ATLASMAP);
 		// in case user has not specified a ADM file and just uses the 
 		// main palette action for opening AtlasMap, we will not open
 		// another AtlasMap instance if there is already one running.
@@ -77,7 +84,8 @@ export function activate(context: vscode.ExtensionContext) {
 			});
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('atlasmap.stop', () => {
+	context.subscriptions.push(vscode.commands.registerCommand(COMMAND_ID_STOP_ATLASMAP, () => {
+		sendCommandEvent(COMMAND_ID_STOP_ATLASMAP);
 		if (!isAtlasMapRunning()) {
 			vscode.window.showWarningMessage("Unable to locate running AtlasMap instance");
 		} else {
@@ -86,9 +94,23 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 }
 
+function sendCommandEvent(commandId: string) {
+	const telemetryEvent: TelemetryEvent = {
+		type: 'track',
+		name: 'command',
+		properties: {
+			identifier: commandId
+		}
+	};
+	telemetryService.send(telemetryEvent);
+}
+
 export function deactivate(context: vscode.ExtensionContext) {
 	if (isAtlasMapRunning()) {
 		stopLocalAtlasMapInstance();
+	}
+	if (telemetryService) {
+		telemetryService.sendShutdownEvent();
 	}
 }
 

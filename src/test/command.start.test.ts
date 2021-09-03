@@ -2,15 +2,15 @@
 
 import * as atlasMapWebView from "../AtlasMapPanel";
 import * as chai from "chai";
-import * as child_process from 'child_process';
 import * as fs from "fs";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as testUtils from "./command.test.utils";
 import * as vscode from "vscode";
 import { BrowserType } from "../utils";
-import { RESTART_CHOICE, WARN_MSG } from '../extension';
+import { RESTART_CHOICE, WARN_MSG, telemetryService } from '../extension';
 import { waitUntil } from 'async-wait-until';
+import { TelemetryEvent } from "@redhat-developer/vscode-redhat-telemetry/lib";
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -26,6 +26,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 		let port: string;
 		let testADMFileWorking: string;
 		let testADMFileBroken: string;
+		let telemetrySpy: sinon.SinonSpy;
 
 		before(async function() {
 			sandbox = sinon.createSandbox();
@@ -40,6 +41,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			testUtils.switchSettingsToType(browserConfig);
 			testADMFileWorking = await testUtils.downloadTestADM();
 			testADMFileBroken = testUtils.createBrokenADM();
+			telemetrySpy = sinon.spy(telemetryService, 'send');
 		});
 
 		after(function() {
@@ -59,6 +61,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 					if (err) throw err;
 				});
 			}
+			telemetrySpy.restore();
 		});
 
 		afterEach(function(done) {
@@ -85,6 +88,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
 			expect(createOutputChannelSpy.calledOnce);
+			checkTelemetry(telemetrySpy);
 		});
 
 		it("Test Start Command invocation with running AtlasMap instance (DO NOT SPAWN MORE THAN ONE ATLASMAP)", async() => {
@@ -193,6 +197,12 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 	});
 });
+
+function checkTelemetry(telemetrySpy: sinon.SinonSpy<any[], any>) {
+	expect(telemetrySpy.calledOnce).true;
+	const actualEvent: TelemetryEvent = telemetrySpy.getCall(0).args[0];
+	expect(actualEvent.name).to.be.equal('command');
+}
 
 async function checkContainsAtlasMapTitle() {
 	const expectedAtlasMapTitle = '<title>AtlasMap Data Mapper UI</title>';

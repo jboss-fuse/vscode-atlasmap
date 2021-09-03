@@ -8,6 +8,8 @@ import * as sinonChai from "sinon-chai";
 import * as testUtils from "./command.test.utils";
 import * as vscode from "vscode";
 import { isInternalWebViewClosed } from './command.test.utils';
+import { telemetryService } from "../extension";
+import { TelemetryEvent } from "@redhat-developer/vscode-redhat-telemetry/lib";
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -20,6 +22,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 		let showInformationMessageSpy: sinon.SinonSpy;
 		let createOutputChannelSpy: sinon.SinonSpy;
 		let port: string;
+		let telemetrySpy: sinon.SinonSpy;
 
 		before(function() {
 			sandbox = sinon.createSandbox();
@@ -27,6 +30,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
 			createOutputChannelSpy = sinon.spy(vscode.window, "createOutputChannel");
 			testUtils.switchSettingsToType(browserConfig);
+			telemetrySpy = sinon.spy(telemetryService, 'send');
 		});
 
 		after(function() {
@@ -36,6 +40,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			sandbox.restore();
 			port =  undefined;
 			testUtils.switchSettingsToType(undefined);
+			telemetrySpy.restore();
 		});
 
 		afterEach(function(done) {
@@ -58,6 +63,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			expect(port).to.be.undefined;
 			testUtils.startAtlasMapInstance(showInformationMessageSpy)
 				.then( async (_port) => {
+					telemetrySpy.resetHistory();
 					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 					port = _port;
 					expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
@@ -71,6 +77,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 								expect(isInternalWebViewClosed(), "It seems the internal web view ui is still not closed.").to.be.true;
 							}
 							port =  undefined;
+							checkTelemetry(telemetrySpy);
 							done();
 						})
 						.catch( err => {
@@ -99,3 +106,9 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 		});
 	});
 });
+
+function checkTelemetry(telemetrySpy: sinon.SinonSpy<any[], any>) {
+	expect(telemetrySpy.calledOnce).true;
+	const actualEvent: TelemetryEvent = telemetrySpy.getCall(0).args[0];
+	expect(actualEvent.name).to.be.equal('command');
+}

@@ -63,3 +63,7 @@ Bear in mind, however, the following caveats:
     AtlasMap allow for importing from or exporting to anywhere on your file system.
 -   AtlasMap requires quite a bit of horizontal real-estate, so you may need to expand the width of your VS Code
     window.
+
+## Data and telemetry
+
+The AtlasMap by Red Hat for Visual Studio Code collects anonymous [usage data](USAGE_DATA.md) and sends it to Red Hat servers to help improve our products and services. Read our [privacy statement](https://developers.redhat.com/article/tool-data-collection) to learn more. This extension respects the `redhat.elemetry.enabled` setting which you can learn more about at https://github.com/redhat-developer/vscode-commons#how-to-disable-telemetry-reporting
