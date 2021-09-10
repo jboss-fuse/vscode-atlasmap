@@ -14,6 +14,7 @@ export default class AtlasMapPanel {
 	public readonly _panel: vscode.WebviewPanel;
 	public readonly _context: vscode.ExtensionContext;
 	private _disposables: vscode.Disposable[] = [];
+	private previouslyVisible: boolean = true;
 
 	public static createOrShow(url: string, context: vscode.ExtensionContext) {
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
@@ -61,9 +62,11 @@ export default class AtlasMapPanel {
 
 		// Update the content based on view changes
 		this._panel.onDidChangeViewState(e => {
-			if (this._panel.visible) {
+			// Checking for previous visibility because in Theia, the event is thrown also when taking focus which is causing too many reloads
+			if (this._panel.visible && !this.previouslyVisible) {
 				this._update(url);
 			}
+			this.previouslyVisible = this._panel.visible;
 		}, null, this._disposables);
 
 		// Handle messages from the webview

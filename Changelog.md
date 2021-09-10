@@ -4,6 +4,7 @@
 
 - Upgrade to AtlasMap 2.2.3
 - Include opt-in telemetrics for usage information
+- Avoid reloading of AtlasMap UI on each focus gain/lost of the webview in Eclipse Theia
 
 ## 0.0.7
 
