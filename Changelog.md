@@ -3,6 +3,7 @@
 ## 0.0.9
 
 - Allow automatic detection of JREs (and not only JDKs)
+- Provide Codelens to open _*.adm_ files referenced in Camel URI inside AtlasMap UI
 
 ## 0.0.8
 
