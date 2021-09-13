@@ -40,6 +40,18 @@ The AtlasMap web interface opens with the last edited Data transformation.
 It allows you to create and modify data transformations using AtlasMap. You can export your data transformation from the AtlasMap UI
 and save the artifact into your project.
 
+### Load *.adm from Camel URI
+
+When the *.adm file from a Camel URI can be resolved, a codelens is provided allowing to load it in AtlasMap UI.
+
+![Codelens to open AtlasMap from Camel URI using atlasmap component](doc/codelens-open-atlasmap.gif)
+
+Current conditions to have it resolved:
+* First atlasmap declaration on the line
+* Use `atlas:` (Camel 2) or `atlasmap:` (Camel 3+) scheme prefix
+* Use default or classpath. E.g. `atlasmap:classpath:my.adm` or `atlasmap:my.adm`
+* The pointed _*.adm_ file is either a sibling file to the Camel Route definition file or in `src/main/resources` at root of the workspace.
+
 ## Using AtlasMap
 
 If you are not familiar with AtlasMap, then you'll first want to peruse the [AtlasMap documentation](http://docs.atlasmap.io/). As

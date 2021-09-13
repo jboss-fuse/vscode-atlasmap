@@ -24,7 +24,8 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceRoot}",
-				"--extensionTestsPath=${workspaceRoot}/out/test"],
+				"--extensionTestsPath=${workspaceRoot}/out/test",
+				"${workspaceRoot}/test Fixture with speci@l chars"],
 			"stopOnEntry": false,
 			"sourceMaps": true,
 			"outFiles": ["${workspaceRoot}/out/test/**/*.js"]

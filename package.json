@@ -86,6 +86,7 @@
 		}
 	},
 	"activationEvents": [
+		"workspaceContains:**/*.adm",
 		"onCommand:atlasmap.start",
 		"onCommand:atlasmap.stop"
 	],

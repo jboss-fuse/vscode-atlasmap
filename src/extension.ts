@@ -2,6 +2,7 @@
 
 import * as atlasMapWebView from './AtlasMapPanel';
 import * as child_process from 'child_process';
+import { OpenAdmCodeLensProvider } from './codelenses/OpenAdmCodeLensProvider'; 
 import * as path from 'path';
 import * as requirements from './requirements';
 import { TextDecoder } from 'util';
@@ -25,7 +26,7 @@ const MAX_WAIT: number = 30000;
 export const WARN_MSG: string = "There is currently a local AtlasMap instance running. We need to restart that instance. Make sure you have saved all your changes in the AtlasMap UI to prevent data loss.";
 export const RESTART_CHOICE: string = "Restart";
 
-const COMMAND_ID_START_ATLASMAP = 'atlasmap.start';
+export const COMMAND_ID_START_ATLASMAP = 'atlasmap.start';
 const COMMAND_ID_STOP_ATLASMAP = 'atlasmap.stop';
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -92,6 +93,10 @@ export async function activate(context: vscode.ExtensionContext) {
 			handleStopAtlasMap();
 		}
 	}));
+	const docSelectorForPhysicalFiles: vscode.DocumentSelector = {
+		scheme: 'file'
+	}; 
+	vscode.languages.registerCodeLensProvider(docSelectorForPhysicalFiles, new OpenAdmCodeLensProvider());
 }
 
 function sendCommandEvent(commandId: string) {
@@ -121,8 +126,7 @@ function isAtlasMapRunning(): boolean {
 function ensureNoOtherAtlasMapInstanceRunning(): Promise<boolean> {
 	return new Promise( async (resolve, reject) => {
 		if (isAtlasMapRunning()) {
-			// we need to stop a running atlasmap to make the next import work
-			let choice = await vscode.window.showWarningMessage(WARN_MSG, { modal: true }, RESTART_CHOICE);
+			let choice = await warnUserOfRiskOfRestarting();
 			if (RESTART_CHOICE === choice) {
 				handleStopAtlasMap();
 
@@ -144,6 +148,25 @@ function ensureNoOtherAtlasMapInstanceRunning(): Promise<boolean> {
 		}
 		resolve(true);
 	});
+}
+
+/**
+ * It opens a dialog warnign user of potential data loss.
+ * To workaround https://github.com/microsoft/vscode/issues/133073 ,
+ * avoid using of native dialog by changing preference value the time of warning message dialog display.
+*/
+async function warnUserOfRiskOfRestarting() {
+	const windowConfiguration = vscode.workspace.getConfiguration('window');
+	const CONFIGURATION_KEY_DIALOG_STYLE = 'dialogStyle';
+	const initialDialogStyle = windowConfiguration.get(CONFIGURATION_KEY_DIALOG_STYLE);
+	let choice;
+	try {
+		await windowConfiguration.update(CONFIGURATION_KEY_DIALOG_STYLE, 'custom', vscode.ConfigurationTarget.Global);
+		choice = await vscode.window.showWarningMessage(WARN_MSG, { modal: true }, RESTART_CHOICE);
+	} finally {
+		await windowConfiguration.update(CONFIGURATION_KEY_DIALOG_STYLE, initialDialogStyle, vscode.ConfigurationTarget.Global);
+	}
+	return choice;
 }
 
 function handleStopAtlasMap() {
