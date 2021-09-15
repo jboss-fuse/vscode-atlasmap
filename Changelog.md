@@ -2,6 +2,8 @@
 
 ## 0.0.9
 
+- Allow automatic detection of JREs (and not only JDKs)
+
 ## 0.0.8
 
 - Upgrade to AtlasMap 2.2.3
