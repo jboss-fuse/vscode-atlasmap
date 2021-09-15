@@ -61,7 +61,7 @@ function checkJavaRuntime(): Promise<string> {
 			return resolve(javaHome);
 		}
 		//No settings, let's try to detect as last resort.
-		findJavaHome(function (err, home) {
+		findJavaHome({allowJre: true},function (err, home) {
 			if (err) {
 				openJDKDownload(reject, 'Java runtime could not be located');
 			}
