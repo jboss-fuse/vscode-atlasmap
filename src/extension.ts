@@ -151,7 +151,7 @@ function ensureNoOtherAtlasMapInstanceRunning(): Promise<boolean> {
 }
 
 /**
- * It opens a dialog warnign user of potential data loss.
+ * It opens a dialog warning user of potential data loss.
  * To workaround https://github.com/microsoft/vscode/issues/133073 ,
  * avoid using of native dialog by changing preference value the time of warning message dialog display.
 */
