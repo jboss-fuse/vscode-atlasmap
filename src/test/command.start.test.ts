@@ -11,6 +11,7 @@ import { BrowserType } from "../utils";
 import { RESTART_CHOICE, WARN_MSG, telemetryService } from '../extension';
 import { waitUntil } from 'async-wait-until';
 import { TelemetryEvent } from "@redhat-developer/vscode-redhat-telemetry/lib";
+import { fail } from "assert";
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -163,7 +164,13 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			}
 
 			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, context);
-			expect(showWarningMessageStub.withArgs(WARN_MSG).calledOnce, `A warning dialog was expected when starting another instance with an ADM import specified. It has been displayed ${showWarningMessageStub.withArgs(WARN_MSG).callCount} time(s).`).to.be.true;
+			try {
+				await waitUntil(() => {
+					return showWarningMessageStub.withArgs(WARN_MSG).callCount === 1;
+				}, 10000);
+			} catch {
+				fail(`A warning dialog was expected when starting another instance with an ADM import specified. It has been displayed ${showWarningMessageStub.withArgs(WARN_MSG).callCount} time(s).`)
+			}
 			expect(executeCommandStub.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
