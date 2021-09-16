@@ -13,6 +13,7 @@ import * as vscode from "vscode";
 import * as utils from "../utils";
 import * as extension from "../extension";
 import AtlasMapPanel from '../AtlasMapPanel';
+import { waitUntil } from 'async-wait-until';
 
 const uri2path = require('file-uri-to-path');
 
@@ -79,10 +80,17 @@ export async function startAtlasMapInstance(infoSpy: sinon.SinonSpy, context: an
 
 	const url:string = "http://localhost:" + _port;
 	try {
-		const body: string = await getWebUI(url);
-		expect(body, "Unexpected html response body").to.contain("AtlasMap");
+		await waitUntil(async () => {
+			try {
+				const body: string = await getWebUI(url);
+				return body.includes("AtlasMap");
+			} catch (error) {
+				console.log(`AtlasMap Web UI not ready: ${error}`);
+				return false;
+			}
+		}, 120000, 1000);
 	} catch (error) {
-		return Promise.reject(error);
+		return Promise.reject("Unexpected html response body " +error);
 	}
 	return _port;
 }
