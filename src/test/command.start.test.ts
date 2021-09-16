@@ -163,7 +163,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			}
 
 			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, context);
-			expect(showWarningMessageStub.withArgs(WARN_MSG).calledOnce, "There was no warning dialog shown when starting another instance with an ADM import specified.").to.be.true;
+			expect(showWarningMessageStub.withArgs(WARN_MSG).calledOnce, `A warning dialog was expected when starting another instance with an ADM import specified. It has been displayed ${showWarningMessageStub.withArgs(WARN_MSG).callCount} time(s).`).to.be.true;
 			expect(executeCommandStub.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
