@@ -4,6 +4,7 @@ import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as testUtils from "./command.test.utils";
 import * as vscode from "vscode";
+import { BrowserType } from '../utils';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -25,7 +26,7 @@ describe("Ensure Atlasmap is shut down upon extension deactivation", function ()
 	});
 
 	it("Test that the running instance is stopped on deactivation", function (done) {
-		testUtils.startAtlasMapInstance(showInformationMessageSpy).then(() => {
+		testUtils.startAtlasMapInstance(showInformationMessageSpy, BrowserType.Internal).then(() => {
 			let atlasMapProcess = extension.atlasMapProcess;
 			expect(atlasMapProcess.killed).to.be.false;
 			extension.deactivate(null);

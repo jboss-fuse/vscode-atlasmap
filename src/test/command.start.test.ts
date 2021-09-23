@@ -84,7 +84,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test Start Command invocation without running AtlasMap instance", async() => {
 			expect(port).to.be.undefined;
-			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy);
+			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig);
 			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
@@ -94,7 +94,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test Start Command invocation with running AtlasMap instance (DO NOT SPAWN MORE THAN ONE ATLASMAP)", async() => {
 			expect(port).to.be.undefined;
-			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy);
+			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig);
 			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
@@ -114,7 +114,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test Web UI availability after startup of server", async() => {
 			expect(port).to.be.undefined;
-			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy);
+			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig);
 			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
@@ -132,7 +132,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			expect(port).to.be.undefined;
 			expect(testADMFileWorking, "Unable to download the tagged test adm file from " + testUtils.generateGithubDownloadUrl()).to.not.be.undefined;
 			const context = { fsPath: testADMFileWorking };
-			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, context);
+			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig, context);
 			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
@@ -150,7 +150,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			expect(port).to.be.undefined;
 			expect(testADMFileWorking, "Unable to download the tagged test adm file from " + testUtils.generateGithubDownloadUrl()).to.not.be.undefined;
 			const context = { fsPath: testADMFileWorking };
-			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, context);
+			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig, context);
 			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
@@ -163,7 +163,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 				await checkContainsAtlasMapTitle();
 			}
 
-			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, context);
+			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig, context);
 			try {
 				await waitUntil(() => {
 					return showWarningMessageStub.withArgs(WARN_MSG).callCount === 1;
@@ -188,7 +188,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			expect(port).to.be.undefined;
 			expect(testADMFileBroken).to.not.be.undefined;
 			const context = { fsPath: testADMFileBroken };
-			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, context);
+			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig, context);
 			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
 			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
 			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;

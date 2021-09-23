@@ -54,32 +54,16 @@ export function determineUsedPort(spy: sinon.SinonSpy): string {
 	return undefined;
 }
 
-export async function startAtlasMapInstance(infoSpy: sinon.SinonSpy, context: any = undefined): Promise<string> {
-	await vscode.commands.executeCommand("atlasmap.start", context);
-	
-	let waitTime: number = 0;
-	let _port: string = determineUsedPort(infoSpy);
-	while (_port === undefined && waitTime < MAX_WAIT) {
-		await waitForTask("WaitForPortNumber");
-		_port = determineUsedPort(infoSpy);
-		waitTime += STEP;
-	}		
-	
-	expect(_port, "Seems we can't determine the used port number").to.not.be.null;
-	expect(_port, "Seems we can't determine the used port number").to.not.be.undefined;
-	expect(_port, "Seems we can't determine the used port number").to.not.be.NaN;
-	
-	waitTime = 0;
-	while(!extension.atlasMapUIReady && !AtlasMapPanel.currentPanel && waitTime < MAX_WAIT) {
-		await waitForTask("AtlasMap UI started");
-		waitTime += STEP;
-	}
+export async function startAtlasMapInstance(infoSpy: sinon.SinonSpy, browserConfig: string, context: any = undefined): Promise<string> {
+	await vscode.commands.executeCommand("atlasmap.start", context);	
+	let _port: string = await usedPortToStart(infoSpy);
+	await webviewPanelExists(browserConfig);
+	await webviewContainsAtlasMapText(_port);
+	return _port;
+}
 
-	if (!extension.atlasMapUIReady) {
-		return Promise.reject(new Error("AtlasMap UI not started"));
-	}
-
-	const url:string = "http://localhost:" + _port;
+async function webviewContainsAtlasMapText(_port: string) {
+	const url: string = "http://localhost:" + _port;
 	try {
 		await waitUntil(async () => {
 			try {
@@ -89,9 +73,31 @@ export async function startAtlasMapInstance(infoSpy: sinon.SinonSpy, context: an
 				console.log(`AtlasMap Web UI not ready: ${error}`);
 				return false;
 			}
-		}, 120000, 1000);
+		}, 120000, STEP);
 	} catch (error) {
-		return Promise.reject("Unexpected html response body " +error);
+		fail("Unexpected html response body " + error);
+	}
+}
+
+async function webviewPanelExists(browserConfig: string) {
+	try {
+		await waitUntil(() => {
+			return extension.atlasMapUIReady && (browserConfig === BrowserType.External || AtlasMapPanel.currentPanel !== undefined);
+		}, MAX_WAIT, STEP);
+	} catch {
+		fail(`AtlasMap UI not started after ${MAX_WAIT} ms`);
+	}
+}
+
+async function usedPortToStart(infoSpy: sinon.SinonSpy<any[], any>) {
+	let _port: string = determineUsedPort(infoSpy);
+	try {
+		await waitUntil(() => {
+			_port = determineUsedPort(infoSpy);
+			return _port !== undefined;
+		}, MAX_WAIT, STEP);
+	} catch {
+		fail('Cannot determine used port number');
 	}
 	return _port;
 }
@@ -118,7 +124,7 @@ async function portIsFree(_port: string) {
 			} catch (exception) {
 				return false;
 			}
-		}, 20000, 1000);
+		}, MAX_WAIT, STEP);
 	} catch {
 		fail(`The port ${_port} has not been freed up after 20 seconds!`);
 	}
