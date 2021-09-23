@@ -1,6 +1,7 @@
 "use strict";
 
 import * as chai from "chai";
+import * as detect from 'detect-port';
 import * as download from "download";
 import * as fileUrl from "file-url";
 import * as fs from "fs";
@@ -10,10 +11,10 @@ import * as request from "request";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
-import * as utils from "../utils";
 import * as extension from "../extension";
 import AtlasMapPanel from '../AtlasMapPanel';
 import { waitUntil } from 'async-wait-until';
+import { fail } from "assert";
 
 const uri2path = require('file-uri-to-path');
 
@@ -100,15 +101,27 @@ export function stopAtlasMapInstance(_port: string = DEFAULT_ATLASMAP_PORT, info
 		await vscode.commands.executeCommand("atlasmap.stop");
 		let waitTime = 0;
 		while (!hasStopMessageInInfoMessage(infoSpy) && waitTime < MAX_WAIT) {
-			await waitForTask("AtlasMapShutdown")
-				.then( () => {
-					waitTime += STEP;
-				});
+			await waitForTask("AtlasMapShutdown");
+			waitTime += STEP;
 		}
-		// wait a bit for the port to be really free - not nice but works fine
-		await new Promise(res => setTimeout(res, 3000));
+		await portIsFree(_port);
 		resolve(waitTime < MAX_WAIT);
 	});
+}
+
+async function portIsFree(_port: string) {
+	try {
+		await waitUntil(async () => {
+			try {
+				const availablePort = await detect(_port);
+				return `${availablePort}` === _port;
+			} catch (exception) {
+				return false;
+			}
+		}, 20000, 1000);
+	} catch {
+		fail(`The port ${_port} has not been freed up after 20 seconds!`);
+	}
 }
 
 export async function waitForTask(taskName: string = "<unknownTasK>") {
