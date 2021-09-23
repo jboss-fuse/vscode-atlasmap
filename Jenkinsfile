@@ -3,7 +3,8 @@
 node('rhel8'){
 	stage('Checkout repo') {
 		deleteDir()
-		git url: 'https://github.com/jboss-fuse/vscode-atlasmap.git'
+		git url: 'https://github.com/jboss-fuse/vscode-atlasmap.git',
+		    branch: 'main'
 	}
 
 	stage('Install requirements') {
