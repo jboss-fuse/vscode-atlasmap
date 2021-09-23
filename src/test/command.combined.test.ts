@@ -1,7 +1,6 @@
 "use strict";
 
 import * as chai from "chai";
-import * as child_process from 'child_process';
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as testUtils from "./command.test.utils";
@@ -32,67 +31,42 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 			createOutputChannelSpy.restore();
 			sandbox.restore();
 			executeCommandStub.restore();
-			port =  undefined;
+			port = undefined;
 			testUtils.switchSettingsToType(undefined);
 		});
 
-		afterEach(function(done) {
-			testUtils.stopAtlasMapInstance(port, showInformationMessageSpy)
-				.then( () => {
-					executeCommandStub.resetHistory();
-					showInformationMessageSpy.resetHistory();
-					createOutputChannelSpy.resetHistory();
-					sandbox.resetHistory();
-					port =  undefined;
-					done();
-				})
-				.catch( (err) => {
-					console.error(err);
-					done(err);
-				});
+		afterEach(async () => {
+			console.log(`afterEach: will stop Atlasmap instance on port: ${port}`);
+			if (port !== undefined) {
+				await testUtils.stopAtlasMapInstance(port, showInformationMessageSpy);
+			}
+			executeCommandStub.resetHistory();
+			showInformationMessageSpy.resetHistory();
+			createOutputChannelSpy.resetHistory();
+			sandbox.resetHistory();
+			port = undefined;
 		});
 
-		it("Test AtlasMap Server Output Channel Reinstantiation", function(done) {
+		it("Test AtlasMap Server Output Channel Reinstantiation", async () => {
 			expect(port).to.be.undefined;
-			testUtils.startAtlasMapInstance(showInformationMessageSpy)
-				.then( (_port) => {
-					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
-					port = _port;
-					expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-					expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-					expect(createOutputChannelSpy.calledOnce);
+			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig);
+			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
+			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+			expect(createOutputChannelSpy.calledOnce);
+			const isStopped = await testUtils.stopAtlasMapInstance(port, showInformationMessageSpy);
+			expect(isStopped, "Unable to shutdown the AtlasMap instance! Was it running?").to.be.true;
+			port = undefined;
 
-					testUtils.stopAtlasMapInstance(port, showInformationMessageSpy)
-						.then( (result) => {
-							expect(result, "Unable to shutdown the AtlasMap instance! Was it running?").to.be.true;
-							port =  undefined;
+			//  now reset some spies so the test can succeed
+			showInformationMessageSpy.resetHistory();
 
-							//  now reset some spies so the test can succeed
-							showInformationMessageSpy.resetHistory();
-
-							testUtils.startAtlasMapInstance(showInformationMessageSpy)
-								.then( (_port) => {
-									expect(executeCommandStub.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
-									port = _port;
-									expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-									expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-									expect(createOutputChannelSpy.calledTwice);
-									done();
-								})
-								.catch( err => {
-									console.error(err);
-									done(err);
-								});	
-						})
-						.catch( err => {
-							console.error(err);
-							done(err);
-						});
-				})
-				.catch( err => {
-					console.error(err);
-					done(err);
-				});
+			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig);
+			expect(executeCommandStub.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
+			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
+			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
+			expect(createOutputChannelSpy.calledTwice);
+			console.log(`End of test: port of runnign atlasmap instance is ${port}`);
 		});
 	});
 });

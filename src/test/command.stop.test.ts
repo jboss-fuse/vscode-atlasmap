@@ -61,7 +61,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test Stop Command invocation with running AtlasMap instance", function(done) {
 			expect(port).to.be.undefined;
-			testUtils.startAtlasMapInstance(showInformationMessageSpy)
+			testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig)
 				.then( async (_port) => {
 					telemetrySpy.resetHistory();
 					expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
