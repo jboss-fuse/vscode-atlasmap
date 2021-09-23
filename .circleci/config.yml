@@ -43,7 +43,7 @@ jobs:
           path: ~/.config/Code/User/workspaceStorage/
       - when:
           condition:
-            equal: [master, << pipeline.git.branch >>]
+            equal: [main, << pipeline.git.branch >>]
           steps:
             - sonarcloud/scan
 
