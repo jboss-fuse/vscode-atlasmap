@@ -27,7 +27,7 @@ describe("Ensure Atlasmap is shut down upon extension deactivation", function ()
 
 	it("Test that the running instance is stopped on deactivation", function (done) {
 		testUtils.startAtlasMapInstance(showInformationMessageSpy, BrowserType.Internal).then(() => {
-			let atlasMapProcess = extension.atlasMapProcess;
+			let atlasMapProcess = extension.genericAtlasMapProcess;
 			expect(atlasMapProcess.killed).to.be.false;
 			extension.deactivate(null);
 			expect(atlasMapProcess.killed).to.be.true;
@@ -35,7 +35,7 @@ describe("Ensure Atlasmap is shut down upon extension deactivation", function ()
 		}).catch((error) => {
 			done(error);
 		}).finally(() => {
-			testUtils.stopAtlasMapInstance(extension.atlasMapLaunchPort, showInformationMessageSpy);
+			testUtils.stopAtlasMapInstance(extension.atlasMapGenericLaunchPort, showInformationMessageSpy);
 		});
 	});
 

@@ -1,3 +1,4 @@
+import * as AtlasMapWebViewUtil from './AtlasMapWebViewUtil';
 import * as vscode from 'vscode';
 
 /**
@@ -16,7 +17,7 @@ export default class AtlasMapPanel {
 	private _disposables: vscode.Disposable[] = [];
 	private previouslyVisible: boolean = true;
 
-	public static createOrShow(url: string, context: vscode.ExtensionContext) {
+	public static createOrShow(localUrl: string, context: vscode.ExtensionContext) {
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
 		// If we already have a panel, show it.
@@ -39,7 +40,7 @@ export default class AtlasMapPanel {
 			}
 		);
 
-		AtlasMapPanel.currentPanel = new AtlasMapPanel(panel, url, context);
+		AtlasMapPanel.currentPanel = new AtlasMapPanel(panel, localUrl, context);
 	}
 
 	public static close() {
@@ -94,74 +95,12 @@ export default class AtlasMapPanel {
 		}
 	}
 
-	private _update(url: string) {
+	private async _update(localUrl: string) {
 		this._panel.title = "AtlasMap";
-		this.loadWebContent(url);
-	}
-
-	private async loadWebContent(localUrl: string) {
 		const fullWebServerUri = await vscode.env.asExternalUri(vscode.Uri.parse(localUrl));
 		if (AtlasMapPanel.currentPanel) {
 			const webview = AtlasMapPanel.currentPanel._panel.webview;
-			const cspSource = webview.cspSource;
-			const onScriptsCommand = "atlasmapScripts";
-			/** CSP required for Atlasmap scripts to run. We need the unsafe scripts 
-			 * because of how webpack packages Atlasmap.
-			 * Also set the base href for all requests. Since by default Atlasmap 
-			 * standalone fetches resources against localhost, setting this we make 
-			 * all AJAX requests go against our embedded Atlasmap server.
-			*/
-			const commonHead = `
-				<base href="${fullWebServerUri}">
-				<meta
-					http-equiv="Content-Security-Policy"
-					content="
-						default-src 'self' 'unsafe-inline' 'unsafe-hashes' 'unsafe-eval' ${fullWebServerUri} ${cspSource};
-						img-src 'self' ${fullWebServerUri} ${cspSource} data:;
-					" />
-			`;
-
-			/** We first need to retrieve Atlasmap's index.html, that contains all the
-			 * assets and html structure required to bootstrap the application. Since 
-			 * VSC doesn't provide a way to make AJAX requests inside the extension 
-			 * itself, we use the webview to do that. When the content of the file has
-			 * been retrieve, a `onScriptsCommand` message is sent back to VSC.
-			*/
-			webview.html =`<!DOCTYPE html>
-				<head>
-					${commonHead}
-				</head>
-				<body>
-					<div id="root"></div>
-					<div id="modals"></div>
-					<script>
-						(async function injectAtlasmap() {
-							const request = await fetch("${fullWebServerUri}index.html");
-							const body = await request.text();
-							const vscode = acquireVsCodeApi();
-							vscode.postMessage({
-								command: '${onScriptsCommand}',
-								html: body,
-							})
-						})();
-					</script>
-				</body>
-				</html>
-			`;
-
-			/** This handles the `onScriptsCommand` message from the webview. We take 
-			 * the index.html content as is, augmenting it with the CSP we need to run
-			 * Atlasmap. After this the application is ready.
-			 */
-			AtlasMapPanel.currentPanel._panel.webview.onDidReceiveMessage(
-				message => {
-					if (message.command === onScriptsCommand) {
-						webview.html = (message.html as string).replace("<head>", "<head>" + commonHead);
-					}
-				},
-				undefined,
-				this._context.subscriptions
-			);
+			await AtlasMapWebViewUtil.loadWebContent(webview, fullWebServerUri);
 		}
 	}
 }

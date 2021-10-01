@@ -17,7 +17,6 @@
 'use strict';
 
 import { assert, expect } from "chai";
-import * as extension from '../../extension';
 import * as vscode from 'vscode';
 import path = require("path");
 
@@ -82,7 +81,7 @@ async function retrieveCodeLensOnOpenedDocument(uri: vscode.Uri): Promise<vscode
 
 function checkCodeLens(codeLenses: vscode.CodeLens[], expectedAdmUri: vscode.Uri) {
 	const startIntegrationCodeLenses = codeLenses.filter(codelens => {
-		return codelens.command?.command === extension.COMMAND_ID_START_ATLASMAP;
+		return codelens.command?.command === 'vscode.open';
 	});
 	expect(startIntegrationCodeLenses).has.length(1);
 	const codeLens: vscode.CodeLens = startIntegrationCodeLenses[0];

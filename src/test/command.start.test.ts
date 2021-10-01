@@ -11,7 +11,6 @@ import { BrowserType } from "../utils";
 import { RESTART_CHOICE, WARN_MSG, telemetryService } from '../extension';
 import { waitUntil } from 'async-wait-until';
 import { TelemetryEvent } from "@redhat-developer/vscode-redhat-telemetry/lib";
-import { fail } from "assert";
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -122,80 +121,6 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 			const url: string = "http://localhost:" + port;
 			const body: string = await testUtils.getWebUI(url);
-			expect(body, "Unexpected html response body").to.contain("AtlasMap");
-			if (browserConfig === BrowserType.Internal) {
-				await checkContainsAtlasMapTitle();
-			}
-		});
-
-		it("Test import of ADM file with stopped server", async() => {
-			expect(port).to.be.undefined;
-			expect(testADMFileWorking, "Unable to download the tagged test adm file from " + testUtils.generateGithubDownloadUrl()).to.not.be.undefined;
-			const context = { fsPath: testADMFileWorking };
-			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig, context);
-			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
-			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-			expect(createOutputChannelSpy.calledOnce);
-
-			const url:string = "http://localhost:" + port;
-			const body: string = await testUtils.getWebUI(url);
-			expect(body, "Unexpected html response body").to.contain("AtlasMap");
-			if (browserConfig === BrowserType.Internal) {
-				await checkContainsAtlasMapTitle();
-			}
-		});
-
-		it("Test import of ADM file with running server", async() => {
-			expect(port).to.be.undefined;
-			expect(testADMFileWorking, "Unable to download the tagged test adm file from " + testUtils.generateGithubDownloadUrl()).to.not.be.undefined;
-			const context = { fsPath: testADMFileWorking };
-			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig, context);
-			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
-			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-			expect(createOutputChannelSpy.calledOnce);
-
-			let url:string = "http://localhost:" + port;
-			const body: string = await testUtils.getWebUI(url);
-			expect(body, "Unexpected html response body").to.contain("AtlasMap");
-			if (browserConfig === BrowserType.Internal) {
-				await checkContainsAtlasMapTitle();
-			}
-
-			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig, context);
-			try {
-				await waitUntil(() => {
-					return showWarningMessageStub.withArgs(WARN_MSG).callCount === 1;
-				}, 10000);
-			} catch {
-				fail(`A warning dialog was expected when starting another instance with an ADM import specified. It has been displayed ${showWarningMessageStub.withArgs(WARN_MSG).callCount} time(s).`)
-			}
-			expect(executeCommandStub.withArgs("atlasmap.start").calledTwice, "AtlasMap start command was not issued").to.be.true;
-			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-			expect(createOutputChannelSpy.calledTwice);
-
-			url = "http://localhost:" + port;
-			const bodyOnSecondCall = await testUtils.getWebUI(url);
-			expect(bodyOnSecondCall, "Unexpected html response body").to.contain("AtlasMap");
-			if (browserConfig === BrowserType.Internal) {
-				await checkContainsAtlasMapTitle();
-			}
-		});
-
-		it("Test import of corrupted ADM file with stopped server", async() => {
-			expect(port).to.be.undefined;
-			expect(testADMFileBroken).to.not.be.undefined;
-			const context = { fsPath: testADMFileBroken };
-			port = await testUtils.startAtlasMapInstance(showInformationMessageSpy, browserConfig, context);
-			expect(executeCommandStub.withArgs("atlasmap.start").calledOnce, "AtlasMap start command was not issued").to.be.true;
-			expect(port, "Unable to determine used port for AtlasMap server").to.not.be.undefined;
-			expect(port, "Port for AtlasMap server seems to be NaN").to.not.be.NaN;
-			expect(createOutputChannelSpy.calledOnce);
-
-			const url :string = "http://localhost:" + port;
-			const body :string = await testUtils.getWebUI(url);
 			expect(body, "Unexpected html response body").to.contain("AtlasMap");
 			if (browserConfig === BrowserType.Internal) {
 				await checkContainsAtlasMapTitle();

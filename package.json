@@ -54,15 +54,6 @@
 				"category": "AtlasMap"
 			}
 		],
-		"menus": {
-			"explorer/context": [
-				{
-					"command": "atlasmap.start",
-					"when": "resourceExtname == .adm",
-					"group": "navigation"
-				}
-			]
-		},
 		"configuration": {
 			"type": "object",
 			"title": "AtlasMap Settings",
@@ -83,12 +74,24 @@
 					"scope": "window"
 				}
 			}
-		}
+		},
+		"customEditors": [
+			{
+				"viewType": "atlasmap.editor",
+				"displayName": "AtlasMap",
+				"selector": [
+					{
+						"filenamePattern": "*.adm"
+					}
+				]
+			}
+		]
 	},
 	"activationEvents": [
 		"workspaceContains:**/*.adm",
 		"onCommand:atlasmap.start",
-		"onCommand:atlasmap.stop"
+		"onCommand:atlasmap.stop",
+		"onCustomEditor:atlasmap.editor"
 	],
 	"scripts": {
 		"vscode:prepublish": "tsc -p ./",
@@ -104,7 +107,8 @@
 	"dependencies": {
 		"@redhat-developer/vscode-redhat-telemetry": "^0.4.2",
 		"child_process": "^1.0.2",
-		"detect-port": "^1.3.0",
+		"chokidar": "^3.5.2",
+		"download": "^8.0.0",
 		"expand-home-dir": "^0.0.3",
 		"fetch": "^1.1.0",
 		"find-java-home": "^1.2.2",
@@ -123,7 +127,7 @@
 		"assert": "^2.0.0",
 		"async-wait-until": "^2.0.8",
 		"chai": "^4.3.4",
-		"download": "^8.0.0",
+		"detect-port": "^1.3.0",
 		"file-uri-to-path": "^2.0.0",
 		"file-url": "^3.0.0",
 		"fs": "^0.0.1-security",

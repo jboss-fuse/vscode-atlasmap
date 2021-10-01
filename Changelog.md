@@ -7,6 +7,7 @@
 - Upgrade to AtlasMap 2.3.2
 - Allow automatic detection of JREs (and not only JDKs)
 - Provide Codelens to open _*.adm_ files referenced in Camel URI inside AtlasMap UI
+- Open _*.adm_ files in VS Code Editor isntead fo Webview. It allows to have dirty/save lifecycle.
 
 ## 0.0.8
 
