@@ -5,7 +5,7 @@ import * as detect from 'detect-port';
 import * as download from "download";
 import * as fileUrl from "file-url";
 import * as fs from "fs";
-import { DEFAULT_ATLASMAP_PORT, BrowserType, BROWSERTYPE_PREFERENCE_KEY } from '../utils';
+import { BrowserType, BROWSERTYPE_PREFERENCE_KEY } from '../utils';
 import { isString } from "util";
 import * as request from "request";
 import * as sinon from "sinon";
@@ -18,7 +18,6 @@ import { fail } from "assert";
 
 const uri2path = require('file-uri-to-path');
 
-const expect = chai.expect;
 chai.use(sinonChai);
 
 const MAX_WAIT = 20000;
@@ -102,7 +101,7 @@ async function usedPortToStart(infoSpy: sinon.SinonSpy<any[], any>) {
 	return _port;
 }
 
-export function stopAtlasMapInstance(_port: string = DEFAULT_ATLASMAP_PORT, infoSpy: sinon.SinonSpy): Promise<boolean> {
+export function stopAtlasMapInstance(_port: string, infoSpy: sinon.SinonSpy): Promise<boolean> {
 	return new Promise<boolean>( async (resolve, reject) => {
 		await vscode.commands.executeCommand("atlasmap.stop");
 		let waitTime = 0;
@@ -186,14 +185,9 @@ export function createExecuteCommandStubFakingExternalOpenBrowserCall() {
 
 export async function downloadTestADM() {
 	let f = "./mockdocfhir.adm";
-	return await download(generateGithubDownloadUrl())
-		.then( data => {
-			fs.writeFileSync(f, data);
-			return uri2path(fileUrl(f));
-		})
-		.catch( err => {
-			return undefined;
-		});
+	const data = await download(generateGithubDownloadUrl())
+	fs.writeFileSync(f, data);
+	return uri2path(fileUrl(f));
 }
 
 export function generateGithubDownloadUrl(): string {

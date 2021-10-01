@@ -1,14 +1,13 @@
 "use strict";
 
 import * as chai from "chai";
-import * as child_process from 'child_process';
-import { DEFAULT_ATLASMAP_PORT, BrowserType } from '../utils';
+import { BrowserType } from '../utils';
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 import * as testUtils from "./command.test.utils";
 import * as vscode from "vscode";
 import { isInternalWebViewClosed } from './command.test.utils';
-import { telemetryService } from "../extension";
+import { atlasMapGenericLaunchPort, telemetryService } from "../extension";
 import { TelemetryEvent } from "@redhat-developer/vscode-redhat-telemetry/lib";
 
 const expect = chai.expect;
@@ -93,7 +92,7 @@ testUtils.BROWSER_TYPES.forEach(function (browserConfig) {
 
 		it("Test Stop Command invocation without running AtlasMap instance", function(done) {
 			expect(port).to.be.undefined;
-			testUtils.stopAtlasMapInstance(DEFAULT_ATLASMAP_PORT, showInformationMessageSpy)
+			testUtils.stopAtlasMapInstance(atlasMapGenericLaunchPort, showInformationMessageSpy)
 				.then( (result) => {
 					expect(result, "There is no AtlasMap running, so why does it report back its successfully stopped?").to.be.false;
 					port =  undefined;

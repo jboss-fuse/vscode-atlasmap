@@ -11,34 +11,14 @@
 
 ## Features
 
-This extension is providing a command to help development of [AtlasMap](http://docs.atlasmap.io/) transformations.
+This extension is providing tooling for [AtlasMap](http://docs.atlasmap.io/) transformations:
+* An editor to edit and save existing _*.adm_ files with AtlasMap UI.
+* A codelens to open _*.adm_ file directly from textual editor with a Camel Route using a Camel AtlasMap endpoint.
+* A command to open AtlasMap UI on a not sepcific _*.adm_ file.
 
-### Choose your preferred browser type (optional)
+### AtlasMap UI as an editor
 
-Inside the VS Code Preferences you can choose what browser type you want to open the AtlasMap UI with.
-
-Possible choices:
-
--   Internal (This is the default and will open the AtlasMap UI inside VS Code in a dedicated view)
--   External (This will open the AtlasMap UI in the default OS browser externally)
-
-    ![AtlasMap Preferences](doc/AtlasMapPreferences.png)
-
-### Start an AtlasMap instance
-
-The "AtlasMap: Open AtlasMap" command starts a local AtlasMap instance and opens a Web View or an external browser pointing to its
-web UI:
-![Open AtlasMap command in palette](doc/OpenAtlasMapCommand.png)
-
-AtlasMap is started on port 8585 by default. If this port is occupied another free port will be chosen automatically.
-To check if it has been started correctly, you can go to Output view and check for the "AtlasMap Server" output:
-![AtlasMap Server output](doc/AtlasMapServerOutput.png)
-
-The AtlasMap web interface opens with the last edited Data transformation.
-![Default page AtlasMap](doc/AtlasMapDefaultPage.png)
-
-It allows you to create and modify data transformations using AtlasMap. You can export your data transformation from the AtlasMap UI
-and save the artifact into your project.
+When opening a _*.adm_ file, the AtlasMap UI is openign in a editor. It allows to use dirty/save lifecycle to update the AtlasMap Data transformation.
 
 ### Load *.adm from Camel URI
 
@@ -51,6 +31,32 @@ Current conditions to have it resolved:
 * Use `atlas:` (Camel 2) or `atlasmap:` (Camel 3+) scheme prefix
 * Use default or classpath. E.g. `atlasmap:classpath:my.adm` or `atlasmap:my.adm`
 * The pointed _*.adm_ file is either a sibling file to the Camel Route definition file or in `src/main/resources` at root of the workspace.
+
+### Start an AtlasMap instance not linked to a specific file
+
+The "AtlasMap: Open AtlasMap" command starts a local AtlasMap instance and opens a Web View or an external browser pointing to its
+web UI:
+![Open AtlasMap command in palette](doc/OpenAtlasMapCommand.png)
+
+To check if it has been started correctly, you can go to Output view and check for the "AtlasMap Server" output:
+![AtlasMap Server output](doc/AtlasMapServerOutput.png)
+
+The AtlasMap web interface opens with the last edited Data transformation opened through the same command.
+![Default page AtlasMap](doc/AtlasMapDefaultPage.png)
+
+It allows you to create and modify data transformations using AtlasMap. You can export your data transformation from the AtlasMap UI
+and save the artifact into your project.
+
+### Choose your preferred browser type for AtlasMap instance not linked to a specific file (optional)
+
+Inside the VS Code Preferences you can choose what browser type you want to open the AtlasMap UI with.
+
+Possible choices:
+
+-   Internal (This is the default and will open the AtlasMap UI inside VS Code in a dedicated view)
+-   External (This will open the AtlasMap UI in the default OS browser externally)
+
+    ![AtlasMap Preferences](doc/AtlasMapPreferences.png)
 
 ## Using AtlasMap
 

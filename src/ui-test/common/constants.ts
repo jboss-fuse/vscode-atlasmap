@@ -1,5 +1,5 @@
 export namespace notifications {
-	export const ATLASMAP_STARTING = "Starting AtlasMap instance at port ";
+	export const ATLASMAP_STARTING = "Starting AtlasMap instance";
 	export const ATLASMAP_RUNNING = "Running AtlasMap instance found";
 	export const ATLASMAP_WAITING = "Waiting for ";
 	export const ATLASMAP_STOPPING = "Stopping AtlasMap instance at port";

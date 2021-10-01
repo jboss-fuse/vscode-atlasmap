@@ -77,12 +77,12 @@ export class OpenAdmCodeLensProvider implements vscode.CodeLensProvider {
 
 	private createCodelens(lineNumber: number, indexOfAtlasMap: number, resourceUriParameterValue: string, admUri: vscode.Uri) {
 		const positionOfCodelens = new vscode.Range(lineNumber, indexOfAtlasMap, lineNumber, indexOfAtlasMap + resourceUriParameterValue.length);
-		const openAtlasMapCommand: vscode.Command = {
-			command: extension.COMMAND_ID_START_ATLASMAP,
+		const openAtlasMapEditorCommand: vscode.Command = {
+			command: 'vscode.open',
 			title: 'Open in AtlasMap UI',
 			arguments: [admUri]
 		};
-		return new vscode.CodeLens(positionOfCodelens, openAtlasMapCommand);
+		return new vscode.CodeLens(positionOfCodelens, openAtlasMapEditorCommand);
 	}
 }
 
