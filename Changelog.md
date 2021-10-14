@@ -2,7 +2,7 @@
 
 ## 0.0.9
 
-- Upgrade to AtlasMap 2.3.0
+- Upgrade to AtlasMap 2.3.1
 - Allow automatic detection of JREs (and not only JDKs)
 - Provide Codelens to open _*.adm_ files referenced in Camel URI inside AtlasMap UI
 
