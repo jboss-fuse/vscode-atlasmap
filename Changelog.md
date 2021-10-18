@@ -2,12 +2,14 @@
 
 ## 0.1.0
 
+- Open _*.adm_ files in VS Code Editor instead fo Webview. It allows to have dirty/save lifecycle.
+- Remove Open and Stop AtlasMap command, forcing the AtlasMap UI to be linked to an _*.adm_ file and benefits from dirty/save lifecylce.
+
 ## 0.0.9
 
 - Upgrade to AtlasMap 2.3.2
 - Allow automatic detection of JREs (and not only JDKs)
 - Provide Codelens to open _*.adm_ files referenced in Camel URI inside AtlasMap UI
-- Open _*.adm_ files in VS Code Editor isntead fo Webview. It allows to have dirty/save lifecycle.
 
 ## 0.0.8
 

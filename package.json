@@ -42,31 +42,10 @@
 	],
 	"main": "./out/extension",
 	"contributes": {
-		"commands": [
-			{
-				"command": "atlasmap.start",
-				"title": "Open AtlasMap",
-				"category": "AtlasMap"
-			},
-			{
-				"command": "atlasmap.stop",
-				"title": "Stop AtlasMap",
-				"category": "AtlasMap"
-			}
-		],
 		"configuration": {
 			"type": "object",
 			"title": "AtlasMap Settings",
 			"properties": {
-				"atlasmap.openInBrowser": {
-					"type": "string",
-					"enum": [
-						"Internal",
-						"External (Default OS Browser)"
-					],
-					"default": "Internal",
-					"description": "Select the preferred browser type to open AtlasMap UI in."
-				},
 				"redhat.telemetry.enabled": {
 					"type": "boolean",
 					"default": null,
@@ -89,8 +68,15 @@
 	},
 	"activationEvents": [
 		"workspaceContains:**/*.adm",
-		"onCommand:atlasmap.start",
-		"onCommand:atlasmap.stop",
+		"onLanguage:xml",
+		"onLanguage:java",
+		"onLanguage:groovy",
+		"onLanguage:properties",
+		"onLanguage:spring-boot-properties",
+		"onLanguage:quarkus-properties",
+		"onLanguage:kotlin",
+		"onLanguage:javascript",
+		"onLanguage:yaml",
 		"onCustomEditor:atlasmap.editor"
 	],
 	"scripts": {
@@ -127,7 +113,6 @@
 		"assert": "^2.0.0",
 		"async-wait-until": "^2.0.8",
 		"chai": "^4.3.4",
-		"detect-port": "^1.3.0",
 		"file-uri-to-path": "^2.0.0",
 		"file-url": "^3.0.0",
 		"fs": "^0.0.1-security",

@@ -19,7 +19,7 @@ import * as extension from '../extension';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { AtlasMapDocument } from './AtlasMapDocument';
-import * as AtlasMapWebViewUtil from './../AtlasMapWebViewUtil';
+import * as AtlasMapWebViewUtil from './AtlasMapWebViewUtil';
 
 import download = require('download');
 
@@ -68,7 +68,6 @@ export class AtlasMapEditorProvider implements vscode.CustomEditorProvider<Atlas
 		const atlasmapExecutablePath = this.context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
 		console.log('will launch atlasmap for the editor');
 		await extension.launchAtlasMapLocally(
-			this.context,
 			atlasmapExecutablePath,
 			document.uri.fsPath,
 			webviewPanel,
