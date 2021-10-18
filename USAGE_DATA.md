@@ -3,4 +3,4 @@
 ### Usage Data
 
 * when extension is activated
-* when a command from this extension is used, the command id is provided
+* when the AtlasMap server is launched

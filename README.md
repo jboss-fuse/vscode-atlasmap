@@ -7,18 +7,19 @@
 
 ## Prerequisites
 
--   Java 8+ must be installed on system path
+-   Java 8+ must be installed on system path or configured through _JAVA_HOME_, _JDK_HOME_ or the VS Code setting _java.home_.
 
 ## Features
 
 This extension is providing tooling for [AtlasMap](http://docs.atlasmap.io/) transformations:
 * An editor to edit and save existing _*.adm_ files with AtlasMap UI.
 * A codelens to open _*.adm_ file directly from textual editor with a Camel Route using a Camel AtlasMap endpoint.
-* A command to open AtlasMap UI on a not sepcific _*.adm_ file.
 
 ### AtlasMap UI as an editor
 
-When opening a _*.adm_ file, the AtlasMap UI is openign in a editor. It allows to use dirty/save lifecycle to update the AtlasMap Data transformation.
+When opening a _*.adm_ file, the AtlasMap UI is opening in an editor. It allows to use dirty/save lifecycle to update the AtlasMap Data transformation.
+
+It remains possible to export your data transformation from the AtlasMap UI and save the artifact in another place.
 
 ### Load *.adm from Camel URI
 
@@ -32,31 +33,10 @@ Current conditions to have it resolved:
 * Use default or classpath. E.g. `atlasmap:classpath:my.adm` or `atlasmap:my.adm`
 * The pointed _*.adm_ file is either a sibling file to the Camel Route definition file or in `src/main/resources` at root of the workspace.
 
-### Start an AtlasMap instance not linked to a specific file
-
-The "AtlasMap: Open AtlasMap" command starts a local AtlasMap instance and opens a Web View or an external browser pointing to its
-web UI:
-![Open AtlasMap command in palette](doc/OpenAtlasMapCommand.png)
+### AtlasMap Server output
 
 To check if it has been started correctly, you can go to Output view and check for the "AtlasMap Server" output:
 ![AtlasMap Server output](doc/AtlasMapServerOutput.png)
-
-The AtlasMap web interface opens with the last edited Data transformation opened through the same command.
-![Default page AtlasMap](doc/AtlasMapDefaultPage.png)
-
-It allows you to create and modify data transformations using AtlasMap. You can export your data transformation from the AtlasMap UI
-and save the artifact into your project.
-
-### Choose your preferred browser type for AtlasMap instance not linked to a specific file (optional)
-
-Inside the VS Code Preferences you can choose what browser type you want to open the AtlasMap UI with.
-
-Possible choices:
-
--   Internal (This is the default and will open the AtlasMap UI inside VS Code in a dedicated view)
--   External (This will open the AtlasMap UI in the default OS browser externally)
-
-    ![AtlasMap Preferences](doc/AtlasMapPreferences.png)
 
 ## Using AtlasMap
 

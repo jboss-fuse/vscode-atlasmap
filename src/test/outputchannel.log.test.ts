@@ -4,7 +4,6 @@ import * as chai from "chai";
 import { log, disposeExtensionOutputChannel } from "../extension";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
-import * as testUtils from "./command.test.utils";
 import * as vscode from "vscode";
 
 const expect = chai.expect;

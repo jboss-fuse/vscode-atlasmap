@@ -81,7 +81,7 @@ async function retrieveCodeLensOnOpenedDocument(uri: vscode.Uri): Promise<vscode
 
 function checkCodeLens(codeLenses: vscode.CodeLens[], expectedAdmUri: vscode.Uri) {
 	const startIntegrationCodeLenses = codeLenses.filter(codelens => {
-		return codelens.command?.command === 'vscode.open';
+		return codelens.command?.command === '_workbench.open';
 	});
 	expect(startIntegrationCodeLenses).has.length(1);
 	const codeLens: vscode.CodeLens = startIntegrationCodeLenses[0];
