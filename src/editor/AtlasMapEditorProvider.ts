@@ -69,7 +69,6 @@ export class AtlasMapEditorProvider implements vscode.CustomEditorProvider<Atlas
 		console.log('will launch atlasmap for the editor');
 		await extension.launchAtlasMapLocally(
 			atlasmapExecutablePath,
-			document.uri.fsPath,
 			webviewPanel,
 			this.onDidChangeCustomDocumentEventEmitter,
 			document);

@@ -58,10 +58,10 @@ export function deactivate(context: vscode.ExtensionContext) {
 
 export function launchAtlasMapLocally(
 	atlasmapExecutablePath: string,
-	admPath: string,
 	webviewPanel: vscode.WebviewPanel,
 	eventEmitter: vscode.EventEmitter<vscode.CustomDocumentContentChangeEvent<AtlasMapDocument>>,
 	atlasMapDocument: AtlasMapDocument): Promise<void>{
+	const admPath = atlasMapDocument.uri.fsPath;
 	const admWorkspaceRelative = vscode.workspace.asRelativePath(admPath);
 	const idFolder = admWorkspaceRelative.replace(/\//g, '_');
 	const filename = admPath.substring(admPath.lastIndexOf('/') + 1).replace('.adm', '');
@@ -75,7 +75,7 @@ export function launchAtlasMapLocally(
 			}, async (progress, token) => {
 				progress.report( {increment: -1} );
 				let waitTime: number = 0;
-				while (!atlasMapUIReady && waitTime < MAX_WAIT) { // max 30 secs wait
+				while (!atlasMapUIReady && waitTime < MAX_WAIT) {
 					// wait for web ui to become ready
 					await new Promise(waiterResolve => setTimeout(waiterResolve, WAIT_STEP));
 					waitTime += WAIT_STEP;
@@ -167,19 +167,11 @@ function listenForChange(idFolder: any, eventEmitter: vscode.EventEmitter<vscode
 
 function launchAtlasMap(reqs: requirements.RequirementsData, atlasMapWSFolder: string, admPath: string, atlasmapExecutablePath: string) {
 	let javaExecutablePath = path.resolve(reqs.java_home + '/bin/java');
-	
-	if (admPath !== "") {
-		return child_process.spawn(javaExecutablePath,
-			['-Datlasmap.workspace=' + atlasMapWSFolder,
-			 '-Datlasmap.adm.path=' + admPath,
-			 '-Datlasmap.disable.frame.options=true',
-			 '-jar', atlasmapExecutablePath]);
-	} else {
-		return child_process.spawn(javaExecutablePath,
-			['-Datlasmap.workspace=' + atlasMapWSFolder,
-			 '-Datlasmap.disable.frame.options=true',
-			 '-jar', atlasmapExecutablePath]);
-	}
+	return child_process.spawn(javaExecutablePath,
+		['-Datlasmap.workspace=' + atlasMapWSFolder,
+		 '-Datlasmap.adm.path=' + admPath,
+		 '-Datlasmap.disable.frame.options=true',
+		 '-jar', atlasmapExecutablePath]);
 }
 
 export function log(text) {
