@@ -40,12 +40,12 @@ export class AtlasMapEditorProvider implements vscode.CustomEditorProvider<Atlas
 	
 	async saveCustomDocument(document: AtlasMapDocument, cancellation: vscode.CancellationToken): Promise<void> {
 		console.log('saveCustomDocument');
-		const externalUrl = await AtlasMapWebViewUtil.getAtlasMapExternalURI(document.associatedPort);
-		await vscode.workspace.fs.writeFile(document.uri, await download(`${externalUrl}v2/atlas/mapping/ZIP`));
+		await this.saveCustomDocumentAs(document, document.uri, cancellation);
 	}
 	
 	async saveCustomDocumentAs(document: AtlasMapDocument, destination: vscode.Uri, cancellation: vscode.CancellationToken): Promise<void> {
-		throw new Error('Save as on AtlasMap Editor has not been implemented.');
+		const externalUrl = await AtlasMapWebViewUtil.getAtlasMapExternalURI(document.associatedPort);
+		await vscode.workspace.fs.writeFile(destination, await download(`${externalUrl}v2/atlas/mapping/ZIP`));
 	}
 	
 	revertCustomDocument(document: AtlasMapDocument, cancellation: vscode.CancellationToken): Thenable<void> {

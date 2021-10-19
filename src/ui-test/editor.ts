@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { VSBrowser, WebDriver, EditorView, WebView, By, CustomEditor, until } from 'vscode-extension-tester';
-import { assert } from 'chai';
+import { VSBrowser, WebDriver, EditorView, WebView, By, CustomEditor, until, Workbench, InputBox } from 'vscode-extension-tester';
+import { assert, expect } from 'chai';
 import path = require('path');
 
 
@@ -30,6 +30,36 @@ export function editorTests() {
 			driver = VSBrowser.instance.driver;
 		});
 
+		it('Save as', async function () {
+			this.timeout(30000);
+			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
+			await VSBrowser.instance.openResources(workspaceFolder);
+			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
+			await new Workbench().executeCommand('file: save as');
+			const inputbox = new InputBox();
+			const newName = 'atlasmap-mapping-savedas.adm';
+			await inputbox.setText(path.join(workspaceFolder, newName));
+			await inputbox.confirm();
+			
+			await new EditorView().openEditor(newName);
+			expect(await new EditorView().getOpenEditorTitles()).to.have.lengthOf(1);
+			
+			const atlasMapWebView = await retrieveWebview(driver);
+			const atlasMapEditor = await retrieveAtlasMapEditor(driver, atlasMapWebView);
+			
+			await addConstantInAtlasMap(driver, atlasMapWebView);
+			
+			await atlasMapWebView.switchBack();
+			await driver.wait(async () => {
+			 	return atlasMapEditor.isDirty();
+			}, 5000, 'The editor is expected to be dirty but is not.');
+			console.log('will call save - currently not working because the events are swallowed by AtlasMap, see https://github.com/atlasmap/atlasmap/issues/3404');
+			await atlasMapEditor.save();
+			console.log('save called');
+			assert.isFalse(await atlasMapEditor.isDirty(), 'The editor is expected to be no more dirty after save but it is still dirty.');
+			await new EditorView().closeEditor(newName);
+		});
+		
 		it('Open and close .adm in AtlasMap Editor', async function () {
 			this.timeout(30000);
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
@@ -73,6 +103,8 @@ export function editorTests() {
 			
 			await new EditorView().openEditor('atlasmap-mapping.adm');
 		});
+		
+
 
 	});
 
@@ -89,6 +121,10 @@ async function retrieveAtlasMapEditor(driver: WebDriver, atlasMapWebView: WebVie
 async function openAdmFile(workspaceFolder: string, admFileName: string, driver: WebDriver) {
 	await VSBrowser.instance.openResources(path.join(workspaceFolder, admFileName));
 	await new EditorView().openEditor(admFileName);
+	return retrieveWebview(driver);
+}
+
+async function retrieveWebview(driver: WebDriver) {
 	const atlasMapWebView = new WebView();
 	await switchToAtlasmapFrame(driver, atlasMapWebView);
 	await atlasMapWebView.switchBack();

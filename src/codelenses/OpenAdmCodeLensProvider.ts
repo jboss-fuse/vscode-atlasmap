@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as extension from './../extension';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
