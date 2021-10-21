@@ -48,4 +48,7 @@ After calling the "Open AtlasMap" and that the AtlasMap panel is opened, some co
     * Run `npm version --no-git-tag-version patch`
     * Push changes in a PR
     * Follow PR until it is approved/merged
-  
+
+## How to test a new version of AtlasMap standalone without rebuilding
+
+A hack consists in replacing the AtlasMap standalone jar in `~/.vscode/extensions/redhat.atlasmap-viewer-<theVersion>/jars/atlasmap-standalone.jar`.
