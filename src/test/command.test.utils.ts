@@ -21,7 +21,7 @@ const uri2path = require('file-uri-to-path');
 const expect = chai.expect;
 chai.use(sinonChai);
 
-const MAX_WAIT = 20000;
+const MAX_WAIT = 30000;
 const STEP = 1000;
 const KEYSTRING: string = "Starting AtlasMap instance at port ";
 
@@ -126,7 +126,7 @@ async function portIsFree(_port: string) {
 			}
 		}, MAX_WAIT, STEP);
 	} catch {
-		fail(`The port ${_port} has not been freed up after 20 seconds!`);
+		fail(`The port ${_port} has not been freed up after 30 seconds!`);
 	}
 }
 

@@ -22,7 +22,7 @@ let storagePath: string;
 export let telemetryService: TelemetryService = null;
 
 const WAIT_STEP: number = 1000;
-const MAX_WAIT: number = 30000;
+const MAX_WAIT: number = 60000;
 export const WARN_MSG: string = "There is currently a local AtlasMap instance running. We need to restart that instance. Make sure you have saved all your changes in the AtlasMap UI to prevent data loss.";
 export const RESTART_CHOICE: string = "Restart";
 
@@ -281,7 +281,7 @@ async function showProgressInfo(port: string) {
 			progress.report( {increment: -1} );
 			let waitTime: number = 0;
 			const timerStep: number = 1000;
-			while (!atlasMapUIReady && waitTime < 30000) { // max 30 secs wait
+			while (!atlasMapUIReady && waitTime < MAX_WAIT) {
 				// wait for web ui to become ready
 				await new Promise(resolve => setTimeout(resolve, timerStep));
 				waitTime += timerStep;
