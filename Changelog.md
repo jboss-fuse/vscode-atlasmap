@@ -1,5 +1,7 @@
 # ChangeLog
 
+## 0.1.0
+
 ## 0.0.9
 
 - Upgrade to AtlasMap 2.3.2
