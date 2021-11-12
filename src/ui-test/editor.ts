@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { VSBrowser, WebDriver, EditorView, WebView, By, CustomEditor, until, Workbench, InputBox } from 'vscode-extension-tester';
+import { VSBrowser, WebDriver, EditorView, WebView, By, CustomEditor, until, Workbench, InputBox, TextEditor } from 'vscode-extension-tester';
 import { assert, expect } from 'chai';
 import path = require('path');
 
@@ -97,9 +97,8 @@ export function editorTests() {
 			await VSBrowser.instance.openResources(workspaceFolder);
 			const camelRouteFilename = 'basic-case.xml';
 			await VSBrowser.instance.openResources(path.join(workspaceFolder, 'editor-test', camelRouteFilename));
-			const xmlEditor = await new EditorView().openEditor(camelRouteFilename);
-			// TODO: use a page object to click on Codelens https://github.com/redhat-developer/vscode-extension-tester/issues/365
-			const codelens = await xmlEditor.findElement(By.xpath("//a[text()='Open in AtlasMap UI']"));
+			const xmlEditor = await new EditorView().openEditor(camelRouteFilename) as TextEditor;
+			const codelens = await xmlEditor.getCodeLens('Open in AtlasMap UI');
 			await codelens.click();
 			
 			await new EditorView().openEditor('atlasmap-mapping.adm');
