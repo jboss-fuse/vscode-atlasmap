@@ -31,9 +31,10 @@ export function editorTests() {
 		});
 
 		it('Save as', async function () {
-			this.timeout(30000);
+			this.timeout(60000);
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
+			await new EditorView().closeAllEditors();
 			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
 			await new Workbench().executeCommand('file: save as');
 			const inputbox = new InputBox();
@@ -103,11 +104,7 @@ export function editorTests() {
 			
 			await new EditorView().openEditor('atlasmap-mapping.adm');
 		});
-		
-
-
 	});
-
 }
 
 async function retrieveAtlasMapEditor(driver: WebDriver, atlasMapWebView: WebView) {
@@ -134,7 +131,7 @@ async function retrieveWebview(driver: WebDriver) {
 async function addConstantInAtlasMap(driver: WebDriver, atlasMapWebView: WebView) {
 	const createConstantButton = await driver.wait(until.elementLocated(By.xpath("//button[@data-testid='create-constant-button']")), 10000);
 	await createConstantButton.click();
-	const inputConstantName = await atlasMapWebView.findWebElement(By.xpath("//input[@data-testid='constant-name-text-input-tooltip']"));
+	const inputConstantName = await atlasMapWebView.findWebElement(By.xpath("//input[@data-testid='constant-name-text-input']"));
 	await inputConstantName.sendKeys('name-test');
 	const inputConstantValue = await atlasMapWebView.findWebElement(By.xpath("//input[@data-testid='constant-value-text-input']"));
 	await inputConstantValue.sendKeys('name-value');
