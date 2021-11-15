@@ -30,7 +30,7 @@ export function editorTests() {
 		});
 
 		it('Save as', async function () {
-			this.timeout(30000);
+			this.timeout(60000);
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			await new EditorView().closeAllEditors();
