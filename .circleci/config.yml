@@ -39,8 +39,13 @@ jobs:
             - ~/.npm
       - store_artifacts:
           path: ~/.config/Code/logs
+          name: Store VS Code logs
       - store_artifacts:
           path: ~/.config/Code/User/workspaceStorage/
+          name: Store VS Code User Workspace storage
+      - store_artifacts:
+          path: ~/vscode-atlasmap/test-resources/screenshots
+          name: Store VS Code UI Tests screenshots on failure
       - when:
           condition:
             equal: [main, << pipeline.git.branch >>]
