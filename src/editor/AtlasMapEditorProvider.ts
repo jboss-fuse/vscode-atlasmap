@@ -39,7 +39,6 @@ export class AtlasMapEditorProvider implements vscode.CustomEditorProvider<Atlas
 	public readonly onDidChangeCustomDocument = this.onDidChangeCustomDocumentEventEmitter.event;
 	
 	async saveCustomDocument(document: AtlasMapDocument, cancellation: vscode.CancellationToken): Promise<void> {
-		console.log('saveCustomDocument');
 		await this.saveCustomDocumentAs(document, document.uri, cancellation);
 	}
 	
@@ -57,7 +56,6 @@ export class AtlasMapEditorProvider implements vscode.CustomEditorProvider<Atlas
 	}
 	
 	openCustomDocument(uri: vscode.Uri, openContext: vscode.CustomDocumentOpenContext, token: vscode.CancellationToken): AtlasMapDocument | Thenable<AtlasMapDocument> {
-		console.log('Open custom document');
 		return new AtlasMapDocument(uri);
 	}
 	
@@ -66,7 +64,6 @@ export class AtlasMapEditorProvider implements vscode.CustomEditorProvider<Atlas
 			enableScripts: true
 		};
 		const atlasmapExecutablePath = this.context.asAbsolutePath(path.join('jars','atlasmap-standalone.jar'));
-		console.log('will launch atlasmap for the editor');
 		await extension.launchAtlasMapLocally(
 			atlasmapExecutablePath,
 			webviewPanel,

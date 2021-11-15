@@ -107,12 +107,10 @@ export function launchAtlasMapLocally(
 					const dec = new TextDecoder("utf-8");
 					const text = dec.decode(data);
 					serverOutputChannel.append(text);
-					console.log(text);
 					const STARTED_AT_PORT_LOG = 'started at port: ';
 					if (text.includes('### AtlasMap Data Mapper UI') && text.includes(STARTED_AT_PORT_LOG)) {
 						const withoutPrefix = text.substring(text.indexOf(STARTED_AT_PORT_LOG) + STARTED_AT_PORT_LOG.length);
 						const realPort = withoutPrefix.replace(' ###\n', '');
-						console.log('real port' + realPort);
 						atlasMapDocument.setAssociatedPort(realPort);
 						AtlasMapWebViewUtil.getAtlasMapExternalURI(realPort)
 							.then(externalUrl => {
