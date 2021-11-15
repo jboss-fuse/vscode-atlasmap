@@ -18,7 +18,6 @@ import { VSBrowser, WebDriver, EditorView, WebView, By, CustomEditor, until, Wor
 import { assert, expect } from 'chai';
 import path = require('path');
 
-
 export function editorTests() {
 	let driver: WebDriver;
 
@@ -31,24 +30,19 @@ export function editorTests() {
 		});
 
 		it('Save as', async function () {
-			console.log('start save as test');
-			this.timeout(90000);
+			this.timeout(30000);
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			await new EditorView().closeAllEditors();
-			console.log('all editors closed');
 			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
 			await new Workbench().executeCommand('file: save as');
 			const inputbox = new InputBox();
 			const newName = 'atlasmap-mapping-savedas.adm';
 			await inputbox.setText(path.join(workspaceFolder, newName));
 			await inputbox.confirm();
-			console.log('saved as called and nexw name provided');
 			
 			await new EditorView().openEditor(newName);
 			expect(await new EditorView().getOpenEditorTitles()).to.have.lengthOf(1);
-			
-			console.log('we have one editor opened');
 			
 			const atlasMapWebView = await retrieveWebview(driver);
 			const atlasMapEditor = await retrieveAtlasMapEditor(driver, atlasMapWebView);
@@ -59,40 +53,31 @@ export function editorTests() {
 			await driver.wait(async () => {
 			 	return atlasMapEditor.isDirty();
 			}, 5000, 'The editor is expected to be dirty but is not.');
-			console.log('will call save');
 			await atlasMapEditor.save();
-			console.log('save called');
 			assert.isFalse(await atlasMapEditor.isDirty(), 'The editor is expected to be no more dirty after save but it is still dirty.');
 			await new EditorView().closeEditor(newName);
 		});
 		
 		it('Open and close .adm in AtlasMap Editor', async function () {
-			this.timeout(90000);
+			this.timeout(30000);
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			const admFileName = 'atlasmap-mapping.adm';
 			const atlasMapWebView = await openAdmFile(workspaceFolder, admFileName, driver);
-			console.log('editor webview opened');
 			const atlasMapEditor = await retrieveAtlasMapEditor(driver, atlasMapWebView);
-			console.log('atlasmap editor ready');
 			
 			await addConstantInAtlasMap(driver, atlasMapWebView);
-			console.log('constant added');
 			await atlasMapWebView.switchBack();
-			console.log('wait dirtyness');
 			await driver.wait(async () => {
 			 	return atlasMapEditor.isDirty();
 			}, 5000, 'The editor is expected to be dirty but is not.');
-			console.log('will try saving');
 			await atlasMapEditor.save();
-			console.log('saved')
 			assert.isFalse(await atlasMapEditor.isDirty(), 'The editor is expected to be no more dirty after save but it is still dirty.');
 			await new EditorView().closeEditor(admFileName);
-			// TODO: would be nice to check that the AtlasMap server has been stopped
 		});
 		
 		it('Open several .adms in AtlasMap Editor', async function () {
-			this.timeout(90000);
+			this.timeout(30000);
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
@@ -100,7 +85,7 @@ export function editorTests() {
 		});
 		
 		it('Open editor using codelens', async function () {
-			this.timeout(90000);
+			this.timeout(30000);
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			const camelRouteFilename = 'basic-case.xml';
@@ -118,15 +103,13 @@ async function retrieveAtlasMapEditor(driver: WebDriver, atlasMapWebView: WebVie
 	const atlasMapEditor = new CustomEditor();
 	assert.isFalse(await atlasMapEditor.isDirty(), 'The editor is expected to not be dirty on first open but it is dirty.');
 	await switchToAtlasmapFrame(driver, atlasMapWebView);
-	console.log('Wait for AtlasMap Data mapper UI text');
 	try {
 		await driver.wait(until.elementLocated(By.xpath("//title[text()='AtlasMap Data Mapper UI']")), 10000);
 	} catch {
-		console.log('second try');
+		// sometimes, the switch seems to not have been done as expected, redoing it is solving the problem...
 		await switchToAtlasmapFrame(driver, atlasMapWebView);
 		await driver.wait(until.elementLocated(By.xpath("//title[text()='AtlasMap Data Mapper UI']")), 10000);
 	}
-	console.log('Found the AtlasMap Data mapper UI text');
 	return atlasMapEditor;
 }
 
@@ -159,12 +142,9 @@ async function addConstantInAtlasMap(driver: WebDriver, atlasMapWebView: WebView
 async function switchToAtlasmapFrame(driver: WebDriver, atlasMapWebView: WebView) {
 	await driver.wait(async () => {
 		try {
-			console.log('try switch to frame');
 			await atlasMapWebView.switchToFrame();
-			console.log('switch to frame success');
 			return true;
-		} catch (e) {
-			console.log('Switch to frame failed with error: ' + e);
+		} catch {
 			return false;
 		}
 	});
