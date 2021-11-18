@@ -40,6 +40,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		scheme: 'file'
 	};
 	vscode.languages.registerCodeLensProvider(docSelectorForPhysicalFiles, new OpenAdmCodeLensProvider());
+
+	vscode.commands.registerCommand('atlasmap.file.create', () => createAndOpenADM());
 }
 
 function sendOpenEvent() {
@@ -50,9 +52,41 @@ function sendOpenEvent() {
 	telemetryService.send(telemetryEvent);
 }
 
+function sendCreateEvent() {
+	const telemetryEvent: TelemetryEvent = {
+		type: 'track',
+		name: 'atlasmap.file.create'
+	};
+	telemetryService.send(telemetryEvent);
+}
+
 export function deactivate(context: vscode.ExtensionContext) {
 	if (telemetryService) {
 		telemetryService.sendShutdownEvent();
+	}
+}
+
+async function createAndOpenADM() {
+	sendCreateEvent();
+	const selectedWorkspaceFolder: vscode.WorkspaceFolder | undefined = await vscode.window.showWorkspaceFolderPick( {placeHolder: 'Please select the workspace folder in which the new file will be created.'} );
+	if (selectedWorkspaceFolder) {
+		const fileName: string = await vscode.window.showInputBox( {placeHolder: "Enter the name of the new AtlasMap file"});
+		var file: string = `${selectedWorkspaceFolder.uri.fsPath}/${fileName}`;
+		if (!file.toLowerCase().endsWith('.adm')) {
+			file += '.adm';
+		}
+		try {
+			const stat: vscode.FileStat = await vscode.workspace.fs.stat(vscode.Uri.file(file));
+			if (stat && stat.type === vscode.FileType.File) {
+				vscode.window.showErrorMessage(`The file ${file} already exists!`);
+				Promise.reject(new Error(`The file ${file} already exists!`));
+				return;
+			}	
+		} catch (error) {
+			// file doesn't exist - that's good
+		}		
+		await vscode.workspace.fs.writeFile(vscode.Uri.file(file), Buffer.from(''));
+		await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(file));
 	}
 }
 
