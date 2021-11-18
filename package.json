@@ -54,6 +54,11 @@
 				}
 			}
 		},
+		"commands": {
+			"category": "AtlasMap",
+			"title": "Create AtlasMap file",
+			"command": "atlasmap.file.create"
+		}, 
 		"customEditors": [
 			{
 				"viewType": "atlasmap.editor",
@@ -77,6 +82,7 @@
 		"onLanguage:kotlin",
 		"onLanguage:javascript",
 		"onLanguage:yaml",
+		"onCommand:atlasmap.file.create",
 		"onCustomEditor:atlasmap.editor"
 	],
 	"scripts": {
