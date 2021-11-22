@@ -62,6 +62,44 @@ Bear in mind, however, the following caveats:
 -   AtlasMap requires quite a bit of horizontal real-estate, so you may need to expand the width of your VS Code
     window.
 
+## Relation between VS Code AtlasMap and AtlasMap runtime version
+
+Each version of VS Code AtlasMap is embedding a specific AtlasMap UI version. The AtlasMap runtime is community supported with the exact same version of AtlasMap UI. When using a different version, this is not supported even if a lot of features are compatible between versions.
+
+Corresponding versions between VS Code AtlasMap and AtlasMap runtime:
+
+| VS Code AtlasMap version | AtlasMap version |
+| ------------------------ | ---------------- |
+| 0.1.0 | 2.4.0-M1 ? |
+| 0.0.9 | 2.3.2 |
+| 0.0.8 | 2.2.3 |
+| 0.0.7 | 2.1.6 |
+| 0.0.6 | 2.0.5 |
+| 0.0.5 | 1.43.4 |
+| 0.0.4 | 1.42.10 |
+| 0.0.3 | 1.41.1 |
+
+For Red Hat Integration users, even if VS Code AtlasMap is not supported, here is a table with the closest version that you could try to use:
+
+|Fuse version|AtlasMap upstream version|Closest VS Code AtlasMap|
+|--------------|------------------|--------------------------------|
+|7.10|2.3.x?|0.0.9 (using AtlasMap 2.3.2)|
+|7.9|2.2.3|0.0.8 (using AtlasMap 2.2.3)|
+|7.8|2.0.7|0.0.6 (using AtlasMap 2.0.5)|
+|7.7|2.0.5|0.0.6 (using AtlasMap 2.0.5)|
+|7.6|1.43.4|0.0.5 (using AtlasMap 1.43.4)|
+|7.5|1.42.9|0.0.4 (using AtlasMap 1.42.10)|
+|7.4|1.40.2|0.0.3 (using AtlasMap 1.41.1)|
+|7.3|1.39.6|0.0.3 (using AtlasMap 1.41.1)|
+|7.2|1.38.1|0.0.3 (using AtlasMap 1.41.1)|
+|7.1|1.35.7|0.0.3 (using AtlasMap 1.41.1)|
+|7.0|1.34.5|0.0.3 (using AtlasMap 1.41.1)|
+
+By default, VS Code extensions are automatically updated. To use an older VS Code Extension version, you will need to deactivate auto-update by changing the setting: File -> Settings -> Extensions: Auto Update
+
+Older VS Code AtlasMap versions are downloadable from [JBoss Tools repository](https://download.jboss.org/jbosstools/vscode/stable/vscode-atlasmap/).
+
+
 ## Data and telemetry
 
 The AtlasMap by Red Hat for Visual Studio Code collects anonymous [usage data](USAGE_DATA.md) and sends it to Red Hat servers to help improve our products and services. Read our [privacy statement](https://developers.redhat.com/article/tool-data-collection) to learn more. This extension respects the `redhat.elemetry.enabled` setting which you can learn more about at https://github.com/redhat-developer/vscode-commons#how-to-disable-telemetry-reporting
