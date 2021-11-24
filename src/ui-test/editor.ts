@@ -77,7 +77,7 @@ export function editorTests() {
 		});
 		
 		it('Open several .adms in AtlasMap Editor', async function () {
-			this.timeout(30000);
+			this.timeout(60000);
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
