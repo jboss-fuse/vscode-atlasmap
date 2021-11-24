@@ -58,7 +58,7 @@
 			"category": "AtlasMap",
 			"title": "Create AtlasMap file",
 			"command": "atlasmap.file.create"
-		}, 
+		},
 		"customEditors": [
 			{
 				"viewType": "atlasmap.editor",
@@ -106,7 +106,8 @@
 		"find-java-home": "^1.2.2",
 		"path": "^0.12.7",
 		"path-exists": "^4.0.0",
-		"util": "^0.12.4"
+		"util": "^0.12.4",
+		"valid-filename": "^3.1.0"
 	},
 	"devDependencies": {
 		"@types/chai": "^4.2.22",

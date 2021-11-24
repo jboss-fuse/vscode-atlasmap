@@ -11,6 +11,7 @@ import { getRedHatService, TelemetryEvent, TelemetryService } from "@redhat-deve
 import { AtlasMapEditorProvider } from './editor/AtlasMapEditorProvider';
 import { AtlasMapDocument } from './editor/AtlasMapDocument';
 
+const validFilename = require('valid-filename');
 const chokidar = require('chokidar');
 const fs = require('fs');
 const md5 = require('md5');
@@ -67,27 +68,41 @@ export function deactivate(context: vscode.ExtensionContext) {
 }
 
 async function createAndOpenADM() {
-	sendCreateEvent();
 	const selectedWorkspaceFolder: vscode.WorkspaceFolder | undefined = await vscode.window.showWorkspaceFolderPick( {placeHolder: 'Please select the workspace folder in which the new file will be created.'} );
 	if (selectedWorkspaceFolder) {
-		const fileName: string = await vscode.window.showInputBox( {placeHolder: "Enter the name of the new AtlasMap file"});
-		var file: string = `${selectedWorkspaceFolder.uri.fsPath}/${fileName}`;
-		if (!file.toLowerCase().endsWith('.adm')) {
-			file += '.adm';
-		}
-		try {
-			const stat: vscode.FileStat = await vscode.workspace.fs.stat(vscode.Uri.file(file));
-			if (stat && stat.type === vscode.FileType.File) {
-				vscode.window.showErrorMessage(`The file ${file} already exists!`);
-				Promise.reject(new Error(`The file ${file} already exists!`));
-				return;
-			}	
-		} catch (error) {
-			// file doesn't exist - that's good
-		}		
-		await vscode.workspace.fs.writeFile(vscode.Uri.file(file), Buffer.from(''));
-		await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(file));
+		const fileName: string = await vscode.window.showInputBox( {placeHolder: "Enter the name of the new AtlasMap file", validateInput: async (name: string) => {
+			const file: string = `${selectedWorkspaceFolder.uri.fsPath}/${getValidFileNameWithExtension(name)}`;
+			if (!validFilename(name)) {
+				return 'The filename is invalid.';
+			}
+			if (await fileExists(vscode.Uri.file(file))) {
+				return `A file with that name already exists.`;
+			}
+			return undefined;
+		}});
+		if (fileName) {
+			const file = `${selectedWorkspaceFolder.uri.fsPath}/${getValidFileNameWithExtension(fileName)}`;
+			await vscode.workspace.fs.writeFile(vscode.Uri.file(file), Buffer.from(''));
+			await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(file));
+			sendCreateEvent();
+		}			
 	}
+}
+
+function getValidFileNameWithExtension(name: string): string {
+	if (name && !name.toLowerCase().endsWith('.adm')) {
+		return `${name}.adm`;
+	}
+	return name;
+}
+
+export async function fileExists(file: vscode.Uri): Promise<boolean> {
+	try {
+		await vscode.workspace.fs.stat(file);
+	} catch {
+		return false;
+	}
+	return true;
 }
 
 export function launchAtlasMapLocally(
