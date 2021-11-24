@@ -12,6 +12,7 @@
 ## Features
 
 This extension is providing tooling for [AtlasMap](http://docs.atlasmap.io/) transformations:
+* A command _Create AtlasMap file_ to create a new _*.adm_ and open it in the editor
 * An editor to edit and save existing _*.adm_ files with AtlasMap UI.
 * A codelens to open _*.adm_ file directly from textual editor with a Camel Route using a Camel AtlasMap endpoint.
 
