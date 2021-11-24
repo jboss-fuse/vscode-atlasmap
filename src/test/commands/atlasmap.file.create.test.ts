@@ -20,7 +20,7 @@ describe('Test Command: atlasmap.file.create', function() {
 	
 	let testADMFileName: string = 'test.adm';
 	let testADMFile: vscode.Uri;
-	let dummyADMFileName: string = 'dummy.adm';
+	const dummyADMFileName: string = 'dummy.adm';
 	let dummyADMFile: vscode.Uri;
 	let workspaceFolder: vscode.Uri;
 	let wspFld: vscode.WorkspaceFolder;
