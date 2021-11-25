@@ -1,5 +1,7 @@
 # ChangeLog
 
+## 0.1.1
+
 ## 0.1.0
 
 - Upgrade to AtlasMap 2.4.0-M.1
