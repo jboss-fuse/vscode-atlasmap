@@ -3,8 +3,8 @@
 ## 0.1.0
 
 - Upgrade to AtlasMap 2.4.0-M.1
-- Open _*.adm_ files in VS Code Editor instead fo Webview. It allows to have dirty/save lifecycle.
-- Remove Open and Stop AtlasMap command, forcing the AtlasMap UI to be linked to an _*.adm_ file and benefits from dirty/save lifecylce.
+- Open _*.adm_ files in VS Code Editor instead of Webview. It allows to have dirty/save lifecycle.
+- Remove Open and Stop AtlasMap command, forcing the AtlasMap UI to be linked to an _*.adm_ file and benefits from dirty/save lifecycle.
 - Adding a new command to create an AtlasMap _*.adm_ file and open it
 - Adding a telemetry event to track usage of the new command to create _*.adm_ files
 
