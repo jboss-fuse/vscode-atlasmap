@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 0.0.10
+
+- Upgrade to AtlasMap runtime 2.3.4
+
 ## 0.0.9
 
 - Upgrade to AtlasMap 2.3.2
