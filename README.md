@@ -71,7 +71,8 @@ Corresponding versions between VS Code AtlasMap and AtlasMap runtime:
 
 | VS Code AtlasMap version | AtlasMap version |
 | ------------------------ | ---------------- |
-| 0.1.1 | 2.4.0-M1 ? |
+| 0.1.2 | 2.4.0-M2 ? |
+| 0.1.1 | 2.4.0-M2 |
 | 0.1.0 | 2.4.0-M1 |
 | 0.0.9 | 2.3.2 |
 | 0.0.8 | 2.2.3 |
@@ -85,7 +86,8 @@ For Red Hat Integration users, even if VS Code AtlasMap is not supported, here i
 
 |Fuse version|AtlasMap upstream version|Closest VS Code AtlasMap|
 |--------------|------------------|--------------------------------|
-|7.10|2.3.x?|0.0.9 (using AtlasMap 2.3.2)|
+|7.11|2.4.x?|0.1.2 ? (using AtlasMap 2.4.0-M2?)|
+|7.10|2.3.2|0.0.9 (using AtlasMap 2.3.2)|
 |7.9|2.2.3|0.0.8 (using AtlasMap 2.2.3)|
 |7.8|2.0.7|0.0.6 (using AtlasMap 2.0.5)|
 |7.7|2.0.5|0.0.6 (using AtlasMap 2.0.5)|
