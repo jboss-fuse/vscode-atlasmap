@@ -1,5 +1,7 @@
 # ChangeLog
 
+## 0.1.3
+
 ## 0.1.2
 
 - Upgrade to AtlasMap 2.4.0-M.3, notably includes upgrades to log4j 2.17
