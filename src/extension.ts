@@ -159,7 +159,7 @@ export function launchAtlasMapLocally(
 					const STARTED_AT_PORT_LOG = 'started at port: ';
 					if (text.includes('### AtlasMap Data Mapper UI') && text.includes(STARTED_AT_PORT_LOG)) {
 						const withoutPrefix = text.substring(text.indexOf(STARTED_AT_PORT_LOG) + STARTED_AT_PORT_LOG.length);
-						const realPort = withoutPrefix.replace(' ###\n', '');
+						const realPort = withoutPrefix.substring(0, withoutPrefix.indexOf(' ###'));
 						atlasMapDocument.setAssociatedPort(realPort);
 						AtlasMapWebViewUtil.getAtlasMapExternalURI(realPort)
 							.then(externalUrl => {
