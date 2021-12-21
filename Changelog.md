@@ -2,9 +2,11 @@
 
 ## 0.1.2
 
+- Upgrade to AtlasMap 2.4.0-M.3, notably includes upgrades to log4j 2.17
+
 ## 0.1.1
 
-- Upgrade to AtlasMap 2.4.0-M.2, notably includes upgrades to log4j 2.15+
+- Upgrade to AtlasMap 2.4.0-M.2, notably includes upgrades to log4j 2.16
 
 ## 0.1.0
 
