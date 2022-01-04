@@ -11,7 +11,6 @@ import { getRedHatService, TelemetryEvent, TelemetryService } from "@redhat-deve
 import { AtlasMapEditorProvider } from './editor/AtlasMapEditorProvider';
 import { AtlasMapDocument } from './editor/AtlasMapDocument';
 
-const validFilename = require('valid-filename');
 const chokidar = require('chokidar');
 const fs = require('fs');
 const md5 = require('md5');
@@ -72,7 +71,8 @@ async function createAndOpenADM() {
 	if (selectedWorkspaceFolder) {
 		const fileName: string = await vscode.window.showInputBox( {placeHolder: "Enter the name of the new AtlasMap file", validateInput: async (name: string) => {
 			const file: string = `${selectedWorkspaceFolder.uri.fsPath}/${getValidFileNameWithExtension(name)}`;
-			if (!validFilename(name)) {
+			const validFileName = await import('valid-filename');
+			if (!validFileName.default(name)) {
 				return 'The filename is invalid.';
 			}
 			if (await fileExists(vscode.Uri.file(file))) {
