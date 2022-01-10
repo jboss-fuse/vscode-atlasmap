@@ -215,10 +215,11 @@ function listenForChange(idFolder: any, eventEmitter: vscode.EventEmitter<vscode
 function launchAtlasMap(reqs: requirements.RequirementsData, atlasMapWSFolder: string, admPath: string, atlasmapExecutablePath: string) {
 	let javaExecutablePath = path.resolve(reqs.java_home + '/bin/java');
 	return child_process.spawn(javaExecutablePath,
-		['-Datlasmap.workspace=' + atlasMapWSFolder,
-		 '-Datlasmap.adm.path=' + admPath,
-		 '-Datlasmap.disable.frame.options=true',
-		 '-jar', atlasmapExecutablePath]);
+		[
+			'-Datlasmap.workspace=' + atlasMapWSFolder,
+			'-Datlasmap.adm.path=' + admPath,
+			'-Datlasmap.disable.frame.options=true',
+			'-jar', atlasmapExecutablePath]);
 }
 
 export function log(text) {
