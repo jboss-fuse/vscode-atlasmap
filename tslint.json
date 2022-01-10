@@ -1,6 +1,10 @@
 {
 	"rules": {
 		"indent": [true, "tabs"],
-		"semicolon": [true, "always"]
+		"semicolon": [true, "always"],
+		"no-implicit-dependencies": [true, "dev", ["vscode"]]
+	},
+	"linterOptions": {
+		"exclude": ["test-extensions/**", "test-resources/**"]
 	}
 }
