@@ -51,7 +51,7 @@ export function editorTests() {
 			
 			await atlasMapWebView.switchBack();
 			await driver.wait(async () => {
-			 	return atlasMapEditor.isDirty();
+				return atlasMapEditor.isDirty();
 			}, 5000, 'The editor is expected to be dirty but is not.');
 			await atlasMapEditor.save();
 			assert.isFalse(await atlasMapEditor.isDirty(), 'The editor is expected to be no more dirty after save but it is still dirty.');
@@ -69,7 +69,7 @@ export function editorTests() {
 			await addConstantInAtlasMap(driver, atlasMapWebView);
 			await atlasMapWebView.switchBack();
 			await driver.wait(async () => {
-			 	return atlasMapEditor.isDirty();
+				return atlasMapEditor.isDirty();
 			}, 5000, 'The editor is expected to be dirty but is not.');
 			await atlasMapEditor.save();
 			assert.isFalse(await atlasMapEditor.isDirty(), 'The editor is expected to be no more dirty after save but it is still dirty.');
