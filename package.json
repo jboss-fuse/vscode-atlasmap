@@ -87,7 +87,7 @@
 	],
 	"scripts": {
 		"vscode:prepublish": "tsc -p ./",
-		"compile": "tsc -p ./",
+		"compile": "tsc -p ./ && npm run tslint",
 		"watch": "tsc -w -p ./",
 		"clean": "rm -rf out || rmdir out /s /q",
 		"postinstall": "node ./scripts/postinstall.js",
