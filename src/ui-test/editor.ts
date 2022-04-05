@@ -30,7 +30,7 @@ export function editorTests() {
 		});
 
 		it('Save as', async function () {
-			this.timeout(60000);
+			this.timeout(120000);
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			await new EditorView().closeAllEditors();
@@ -59,7 +59,7 @@ export function editorTests() {
 		});
 		
 		it('Open and close .adm in AtlasMap Editor', async function () {
-			this.timeout(30000);
+			this.timeout(60000);
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			const admFileName = 'atlasmap-mapping.adm';
@@ -77,7 +77,7 @@ export function editorTests() {
 		});
 		
 		it('Open several .adms in AtlasMap Editor', async function () {
-			this.timeout(60000);
+			this.timeout(120000);
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
@@ -85,7 +85,7 @@ export function editorTests() {
 		});
 		
 		it('Open editor using codelens', async function () {
-			this.timeout(30000);
+			this.timeout(60000);
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			const camelRouteFilename = 'basic-case.xml';
