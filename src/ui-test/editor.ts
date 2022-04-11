@@ -58,13 +58,15 @@ export function editorTests() {
 			await atlasMapWebView.switchBack();
 			console.log('switched back');
 			await driver.wait(async () => {
-				atlasMapEditor = new CustomEditor();
-				return await atlasMapEditor.isDirty();
-			}, 20000, 'The editor is expected to be dirty but is not.');
+					atlasMapEditor = new CustomEditor();
+					return await atlasMapEditor.isDirty();
+				}, 20000, 'The editor is expected to be dirty but is not.');
 			console.log('editor is dirty');
 			await atlasMapEditor.save();
 			console.log('editor saved');
-			assert.isFalse(await atlasMapEditor.isDirty(), 'The editor is expected to be no more dirty after save but it is still dirty.');
+			await driver.wait(async () => {
+					return !await atlasMapEditor.isDirty();
+				}, 20000, 'The editor is expected to be no more dirty after save but it is still dirty.');
 			await new EditorView().closeEditor(newName);
 		});
 		
