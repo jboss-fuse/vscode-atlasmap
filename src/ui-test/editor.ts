@@ -24,7 +24,7 @@ export function editorTests() {
 	describe('AtlasMap in Editor tests', () => {
 		
 		it('Save as', async function () {
-			this.timeout(120000);
+			this.timeout(180000);
 			await prepareTest();
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
@@ -35,14 +35,15 @@ export function editorTests() {
 			const newName = 'atlasmap-mapping-savedas.adm';
 			await inputbox.setText(path.join(workspaceFolder, newName));
 			await inputbox.confirm();
-			
+			let openedEditors: String = '';
 			await driver.wait(async() => {
 				try {
+					openedEditors = (await new EditorView().getOpenEditorTitles()).join(', ');
 					return await new EditorView().openEditor(newName) !== undefined;
 				} catch {
 					return false;
 				}
-			}, 90000, 'The editor is not opened after saving as.');
+			}, 90000, 'The editor is not opened after saving as. Opened editors: '+ openedEditors);
 			expect(await new EditorView().getOpenEditorTitles()).to.have.lengthOf(1);
 			
 			const atlasMapWebView = await retrieveWebview(driver);
