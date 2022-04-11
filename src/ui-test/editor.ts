@@ -23,14 +23,9 @@ export function editorTests() {
 
 	describe('AtlasMap in Editor tests', () => {
 		
-		beforeEach(async () => {
-			const editorView = new EditorView();
-			await editorView.closeAllEditors();
-			driver = VSBrowser.instance.driver;
-		});
-
 		it('Save as', async function () {
 			this.timeout(120000);
+			await prepareTest();
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			await new EditorView().closeAllEditors();
@@ -72,6 +67,7 @@ export function editorTests() {
 		
 		it('Open and close .adm in AtlasMap Editor', async function () {
 			this.timeout(60000);
+			await prepareTest();
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			const admFileName = 'atlasmap-mapping.adm';
@@ -90,6 +86,7 @@ export function editorTests() {
 		
 		it('Open several .adms in AtlasMap Editor', async function () {
 			this.timeout(120000);
+			await prepareTest();
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
@@ -98,6 +95,7 @@ export function editorTests() {
 		
 		it('Open editor using codelens', async function () {
 			this.timeout(60000);
+			await prepareTest();
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			const camelRouteFilename = 'basic-case.xml';
@@ -109,7 +107,14 @@ export function editorTests() {
 			await new EditorView().openEditor('atlasmap-mapping.adm');
 		});
 	});
+	
+	async function prepareTest(): Promise<void> {
+		const editorView = new EditorView();
+		await editorView.closeAllEditors();
+		driver = VSBrowser.instance.driver;
+	}
 }
+
 
 async function retrieveAtlasMapEditor(driver: WebDriver, atlasMapWebView: WebView) {
 	const atlasMapEditor = new CustomEditor();
