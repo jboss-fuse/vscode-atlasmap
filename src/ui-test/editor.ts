@@ -41,7 +41,13 @@ export function editorTests() {
 			await inputbox.setText(path.join(workspaceFolder, newName));
 			await inputbox.confirm();
 			
-			await new EditorView().openEditor(newName);
+			await driver.wait(async() => {
+				try {
+					return await new EditorView().openEditor(newName) !== undefined;
+				} catch {
+					return false;
+				}
+			});
 			expect(await new EditorView().getOpenEditorTitles()).to.have.lengthOf(1);
 			
 			const atlasMapWebView = await retrieveWebview(driver);
