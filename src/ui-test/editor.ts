@@ -30,6 +30,7 @@ export function editorTests() {
 			await VSBrowser.instance.openResources(workspaceFolder);
 			await new EditorView().closeAllEditors();
 			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
+			console.log('Opened editors: '+ (await new EditorView().getOpenEditorTitles()).join(', '));
 			await new Workbench().executeCommand('file: save as');
 			const inputbox = new InputBox();
 			const newName = 'atlasmap-mapping-savedas.adm';
@@ -163,9 +164,11 @@ async function addConstantInAtlasMap(driver: WebDriver, atlasMapWebView: WebView
 async function switchToAtlasmapFrame(driver: WebDriver, atlasMapWebView: WebView) {
 	await driver.wait(async () => {
 		try {
+			console.log('Switching to AtlasMap frame');
 			await atlasMapWebView.switchToFrame();
 			return true;
 		} catch {
+			console.log('Error when trying to switch to AtlasMap frame');
 			return false;
 		}
 	});
