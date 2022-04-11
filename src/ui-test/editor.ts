@@ -80,7 +80,9 @@ export function editorTests() {
 				return atlasMapEditor.isDirty();
 			}, 5000, 'The editor is expected to be dirty but is not.');
 			await atlasMapEditor.save();
-			assert.isFalse(await atlasMapEditor.isDirty(), 'The editor is expected to be no more dirty after save but it is still dirty.');
+			await driver.wait(async () => {
+				return !await atlasMapEditor.isDirty();
+			}, 20000, 'The editor is expected to be no more dirty after save but it is still dirty.');
 			await new EditorView().closeEditor(admFileName);
 		});
 		
