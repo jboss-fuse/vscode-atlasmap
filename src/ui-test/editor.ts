@@ -42,7 +42,7 @@ export function editorTests() {
 				} catch {
 					return false;
 				}
-			}, 20000, 'The editor is not opened after saving as.');
+			}, 90000, 'The editor is not opened after saving as.');
 			expect(await new EditorView().getOpenEditorTitles()).to.have.lengthOf(1);
 			
 			const atlasMapWebView = await retrieveWebview(driver);
