@@ -59,7 +59,7 @@ export function editorTests() {
 			console.log('switched back');
 			await driver.wait(async () => {
 				atlasMapEditor = new CustomEditor();
-				return atlasMapEditor.isDirty();
+				return await atlasMapEditor.isDirty();
 			}, 20000, 'The editor is expected to be dirty but is not.');
 			console.log('editor is dirty');
 			await atlasMapEditor.save();
