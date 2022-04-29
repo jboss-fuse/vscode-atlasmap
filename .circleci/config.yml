@@ -3,7 +3,7 @@ version: 2.1
 job_default: &job_defaults
   working_directory: ~/vscode-atlasmap
   docker:
-    - image: cimg/node:14.18-browsers
+    - image: cimg/node:16.15-browsers
   
 jobs:
   build:
