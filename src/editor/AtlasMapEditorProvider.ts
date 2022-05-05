@@ -44,7 +44,11 @@ export class AtlasMapEditorProvider implements vscode.CustomEditorProvider<Atlas
 	
 	async saveCustomDocumentAs(document: AtlasMapDocument, destination: vscode.Uri, cancellation: vscode.CancellationToken): Promise<void> {
 		const externalUrl = await AtlasMapWebViewUtil.getAtlasMapExternalURI(document.associatedPort);
-		await vscode.workspace.fs.writeFile(destination, await download(`${externalUrl}v2/atlas/mapping/ZIP`));
+		console.log(`Will save file by calling ${externalUrl}`);
+		const zipToSave = await download(`${externalUrl}v2/atlas/mapping/ZIP`);
+		console.log(`Will write file to ${destination}`);
+		await vscode.workspace.fs.writeFile(destination, zipToSave);
+		console.log(`File saved to ${destination}`);
 	}
 	
 	revertCustomDocument(document: AtlasMapDocument, cancellation: vscode.CancellationToken): Thenable<void> {
