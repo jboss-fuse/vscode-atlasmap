@@ -23,22 +23,29 @@ export function editorTests() {
 
 	describe('AtlasMap in Editor tests', () => {
 		
+		let openedEditors: String = '';
+		
 		it('Save as', async function () {
 			this.timeout(180000);
 			await prepareTest();
 			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
 			await VSBrowser.instance.openResources(workspaceFolder);
 			await new EditorView().closeAllEditors();
-			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
+			let atlasMapWebView = await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
+			let atlasMapEditor = await retrieveAtlasMapEditor(driver, atlasMapWebView);
+			await atlasMapWebView.switchBack();
+			await atlasMapEditor.save();
 			await new Workbench().executeCommand('file: save as');
 			const inputbox = new InputBox();
 			const newName = 'atlasmap-mapping-savedas.adm';
-			await inputbox.setText(path.join(workspaceFolder, newName));
+			const newFullPath = path.join(workspaceFolder, newName);
+			console.log(`New full path is ${newFullPath}`);
+			await inputbox.setText(newFullPath);
 			await inputbox.confirm();
-			let openedEditors: String = '';
 			await driver.wait(async() => {
 				try {
 					openedEditors = (await new EditorView().getOpenEditorTitles()).join(', ');
+					console.log('currently opened editors: ' + openedEditors);
 					return await new EditorView().openEditor(newName) !== undefined;
 				} catch {
 					return false;
@@ -46,8 +53,8 @@ export function editorTests() {
 			}, 90000, 'The editor is not opened after saving as. Opened editors: '+ openedEditors);
 			expect(await new EditorView().getOpenEditorTitles()).to.have.lengthOf(1);
 			
-			const atlasMapWebView = await retrieveWebview(driver);
-			let atlasMapEditor = await retrieveAtlasMapEditor(driver, atlasMapWebView);
+			atlasMapWebView = await retrieveWebview(driver);
+			atlasMapEditor = await retrieveAtlasMapEditor(driver, atlasMapWebView);
 			
 			await addConstantInAtlasMap(driver, atlasMapWebView);
 			console.log('will switch back');
@@ -115,7 +122,7 @@ export function editorTests() {
 		const editorView = new EditorView();
 		await editorView.closeAllEditors();
 		driver = VSBrowser.instance.driver;
-		console.log('End of preparign test');
+		console.log('End of preparing test');
 	}
 }
 
@@ -125,11 +132,11 @@ async function retrieveAtlasMapEditor(driver: WebDriver, atlasMapWebView: WebVie
 	assert.isFalse(await atlasMapEditor.isDirty(), 'The editor is expected to not be dirty on first open but it is dirty.');
 	await switchToAtlasmapFrame(driver, atlasMapWebView);
 	try {
-		await driver.wait(until.elementLocated(By.xpath("//title[text()='AtlasMap Data Mapper UI']")), 10000);
+		await driver.wait(until.elementLocated(By.xpath("//title[text()='AtlasMap Data Mapper UI']")), 30000);
 	} catch {
 		// sometimes, the switch seems to not have been done as expected, redoing it is solving the problem...
 		await switchToAtlasmapFrame(driver, atlasMapWebView);
-		await driver.wait(until.elementLocated(By.xpath("//title[text()='AtlasMap Data Mapper UI']")), 10000);
+		await driver.wait(until.elementLocated(By.xpath("//title[text()='AtlasMap Data Mapper UI']")), 30000);
 	}
 	return atlasMapEditor;
 }
