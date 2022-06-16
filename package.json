@@ -19,17 +19,17 @@
 		{
 			"name": "Aurélien Pupier",
 			"email": "apupier@redhat.com",
-			"url": "http://redhat.com"
+			"url": "https://redhat.com"
 		},
 		{
 			"name": "Lars Heinemann",
 			"email": "lheinema@redhat.com",
-			"url": "http://redhat.com"
+			"url": "https://redhat.com"
 		},
 		{
 			"name": "Joshi Raez",
 			"email": "jraez@redhat.com",
-			"url": "http://redhat.com"
+			"url": "https://redhat.com"
 		}
 	],
 	"license": "Apache-2.0",
