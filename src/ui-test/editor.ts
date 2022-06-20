@@ -22,12 +22,25 @@ export function editorTests() {
 	let driver: WebDriver;
 
 	describe('AtlasMap in Editor tests', () => {
+
+		const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
+
+		before(async function () {
+			this.timeout(20000);
+			driver = VSBrowser.instance.driver;
+			await VSBrowser.instance.openResources(workspaceFolder);
+		});
+
+		beforeEach(async function () {
+			this.timeout(10000);
+			console.log('Start of preparing test');
+			const editorView = new EditorView();
+			await editorView.closeAllEditors();
+			console.log('End of preparing test');
+		});
 		
 		it('Save as', async function () {
 			this.timeout(180000);
-			await prepareTest();
-			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
-			await VSBrowser.instance.openResources(workspaceFolder);
 			await new EditorView().closeAllEditors();
 			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
 			console.log('Opened editors: '+ (await new EditorView().getOpenEditorTitles()).join(', '));
@@ -69,9 +82,6 @@ export function editorTests() {
 		
 		it('Open and close .adm in AtlasMap Editor', async function () {
 			this.timeout(120000);
-			await prepareTest();
-			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
-			await VSBrowser.instance.openResources(workspaceFolder);
 			const admFileName = 'atlasmap-mapping.adm';
 			const atlasMapWebView = await openAdmFile(workspaceFolder, admFileName, driver);
 			const atlasMapEditor = await retrieveAtlasMapEditor(driver, atlasMapWebView);
@@ -90,18 +100,12 @@ export function editorTests() {
 		
 		it('Open several .adms in AtlasMap Editor', async function () {
 			this.timeout(120000);
-			await prepareTest();
-			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
-			await VSBrowser.instance.openResources(workspaceFolder);
 			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
 			await openAdmFile(workspaceFolder, 'atlasmap-mapping2.adm', driver);
 		});
 		
 		it('Open editor using codelens', async function () {
 			this.timeout(120000);
-			await prepareTest();
-			const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
-			await VSBrowser.instance.openResources(workspaceFolder);
 			const camelRouteFilename = 'basic-case.xml';
 			await VSBrowser.instance.openResources(path.join(workspaceFolder, 'editor-test', camelRouteFilename));
 			const xmlEditor = await new EditorView().openEditor(camelRouteFilename) as TextEditor;
@@ -111,15 +115,7 @@ export function editorTests() {
 			await new EditorView().openEditor('atlasmap-mapping.adm');
 		});
 	});
-	
-	async function prepareTest(): Promise<void> {
-		const editorView = new EditorView();
-		await editorView.closeAllEditors();
-		driver = VSBrowser.instance.driver;
-		console.log('End of preparign test');
-	}
 }
-
 
 async function retrieveAtlasMapEditor(driver: WebDriver, atlasMapWebView: WebView) {
 	const atlasMapEditor = new CustomEditor();

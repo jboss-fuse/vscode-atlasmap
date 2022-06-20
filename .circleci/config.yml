@@ -44,7 +44,7 @@ jobs:
           path: ~/.config/Code/User/workspaceStorage/
           name: Store VS Code User Workspace storage
       - store_artifacts:
-          path: ~/vscode-atlasmap/test-resources/screenshots
+          path: ~/vscode-atlasmap/uitest-resources/screenshots
           name: Store VS Code UI Tests screenshots on failure
       - when:
           condition:
