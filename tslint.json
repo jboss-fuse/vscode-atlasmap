@@ -5,6 +5,6 @@
 		"no-implicit-dependencies": [true, "dev", ["vscode"]]
 	},
 	"linterOptions": {
-		"exclude": ["test-extensions/**", "test-resources/**"]
+		"exclude": ["test-extensions/**", "uitest-resources/**"]
 	}
 }
