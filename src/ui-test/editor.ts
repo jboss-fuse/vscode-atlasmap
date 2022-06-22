@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { VSBrowser, WebDriver, EditorView, WebView, By, CustomEditor, until, Workbench, InputBox, TextEditor } from 'vscode-extension-tester';
+import { VSBrowser, WebDriver, EditorView, WebView, By, CustomEditor, until, Workbench, InputBox, TextEditor, NotificationType } from 'vscode-extension-tester';
 import { assert, expect } from 'chai';
 import path = require('path');
 
@@ -41,7 +41,6 @@ export function editorTests() {
 		
 		it('Save as', async function () {
 			this.timeout(180000);
-			await new EditorView().closeAllEditors();
 			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
 			console.log('Opened editors: '+ (await new EditorView().getOpenEditorTitles()).join(', '));
 			await new Workbench().executeCommand('file: save as');
@@ -49,17 +48,11 @@ export function editorTests() {
 			const newName = 'atlasmap-mapping-savedas.adm';
 			await inputbox.setText(path.join(workspaceFolder, newName));
 			await inputbox.confirm();
-			let openedEditors: String = '';
-			await driver.wait(async() => {
-				try {
-					openedEditors = (await new EditorView().getOpenEditorTitles()).join(', ');
-					return await new EditorView().openEditor(newName) !== undefined;
-				} catch {
-					return false;
-				}
-			}, 90000, 'The editor is not opened after saving as. Opened editors: '+ openedEditors);
+			await waitForAtlasMapEditorOpening();
+			await handleDirtyEditor();
+
 			expect(await new EditorView().getOpenEditorTitles()).to.have.lengthOf(1);
-			
+
 			const atlasMapWebView = await retrieveWebview(driver);
 			let atlasMapEditor = await retrieveAtlasMapEditor(driver, atlasMapWebView);
 			
@@ -108,13 +101,63 @@ export function editorTests() {
 			this.timeout(120000);
 			const camelRouteFilename = 'basic-case.xml';
 			await VSBrowser.instance.openResources(path.join(workspaceFolder, 'editor-test', camelRouteFilename));
+			await waitForAtlasMapEditorOpening();
 			const xmlEditor = await new EditorView().openEditor(camelRouteFilename) as TextEditor;
 			const codelens = await xmlEditor.getCodeLens('Open in AtlasMap UI');
 			await codelens.click();
-			
+
+			await waitForAtlasMapEditorOpening();
+			await handleDirtyEditor();
 			await new EditorView().openEditor('atlasmap-mapping.adm');
 		});
 	});
+}
+
+async function handleDirtyEditor(): Promise<void> {
+	await new Promise( resolve => setTimeout(resolve, 3000) );
+	if(new CustomEditor().isDirty()) {
+		console.log('Editor is dirty!... Reverting file...');
+		await revertChanges();
+		console.log('File changes reverted!');
+	}
+}
+
+async function revertChanges(): Promise<void> {
+	const workbench = new Workbench();
+	await workbench.executeCommand('File: Revert File');
+}
+
+async function waitForAtlasMapEditorOpening(timeout = 60000) {
+	await new Promise( resolve => setTimeout(resolve, 5000) ); // wait for initial notification is displayed
+	try {
+		console.log('Start checking notifications');
+		await VSBrowser.instance.driver.wait(async () => {
+			return notificationExists('Waiting for editor to open AtlasMap UI for');
+		}, timeout);
+		await new Promise( resolve => setTimeout(resolve, 5000) ); // wait for the AtlasMap editor init
+		console.log('End checking notifications');
+	} catch(error) {
+		expect.fail(`Could not find notification: ${error}`);
+	}
+}
+
+async function notificationExists(text: string): Promise<boolean> {
+	try {
+		const center = await new Workbench().openNotificationsCenter();
+		const notifications = await center.getNotifications(NotificationType.Any);
+		for (const notification of notifications) {
+			const message = await notification.getMessage();
+			if (message.includes(text)) {
+				console.log(message);
+				return false;
+			}
+		}
+		console.log('AtlasMap notification is gone!');
+		return true;
+	} catch (err) {
+		console.log('AtlasMap notification is gone!');
+		return true;
+	}
 }
 
 async function retrieveAtlasMapEditor(driver: WebDriver, atlasMapWebView: WebView) {
@@ -133,7 +176,9 @@ async function retrieveAtlasMapEditor(driver: WebDriver, atlasMapWebView: WebVie
 
 async function openAdmFile(workspaceFolder: string, admFileName: string, driver: WebDriver) {
 	await VSBrowser.instance.openResources(path.join(workspaceFolder, admFileName));
+	await waitForAtlasMapEditorOpening();
 	await new EditorView().openEditor(admFileName);
+	await handleDirtyEditor();
 	return retrieveWebview(driver);
 }
 
