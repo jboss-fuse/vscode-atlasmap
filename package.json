@@ -99,7 +99,7 @@
 		"postinstall": "node ./scripts/postinstall.js",
 		"test": "node ./out/test/runTest.js",
 		"update-deps": "npm update",
-		"ui-test": "extest setup-and-run out/ui-test/all.js --storage uitest-resources --code_settings ./src/ui-test/settings.json",
+		"ui-test": "extest setup-and-run out/ui-test/all.js --storage uitest-resources --code_settings ./src/ui-test/settings.json --uninstall_extension",
 		"tslint": "gulp tslint"
 	},
 	"dependencies": {
