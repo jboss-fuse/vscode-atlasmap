@@ -52,10 +52,10 @@ function checkJavaRuntime(): Promise<string> {
 		}
 		if (javaHome) {
 			javaHome = expandHomeDir(javaHome);
-			if (!pathExists.sync(javaHome)) {
+			if (!pathExists.pathExistsSync(javaHome)) {
 				openJDKDownload(reject, source + ' points to a missing folder');
 			}
-			if (!pathExists.sync(path.resolve(javaHome, 'bin', JAVAC_FILENAME))) {
+			if (!pathExists.pathExistsSync(path.resolve(javaHome, 'bin', JAVAC_FILENAME))) {
 				openJDKDownload(reject, source + ' does not point to a JDK.');
 			}
 			return resolve(javaHome);

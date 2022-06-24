@@ -112,7 +112,7 @@
 		"find-java-home": "^1.2.2",
 		"md5": "^2.3.0",
 		"path": "^0.12.7",
-		"path-exists": "^4.0.0",
+		"path-exists": "^5.0.0",
 		"util": "^0.12.4",
 		"valid-filename": "^4.0.0"
 	},
