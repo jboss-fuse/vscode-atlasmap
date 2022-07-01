@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 0.2.0
+
+- Upgrade to AtlasMap 2.4.0. Beware 2.4.0 is based on 2.3.x which is older than 2.4.0-M4 this extension was previously based on. The main branch work is now suspended. Breaking changes: adm files created with 0.1.x VS Code AtlasMap might not be compatible with this new version. It should work in most of the cases but it is not guaranteed.
+
 ## 0.1.3
 
 - Upgrade to AtlasMap 2.4.0-M.4, notably includes upgrades to log4j 2.17.1
