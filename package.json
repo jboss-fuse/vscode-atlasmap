@@ -2,12 +2,12 @@
 	"name": "atlasmap-viewer",
 	"displayName": "AtlasMap Data Transformation editor by Red Hat",
 	"description": "Opens a browser for AtlasMap Data Transformation editor",
-	"version": "0.1.3",
+	"version": "0.2.0",
 	"publisher": "redhat",
 	"icon": "icons/icon128.png",
 	"preview": true,
 	"config": {
-		"atlasmapversion": "2.4.0-M.4"
+		"atlasmapversion": "2.4.0"
 	},
 	"bugs": "https://github.com/jboss-fuse/vscode-atlasmap/issues",
 	"homepage": "https://github.com/jboss-fuse/vscode-atlasmap",
