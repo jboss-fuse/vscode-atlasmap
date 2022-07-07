@@ -11,6 +11,7 @@ import { getRedHatService, TelemetryEvent, TelemetryService } from "@redhat-deve
 import { AtlasMapEditorProvider } from './editor/AtlasMapEditorProvider';
 import { AtlasMapDocument } from './editor/AtlasMapDocument';
 
+const validFilename = require('valid-filename');
 const chokidar = require('chokidar');
 const fs = require('fs');
 const md5 = require('md5');
@@ -70,15 +71,7 @@ async function createAndOpenADM() {
 	const selectedWorkspaceFolder: vscode.WorkspaceFolder | undefined = await vscode.window.showWorkspaceFolderPick( {placeHolder: 'Please select the workspace folder in which the new file will be created.'} );
 	if (selectedWorkspaceFolder) {
 		const fileName: string = await vscode.window.showInputBox( {placeHolder: "Enter the name of the new AtlasMap file", validateInput: async (name: string) => {
-			const file: string = `${selectedWorkspaceFolder.uri.fsPath}/${getValidFileNameWithExtension(name)}`;
-			const validFileName = await import('valid-filename');
-			if (!validFileName.default(name)) {
-				return 'The filename is invalid.';
-			}
-			if (await fileExists(vscode.Uri.file(file))) {
-				return `A file with that name already exists.`;
-			}
-			return undefined;
+			return validateFileName(selectedWorkspaceFolder, name);
 		}});
 		if (fileName) {
 			const file = `${selectedWorkspaceFolder.uri.fsPath}/${getValidFileNameWithExtension(fileName)}`;
@@ -87,6 +80,17 @@ async function createAndOpenADM() {
 			sendCreateEvent();
 		}			
 	}
+}
+
+export async function validateFileName(selectedWorkspaceFolder: vscode.WorkspaceFolder, fileName): Promise<string> {
+	const file: string = `${selectedWorkspaceFolder.uri.fsPath}/${getValidFileNameWithExtension(fileName)}`;
+		if (!validFilename(fileName)) {
+			return 'The filename is invalid.';
+		}
+		if (await fileExists(vscode.Uri.file(file))) {
+			return `A file with that name already exists.`;
+		}
+		return undefined;
 }
 
 function getValidFileNameWithExtension(name: string): string {

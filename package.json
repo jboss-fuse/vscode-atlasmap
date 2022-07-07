@@ -56,7 +56,9 @@
 					"default": null,
 					"markdownDescription": "Enable usage data and errors to be sent to Red Hat servers. Read our [privacy statement](https://developers.redhat.com/article/tool-data-collection).",
 					"scope": "window",
-					"tags": ["telemetry"]
+					"tags": [
+						"telemetry"
+					]
 				}
 			}
 		},
@@ -114,7 +116,7 @@
 		"path": "^0.12.7",
 		"path-exists": "^4.0.0",
 		"util": "^0.12.4",
-		"valid-filename": "^4.0.0"
+		"valid-filename": "^3.1.0"
 	},
 	"devDependencies": {
 		"@types/chai": "^4.3.1",

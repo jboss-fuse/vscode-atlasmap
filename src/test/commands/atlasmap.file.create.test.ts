@@ -7,7 +7,7 @@ import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
 import path = require('path');
 import { fail } from "assert";
-import { fileExists } from "../../extension";
+import { fileExists, validateFileName } from "../../extension";
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -60,5 +60,21 @@ describe('Test Command: atlasmap.file.create', function() {
 		} catch (err) {
 			fail(err);
 		}
+	});
+	
+	describe('Check validator for file name', () => {
+		
+		it('Check validator of input for valid file name', async function () {
+			expect(await validateFileName(wspFld, 'good name')).to.be.undefined;
+		});
+		
+		it('Check validator of input for invalid file name', async function () {
+			expect(await validateFileName(wspFld, 'wrong/name')).to.not.be.undefined;
+		});
+		
+		it('Check validator of input for invalid empty file name', async function () {
+			expect(await validateFileName(wspFld, '')).to.not.be.undefined;
+		});
+		
 	});
 });
