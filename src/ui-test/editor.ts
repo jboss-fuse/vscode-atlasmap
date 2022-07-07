@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { VSBrowser, WebDriver, EditorView, WebView, By, CustomEditor, until, Workbench, InputBox, TextEditor, NotificationType } from 'vscode-extension-tester';
-import { assert, expect } from 'chai';
+import { VSBrowser, WebDriver, EditorView, WebView, By, CustomEditor, until, Workbench, InputBox, TextEditor } from 'vscode-extension-tester';
+import { expect } from 'chai';
 import path = require('path');
+import { handleDirtyEditor, retrieveWebview, retrieveAtlasMapEditor, notificationExists } from './AtlasMapEditorUtils';
 
 export function editorTests() {
 	let driver: WebDriver;
@@ -113,20 +114,6 @@ export function editorTests() {
 	});
 }
 
-async function handleDirtyEditor(): Promise<void> {
-	await new Promise( resolve => setTimeout(resolve, 3000) );
-	if(new CustomEditor().isDirty()) {
-		console.log('Editor is dirty!... Reverting file...');
-		await revertChanges();
-		console.log('File changes reverted!');
-	}
-}
-
-async function revertChanges(): Promise<void> {
-	const workbench = new Workbench();
-	await workbench.executeCommand('File: Revert File');
-}
-
 async function waitForAtlasMapEditorOpening(timeout = 60000) {
 	await new Promise( resolve => setTimeout(resolve, 5000) ); // wait for initial notification is displayed
 	try {
@@ -140,53 +127,12 @@ async function waitForAtlasMapEditorOpening(timeout = 60000) {
 		expect.fail(`Could not find notification: ${error}`);
 	}
 }
-
-async function notificationExists(text: string): Promise<boolean> {
-	try {
-		const center = await new Workbench().openNotificationsCenter();
-		const notifications = await center.getNotifications(NotificationType.Any);
-		for (const notification of notifications) {
-			const message = await notification.getMessage();
-			if (message.includes(text)) {
-				console.log(message);
-				return false;
-			}
-		}
-		console.log('AtlasMap notification is gone!');
-		return true;
-	} catch (err) {
-		console.log('AtlasMap notification is gone!');
-		return true;
-	}
-}
-
-async function retrieveAtlasMapEditor(driver: WebDriver, atlasMapWebView: WebView) {
-	const atlasMapEditor = new CustomEditor();
-	assert.isFalse(await atlasMapEditor.isDirty(), 'The editor is expected to not be dirty on first open but it is dirty.');
-	await switchToAtlasmapFrame(driver, atlasMapWebView);
-	try {
-		await driver.wait(until.elementLocated(By.xpath("//title[text()='AtlasMap Data Mapper UI']")), 10000);
-	} catch {
-		// sometimes, the switch seems to not have been done as expected, redoing it is solving the problem...
-		await switchToAtlasmapFrame(driver, atlasMapWebView);
-		await driver.wait(until.elementLocated(By.xpath("//title[text()='AtlasMap Data Mapper UI']")), 10000);
-	}
-	return atlasMapEditor;
-}
-
 async function openAdmFile(workspaceFolder: string, admFileName: string, driver: WebDriver) {
 	await VSBrowser.instance.openResources(path.join(workspaceFolder, admFileName));
 	await waitForAtlasMapEditorOpening();
 	await new EditorView().openEditor(admFileName);
 	await handleDirtyEditor();
 	return retrieveWebview(driver);
-}
-
-async function retrieveWebview(driver: WebDriver) {
-	const atlasMapWebView = new WebView();
-	await switchToAtlasmapFrame(driver, atlasMapWebView);
-	await atlasMapWebView.switchBack();
-	return atlasMapWebView;
 }
 
 async function addConstantInAtlasMap(driver: WebDriver, atlasMapWebView: WebView) {
@@ -200,17 +146,4 @@ async function addConstantInAtlasMap(driver: WebDriver, atlasMapWebView: WebView
 	const confirmConstantButton = await atlasMapWebView.findWebElement(By.xpath("//button[@data-testid='confirmation-dialog-confirm-button']"));
 	await driver.wait(until.elementIsEnabled(confirmConstantButton));
 	await confirmConstantButton.click();
-}
-
-async function switchToAtlasmapFrame(driver: WebDriver, atlasMapWebView: WebView) {
-	await driver.wait(async () => {
-		try {
-			console.log('Switching to AtlasMap frame');
-			await atlasMapWebView.switchToFrame();
-			return true;
-		} catch {
-			console.log('Error when trying to switch to AtlasMap frame');
-			return false;
-		}
-	});
 }
