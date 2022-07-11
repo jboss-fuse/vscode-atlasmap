@@ -88,7 +88,7 @@ For Red Hat Integration users, even if VS Code AtlasMap is not supported, here i
 
 |Fuse version|AtlasMap upstream version|Closest VS Code AtlasMap|
 |--------------|------------------|--------------------------------|
-|7.11|2.3.8|0.0.9 (using AtlasMap 2.3.2)|
+|7.11|2.3.8|0.0.9 (using AtlasMap 2.3.2) or 0.2.0 (using AtlasMap 2.4.0 which is mostly based on 2.3.x branch)|
 |7.10|2.3.2|0.0.9 (using AtlasMap 2.3.2)|
 |7.9|2.2.3|0.0.8 (using AtlasMap 2.2.3)|
 |7.8|2.0.7|0.0.6 (using AtlasMap 2.0.5)|
