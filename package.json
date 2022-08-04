@@ -105,7 +105,7 @@
 		"tslint": "gulp tslint"
 	},
 	"dependencies": {
-		"@redhat-developer/vscode-redhat-telemetry": "^0.4.2",
+		"@redhat-developer/vscode-redhat-telemetry": "^0.4.3",
 		"child_process": "^1.0.2",
 		"chokidar": "^3.5.2",
 		"download": "^8.0.0",
