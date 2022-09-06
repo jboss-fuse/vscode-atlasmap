@@ -36,9 +36,9 @@ When the AtlasMap editor is opened, some commands to debug are available:
 * Create a tag
 * Push the tag to vscode-atlasmap repository, it will trigger a build after few minutes
 * Check build is working fine on [Circle CI](https://app.circleci.com/pipelines/github/jboss-fuse/vscode-atlasmap)
-* Start build on [Jenkins CI](https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Fuse/job/VSCode/job/vscode-atlasmap-release/) with _publishToMarketPlace_ and _publishToOVSX_ parameters checked
+* Start build on [Jenkins CI](https://studio-jenkins-csb-codeready.apps.ocp-c1.prod.psi.redhat.com/job/Fuse/job/VSCode/job/vscode-atlasmap-release/) with _publishToMarketPlace_ and _publishToOVSX_ parameters checked
 * When the build hits the _Publish to Marketplace_ step, it will wait for a response
-* It is possible to check that the produced vsix is valid by using the one pushed in [Jboss download area](https://download.jboss.org/jbosstools/vscode/stable/vscode-atlasmap/)
+* It is possible to check that the produced vsix is valid by using the one pushed in [Jboss download area](https://download.jboss.org/jbosstools/vscode/snapshots/vscode-atlasmap/)
 * For someone in _submitter_ list:
   * Ensure you are logged in
   * Go to the console log of the build and click "Proceed"
