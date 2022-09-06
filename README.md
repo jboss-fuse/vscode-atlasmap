@@ -71,6 +71,7 @@ Corresponding versions between VS Code AtlasMap and AtlasMap runtime:
 
 | VS Code AtlasMap version | AtlasMap version |
 | ------------------------ | ---------------- |
+| 0.2.1 | 2.5.0 |
 | 0.2.0 | 2.5.0 |
 | 0.1.3 | 2.4.0-M4 |
 | 0.1.2 | 2.4.0-M3 |
