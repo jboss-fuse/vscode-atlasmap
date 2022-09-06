@@ -70,16 +70,42 @@ export function deactivate(context: vscode.ExtensionContext) {
 async function createAndOpenADM() {
 	const selectedWorkspaceFolder: vscode.WorkspaceFolder | undefined = await vscode.window.showWorkspaceFolderPick( {placeHolder: 'Please select the workspace folder in which the new file will be created.'} );
 	if (selectedWorkspaceFolder) {
+		const admFileLocationChoice = await vscode.window.showQuickPick(
+			["Same as workspace", "Select a folder inside workspace"], {placeHolder: "Select the location of the .adm file"}
+		)
+		let admFolder = selectedWorkspaceFolder.uri.fsPath;
+		if(admFileLocationChoice === "Select a folder inside workspace") {
+			const options: vscode.OpenDialogOptions = {
+				defaultUri: selectedWorkspaceFolder.uri,
+				canSelectMany: false,
+				openLabel: 'Select',
+				canSelectFiles: false,
+				canSelectFolders: true
+			};
+		
+			const admFolderUri = (await vscode.window.showOpenDialog(options))[0];
+			while(!folderIsInside(selectedWorkspaceFolder.uri.fsPath, admFolderUri.fsPath)) {
+				vscode.window.showErrorMessage("Select a folder inside the workspace.")
+				const admFolderUri = (await vscode.window.showOpenDialog(options))[0];
+			}
+			admFolder = admFolderUri.fsPath
+		}
 		const fileName: string = await vscode.window.showInputBox( {placeHolder: "Enter the name of the new AtlasMap file", validateInput: async (name: string) => {
 			return validateFileName(selectedWorkspaceFolder, name);
 		}});
 		if (fileName) {
-			const file = `${selectedWorkspaceFolder.uri.fsPath}/${getValidFileNameWithExtension(fileName)}`;
+			const file = `${admFolder}/${getValidFileNameWithExtension(fileName)}`;
+			vscode.window.showInformationMessage(file);
 			await vscode.workspace.fs.writeFile(vscode.Uri.file(file), Buffer.from(''));
 			await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(file));
 			sendCreateEvent();
 		}			
 	}
+}
+
+function folderIsInside(parentFolder: string, subFolder: string) : boolean {
+	const rel = path.relative(parentFolder, subFolder);
+    return !rel.startsWith('../') && rel !== '..';
 }
 
 export async function validateFileName(selectedWorkspaceFolder: vscode.WorkspaceFolder, fileName): Promise<string> {
