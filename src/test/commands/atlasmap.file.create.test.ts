@@ -16,21 +16,24 @@ describe('Test Command: atlasmap.file.create', function() {
 
 	let sandbox: sinon.SinonSandbox;
 	let workspaceSelectorStub: sinon.SinonStub;
+	let admLocationStub: sinon.SinonStub;
 	let fileNameInputStub: sinon.SinonStub;
 	
 	const testADMFileName: string = 'test.adm';
 	let testADMFile: vscode.Uri;
-	let workspaceFolder: vscode.Uri;
-	let wspFld: vscode.WorkspaceFolder;
+	let workspaceFolderUri: vscode.Uri;
+	let workspaceFolder: vscode.WorkspaceFolder;
 
 	before( async () => {
 		sandbox = sinon.createSandbox();
 
-		workspaceFolder = vscode.Uri.file(path.join(__dirname, '../../../test Fixture with speci@l chars'));
-		wspFld = vscode.workspace.getWorkspaceFolder(workspaceFolder);
+		workspaceFolderUri = vscode.Uri.file(path.join(__dirname, '../../../test Fixture with speci@l chars'));
+		workspaceFolder = vscode.workspace.getWorkspaceFolder(workspaceFolderUri);
 		
 		workspaceSelectorStub = sinon.stub(vscode.window, 'showWorkspaceFolderPick');
-		workspaceSelectorStub.returns(wspFld);
+		workspaceSelectorStub.returns(workspaceFolder);
+		admLocationStub = sinon.stub(vscode.window, 'showQuickPick');
+		admLocationStub.returns("");
 		fileNameInputStub = sinon.stub(vscode.window, 'showInputBox');
 	});
 
@@ -53,8 +56,9 @@ describe('Test Command: atlasmap.file.create', function() {
 		fileNameInputStub.onFirstCall().returns(testADMFileName);
 		try {
 			await vscode.commands.executeCommand('atlasmap.file.create');
-			testADMFile = vscode.Uri.file(`${workspaceFolder.path}/${testADMFileName}`);
+			testADMFile = vscode.Uri.file(`${workspaceFolderUri.path}/${testADMFileName}`);
 			expect(workspaceSelectorStub.called, 'Workspace Selector has not been called').to.be.true;
+			expect(admLocationStub.called, 'Adm location selection has not been called').to.be.true;
 			expect(fileNameInputStub.called, 'File name has not been asked').to.be.true;
 			expect(await fileExists(testADMFile), 'The created file does not exist').to.be.true;
 		} catch (err) {
@@ -65,15 +69,15 @@ describe('Test Command: atlasmap.file.create', function() {
 	describe('Check validator for file name', () => {
 		
 		it('Check validator of input for valid file name', async function () {
-			expect(await validateFileName(wspFld, 'good name')).to.be.undefined;
+			expect(await validateFileName(workspaceFolder, 'good name')).to.be.undefined;
 		});
 		
 		it('Check validator of input for invalid file name', async function () {
-			expect(await validateFileName(wspFld, 'wrong/name')).to.not.be.undefined;
+			expect(await validateFileName(workspaceFolder, 'wrong/name')).to.not.be.undefined;
 		});
 		
 		it('Check validator of input for invalid empty file name', async function () {
-			expect(await validateFileName(wspFld, '')).to.not.be.undefined;
+			expect(await validateFileName(workspaceFolder, '')).to.not.be.undefined;
 		});
 		
 	});
