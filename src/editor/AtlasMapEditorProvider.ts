@@ -16,12 +16,11 @@
  */
 
 import * as extension from '../extension';
+import fetch from 'node-fetch';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { AtlasMapDocument } from './AtlasMapDocument';
 import * as AtlasMapWebViewUtil from './AtlasMapWebViewUtil';
-
-import download = require('download');
 
 export class AtlasMapEditorProvider implements vscode.CustomEditorProvider<AtlasMapDocument> {
 	public static register(context: vscode.ExtensionContext): vscode.Disposable {
@@ -44,7 +43,9 @@ export class AtlasMapEditorProvider implements vscode.CustomEditorProvider<Atlas
 	
 	async saveCustomDocumentAs(document: AtlasMapDocument, destination: vscode.Uri, cancellation: vscode.CancellationToken): Promise<void> {
 		const externalUrl = await AtlasMapWebViewUtil.getAtlasMapExternalURI(document.associatedPort);
-		await vscode.workspace.fs.writeFile(destination, await download(`${externalUrl}v2/atlas/mapping/ZIP`));
+		const response = await fetch(`${externalUrl}v2/atlas/mapping/ZIP`);
+		const buffer = await response.arrayBuffer();
+		await vscode.workspace.fs.writeFile(destination, new Uint8Array(buffer));
 	}
 	
 	revertCustomDocument(document: AtlasMapDocument, cancellation: vscode.CancellationToken): Thenable<void> {
