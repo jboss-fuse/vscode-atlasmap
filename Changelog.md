@@ -2,6 +2,8 @@
 
 ## 0.2.1
 
+- Added an option when using 'Create AtlasMap file' action to choose the placement of the .adm file inside the workspace.
+
 ## 0.2.0
 
 - Upgrade to AtlasMap 2.5.0. Beware 2.5.0 is based on 2.3.x which is older than 2.4.0-M4 this extension was previously based on. The main branch work is now suspended. Breaking changes: adm files created with 0.1.x VS Code AtlasMap might not be compatible with this new version. It should work in most of the cases but it is not guaranteed.
