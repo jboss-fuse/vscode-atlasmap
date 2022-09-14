@@ -8,11 +8,12 @@ import * as vscode from "vscode";
 import path = require('path');
 import { fail } from "assert";
 import { fileExists, validateFileName } from "../../extension";
+import * as fs from "fs";
 
 const expect = chai.expect;
 chai.use(sinonChai);
 
-describe('Test Command: atlasmap.file.create', function() {
+describe.only('Test Command: atlasmap.file.create', function() {
 
 	let sandbox: sinon.SinonSandbox;
 	let workspaceSelectorStub: sinon.SinonStub;
@@ -66,6 +67,37 @@ describe('Test Command: atlasmap.file.create', function() {
 		}
 	});
 	
+	it.only('Test execution of command and creation of file', async function() {
+
+		const tempFolder = "admTmp";
+		const tempFolderUri = path.join(workspaceFolder.uri.path, tempFolder);
+		fs.mkdirSync(tempFolderUri);
+
+		workspaceSelectorStub = sinon.stub(vscode.window, 'showWorkspaceFolderPick');
+		workspaceSelectorStub.returns(workspaceFolder);
+		admLocationStub = sinon.stub(vscode.window, 'showQuickPick');
+		admLocationStub.returns("Select a folder inside workspace");
+		const dirPickerWindow = sinon.stub(vscode.window, 'showOpenDialog');
+		dirPickerWindow.resolves([vscode.Uri.file(".")] as vscode.Uri[]);
+		fileNameInputStub = sinon.stub(vscode.window, 'showInputBox');
+		fileNameInputStub.onFirstCall().returns(testADMFileName);
+
+		try {
+			await vscode.commands.executeCommand('atlasmap.file.create');
+			testADMFile = vscode.Uri.file(`${workspaceFolderUri.path}/${testADMFileName}`);
+			expect(workspaceSelectorStub.called, 'Workspace Selector has not been called').to.be.true;
+			expect(admLocationStub.called, 'Adm location selection has not been called').to.be.true;
+			expect(dirPickerWindow.called, 'Window directory picker was not called').to.be.true;
+			expect(fileNameInputStub.called, 'File name has not been asked').to.be.true;
+			expect(await fileExists(vscode.Uri.file(path.join(tempFolderUri, testADMFileName))),
+			 'The created file does not exist').to.be.true;
+		} catch (err) {
+			fail(err);
+		} finally {
+			fs.rmdirSync(tempFolderUri, {force: true, recursive: true})
+		}
+	});
+
 	describe('Check validator for file name', () => {
 		
 		it('Check validator of input for valid file name', async function () {
