@@ -68,45 +68,111 @@ export function deactivate(context: vscode.ExtensionContext) {
 }
 
 async function createAndOpenADM() {
-	const selectedWorkspaceFolder: vscode.WorkspaceFolder | undefined = await vscode.window.showWorkspaceFolderPick( {placeHolder: 'Please select the workspace folder in which the new file will be created.'} );
+	const selectedWorkspaceFolder: vscode.WorkspaceFolder | undefined
+		= await vscode.window.showWorkspaceFolderPick(
+			{placeHolder: 'Please select the workspace folder in which the new file will be created.'});
+	
 	if (selectedWorkspaceFolder) {
-		const admFileLocationChoice = await vscode.window.showQuickPick(
-			["Workspace root", "Select a folder inside Workspace"], {placeHolder: "Select the location of the .adm file"}
-		);
-		let admFolder = selectedWorkspaceFolder.uri.fsPath;
-		if(admFileLocationChoice === "Select a folder inside Workspace") {
-			const options: vscode.OpenDialogOptions = {
-				defaultUri: selectedWorkspaceFolder.uri,
-				canSelectMany: false,
-				openLabel: 'Select',
-				canSelectFiles: false,
-				canSelectFolders: true,
-				title: "Select the location of the .adm file in the Workspace."
-			};
-		
-			let admFolderUriArray = await vscode.window.showOpenDialog(options);
-			if (!admFolderUriArray) {
-				vscode.window.showInformationMessage("Cancelled by the user");
+		let admFolderPath : string = selectedWorkspaceFolder.uri.fsPath;
+	
+		const admFileAtWorkspaceRoot : boolean 
+			= await promptIfUserWantsAdmFileAtWorkspaceRoot();
+
+		if (!admFileAtWorkspaceRoot) {
+			const admFolderUri : vscode.Uri | undefined 
+				= await promptUserForAdmFileLocationInWorkspace(selectedWorkspaceFolder);
+
+			if (!admFolderUri) {
+				showUserAbortingInfoMessage();
 				return;
 			}
-			let admFolderUri = admFolderUriArray[0];
-			while(!folderIsInside(selectedWorkspaceFolder.uri.fsPath, admFolderUri.fsPath)) {
-				vscode.window.showErrorMessage(
-					"The chosen folder was outside of the workspace. You need to select a folder inside the workspace to create the AtlasMap Data transformation file.");
-				admFolderUri = (await vscode.window.showOpenDialog(options))[0];
-			}
-			admFolder = admFolderUri.fsPath;
+
+			admFolderPath = admFolderUri.fsPath;
 		}
-		const fileName: string = await vscode.window.showInputBox( {placeHolder: "Enter the name of the new AtlasMap file", validateInput: async (name: string) => {
-			return validateFileName(selectedWorkspaceFolder, name);
-		}});
+
+		const fileName: string | undefined 
+			= await promptForAdmFileName(selectedWorkspaceFolder);
+
 		if (fileName) {
-			const file = `${admFolder}/${getValidFileNameWithExtension(fileName)}`;
-			await vscode.workspace.fs.writeFile(vscode.Uri.file(file), Buffer.from(''));
-			await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(file));
-			sendCreateEvent();
-		}			
+			await createAdmFile(admFolderPath, fileName);
+		}
 	}
+}
+
+async function promptIfUserWantsAdmFileAtWorkspaceRoot() : Promise<boolean> {
+	const userSelection = await vscode.window.showQuickPick(
+		["Workspace root", "Select a folder inside Workspace"], {placeHolder: "Select the location of the .adm file"}
+	);
+
+	return !userSelection || userSelection === "Workspace root";
+}
+
+async function promptUserForAdmFileLocationInWorkspace(workspaceRoot: vscode.WorkspaceFolder) 
+	: Promise<vscode.Uri | undefined> {
+
+	let admFolderUri = await promptUserForDirectoryForAdmFile(workspaceRoot);
+
+	if (!admFolderUri) {
+		return undefined;
+	}
+
+	while(!folderIsInside(workspaceRoot.uri.fsPath, admFolderUri.fsPath)) {
+		showFolderOutsideWorkspaceErrorMessage();
+
+		admFolderUri = await promptUserForDirectoryForAdmFile(workspaceRoot);
+
+		if (!admFolderUri) {
+			return undefined;
+		}
+	}
+
+	return admFolderUri;
+}
+
+async function promptForAdmFileName(workspaceFolder : vscode.WorkspaceFolder)
+	: Promise<string | undefined> {
+	return vscode.window.showInputBox(
+		{placeHolder: "Enter the name of the new AtlasMap file",
+		validateInput: async (name: string) => {
+			return validateFileName(workspaceFolder, name);
+	}});
+}
+
+async function createAdmFile(admFolderPath : string, fileName : string) {
+	const file = `${admFolderPath}/${getValidFileNameWithExtension(fileName)}`;
+	await vscode.workspace.fs.writeFile(vscode.Uri.file(file), Buffer.from(''));
+	await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(file));
+	sendCreateEvent();
+}
+
+function showFolderOutsideWorkspaceErrorMessage() {
+	vscode.window.showErrorMessage(
+		"The chosen folder was outside of the workspace. You need to select a folder inside the workspace to create the AtlasMap Data transformation file.");
+}
+
+function showUserAbortingInfoMessage() {
+	vscode.window.showInformationMessage("Cancelled by the user");
+}
+
+async function promptUserForDirectoryForAdmFile(workspaceRoot: vscode.WorkspaceFolder)
+	: Promise<vscode.Uri | undefined> {
+
+	const options: vscode.OpenDialogOptions = {
+		defaultUri: workspaceRoot.uri,
+		canSelectMany: false,
+		openLabel: 'Select',
+		canSelectFiles: false,
+		canSelectFolders: true,
+		title: "Select the location of the .adm file in the Workspace."
+	};
+
+	let admFolderUriArray = await vscode.window.showOpenDialog(options);
+	
+	if (!admFolderUriArray) {
+		return undefined;
+	}
+
+	return admFolderUriArray[0];
 }
 
 function folderIsInside(parentFolder: string, subFolder: string) : boolean {

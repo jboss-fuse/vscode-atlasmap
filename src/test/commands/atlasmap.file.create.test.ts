@@ -70,7 +70,7 @@ describe('Test Command: atlasmap.file.create', function() {
 				
 		workspaceSelectorStub.returns(workspaceFolder);
 		admLocationStub.returns("");
-		fileNameInputStub.onFirstCall().returns(testADMFileName);
+		fileNameInputStub.returns(testADMFileName);
 
 		try {
 			await vscode.commands.executeCommand('atlasmap.file.create');
@@ -92,8 +92,8 @@ describe('Test Command: atlasmap.file.create', function() {
 
 		workspaceSelectorStub.returns(workspaceFolder);
 		admLocationStub.returns("Select a folder inside Workspace");
-		dirPickerWindow.resolves([vscode.Uri.file(tempFolderUri)] as vscode.Uri[]);
-		fileNameInputStub.onFirstCall().returns(testADMFileName);
+		dirPickerWindow.returns([vscode.Uri.file(tempFolderUri)] as vscode.Uri[]);
+		fileNameInputStub.returns(testADMFileName);
 
 		try {
 			await vscode.commands.executeCommand('atlasmap.file.create');
