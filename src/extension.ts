@@ -71,8 +71,8 @@ async function createAndOpenADM() {
 	const selectedWorkspaceFolder: vscode.WorkspaceFolder | undefined = await vscode.window.showWorkspaceFolderPick( {placeHolder: 'Please select the workspace folder in which the new file will be created.'} );
 	if (selectedWorkspaceFolder) {
 		const admFileLocationChoice = await vscode.window.showQuickPick(
-			["Same as workspace", "Select a folder inside workspace"], {placeHolder: "Select the location of the .adm file"}
-		)
+			["Workspace root", "Select a folder inside Workspace"], {placeHolder: "Select the location of the .adm file"}
+		);
 		let admFolder = selectedWorkspaceFolder.uri.fsPath;
 		if(admFileLocationChoice === "Select a folder inside workspace") {
 			const options: vscode.OpenDialogOptions = {
@@ -80,22 +80,23 @@ async function createAndOpenADM() {
 				canSelectMany: false,
 				openLabel: 'Select',
 				canSelectFiles: false,
-				canSelectFolders: true
+				canSelectFolders: true,
+				title: "Select the location of the .adm file in the Workspace."
 			};
 		
-			const admFolderUri = (await vscode.window.showOpenDialog(options))[0];
+			let admFolderUri = (await vscode.window.showOpenDialog(options))[0];
 			while(!folderIsInside(selectedWorkspaceFolder.uri.fsPath, admFolderUri.fsPath)) {
-				vscode.window.showErrorMessage("Select a folder inside the workspace.")
-				const admFolderUri = (await vscode.window.showOpenDialog(options))[0];
+				vscode.window.showErrorMessage(
+					"The chosen folder was outside of the workspace. You need to select a folder inside the workspace to create the AtlasMap Data transformation file.");
+				admFolderUri = (await vscode.window.showOpenDialog(options))[0];
 			}
-			admFolder = admFolderUri.fsPath
+			admFolder = admFolderUri.fsPath;
 		}
 		const fileName: string = await vscode.window.showInputBox( {placeHolder: "Enter the name of the new AtlasMap file", validateInput: async (name: string) => {
 			return validateFileName(selectedWorkspaceFolder, name);
 		}});
 		if (fileName) {
 			const file = `${admFolder}/${getValidFileNameWithExtension(fileName)}`;
-			vscode.window.showInformationMessage(file);
 			await vscode.workspace.fs.writeFile(vscode.Uri.file(file), Buffer.from(''));
 			await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(file));
 			sendCreateEvent();
@@ -105,7 +106,7 @@ async function createAndOpenADM() {
 
 function folderIsInside(parentFolder: string, subFolder: string) : boolean {
 	const rel = path.relative(parentFolder, subFolder);
-    return !rel.startsWith('../') && rel !== '..';
+	return !rel.startsWith('../') && rel !== '..';
 }
 
 export async function validateFileName(selectedWorkspaceFolder: vscode.WorkspaceFolder, fileName): Promise<string> {
