@@ -15,6 +15,21 @@ chai.use(sinonChai);
 
 describe('Test Command: atlasmap.file.create', function() {
 
+	const WORKSPACE_SELECTOR_ASSERTION_LABEL = 
+		"Workspace selection input was shown";
+	const ADM_LOCATION_SELECTOR_ASSERTION_LABEL =
+		".adm location quick pick was shown";
+	const FILE_NAME_INPUT_ASSERTION_LABEL =
+		"File name input was shown";
+	const SELECT_FOLDER_WINDOW_ASSERTION_LABEL =
+		"Folder selection window was shown";
+	const INFO_MESSAGE_ASSERTION_LABEL =
+		"Information message was shown telling the user about the command cancelling";
+	const ERROR_MESSAGE_ASSERTION_LABEL =
+		"Error message telling user that the .adm file must be inside workspace was shown";
+	const FILE_CREATED_ASSERTION_LABEL =
+		location => `The .adm file was created at expected location: ${location}`;
+
 	let sandbox: sinon.SinonSandbox;
 	let workspaceSelectorStub: sinon.SinonStub;
 	let admLocationStub: sinon.SinonStub;
@@ -75,10 +90,10 @@ describe('Test Command: atlasmap.file.create', function() {
 		try {
 			await vscode.commands.executeCommand('atlasmap.file.create');
 			testADMFile = vscode.Uri.file(`${workspaceFolderUri.path}/${testADMFileName}`);
-			expect(workspaceSelectorStub.called, 'Workspace Selector has not been called').to.be.true;
-			expect(admLocationStub.called, 'Adm location selection has not been called').to.be.true;
-			expect(fileNameInputStub.called, 'File name has not been asked').to.be.true;
-			expect(await fileExists(testADMFile), 'The created file does not exist').to.be.true;
+			expect(workspaceSelectorStub.called, WORKSPACE_SELECTOR_ASSERTION_LABEL).to.be.true;
+			expect(admLocationStub.called, ADM_LOCATION_SELECTOR_ASSERTION_LABEL).to.be.true;
+			expect(fileNameInputStub.called, FILE_NAME_INPUT_ASSERTION_LABEL).to.be.true;
+			expect(await fileExists(testADMFile), FILE_CREATED_ASSERTION_LABEL(testADMFile)).to.be.true;
 		} catch (err) {
 			fail(err);
 		}
@@ -98,12 +113,12 @@ describe('Test Command: atlasmap.file.create', function() {
 		try {
 			await vscode.commands.executeCommand('atlasmap.file.create');
 			testADMFile = vscode.Uri.file(`${tempFolderUri}/${testADMFileName}`);
-			expect(workspaceSelectorStub.called, 'Workspace Selector has not been called').to.be.true;
-			expect(admLocationStub.called, 'Adm location selection has not been called').to.be.true;
-			expect(dirPickerWindow.called, 'Window directory picker was not called').to.be.true;
-			expect(fileNameInputStub.called, 'File name has not been asked').to.be.true;
+			expect(workspaceSelectorStub.called, WORKSPACE_SELECTOR_ASSERTION_LABEL).to.be.true;
+			expect(admLocationStub.called, ADM_LOCATION_SELECTOR_ASSERTION_LABEL).to.be.true;
+			expect(dirPickerWindow.called, SELECT_FOLDER_WINDOW_ASSERTION_LABEL).to.be.true;
+			expect(fileNameInputStub.called, FILE_NAME_INPUT_ASSERTION_LABEL).to.be.true;
 			expect(await fileExists(testADMFile),
-				'The created file does not exist').to.be.true;
+				FILE_CREATED_ASSERTION_LABEL(testADMFile)).to.be.true;
 		} catch (err) {
 			fail(err);
 		} finally {
@@ -117,8 +132,8 @@ describe('Test Command: atlasmap.file.create', function() {
 
 		try {
 			await vscode.commands.executeCommand('atlasmap.file.create');
-			expect(workspaceSelectorStub.called, 'Workspace Selector has not been called').to.be.true;
-			expect(infoMessageStub.called, 'Info message was not shown').to.be.true;
+			expect(workspaceSelectorStub.called, WORKSPACE_SELECTOR_ASSERTION_LABEL).to.be.true;
+			expect(infoMessageStub.called, INFO_MESSAGE_ASSERTION_LABEL).to.be.true;
 		} catch (err) {
 			fail(err);
 		}
@@ -132,10 +147,10 @@ describe('Test Command: atlasmap.file.create', function() {
 
 		try {
 			await vscode.commands.executeCommand('atlasmap.file.create');
-			expect(workspaceSelectorStub.called, 'Workspace Selector has not been called').to.be.true;
-			expect(admLocationStub.called, 'Adm location selection has not been called').to.be.true;
-			expect(dirPickerWindow.called, 'Window directory picker was not called').to.be.true;
-			expect(infoMessageStub.called, 'Info message was not shown').to.be.true;
+			expect(workspaceSelectorStub.called, WORKSPACE_SELECTOR_ASSERTION_LABEL).to.be.true;
+			expect(admLocationStub.called, ADM_LOCATION_SELECTOR_ASSERTION_LABEL).to.be.true;
+			expect(dirPickerWindow.called, SELECT_FOLDER_WINDOW_ASSERTION_LABEL).to.be.true;
+			expect(infoMessageStub.called, INFO_MESSAGE_ASSERTION_LABEL).to.be.true;
 		} catch (err) {
 			fail(err);
 		}
@@ -154,11 +169,11 @@ describe('Test Command: atlasmap.file.create', function() {
 
 		try {
 			await vscode.commands.executeCommand('atlasmap.file.create');
-			expect(workspaceSelectorStub.called, 'Workspace Selector has not been called').to.be.true;
-			expect(admLocationStub.called, 'Adm location selection has not been called').to.be.true;
+			expect(workspaceSelectorStub.called, WORKSPACE_SELECTOR_ASSERTION_LABEL).to.be.true;
+			expect(admLocationStub.called, ADM_LOCATION_SELECTOR_ASSERTION_LABEL).to.be.true;
 			expect(dirPickerWindow.calledTwice,
 				`Window directory picker was not called or wasn't shown again`).to.be.true;
-			expect(errorMessageStub.called, 'Error message was not shown').to.be.true;
+			expect(errorMessageStub.called, ERROR_MESSAGE_ASSERTION_LABEL).to.be.true;
 		} catch (err) {
 			fail(err);
 		}
@@ -173,10 +188,10 @@ describe('Test Command: atlasmap.file.create', function() {
 		try {
 			await vscode.commands.executeCommand('atlasmap.file.create');
 			testADMFile = vscode.Uri.file(`${workspaceFolderUri.path}/${testADMFileName}`);
-			expect(workspaceSelectorStub.called, 'Workspace Selector has not been called').to.be.true;
-			expect(admLocationStub.called, 'Adm location selection has not been called').to.be.true;
-			expect(fileNameInputStub.called, 'File name has not been asked').to.be.true;
-			expect(infoMessageStub.called, 'Info message was not shown').to.be.true;
+			expect(workspaceSelectorStub.called, WORKSPACE_SELECTOR_ASSERTION_LABEL).to.be.true;
+			expect(admLocationStub.called, ADM_LOCATION_SELECTOR_ASSERTION_LABEL).to.be.true;
+			expect(fileNameInputStub.called, FILE_NAME_INPUT_ASSERTION_LABEL).to.be.true;
+			expect(infoMessageStub.called, INFO_MESSAGE_ASSERTION_LABEL).to.be.true;
 		} catch (err) {
 			fail(err);
 		}
