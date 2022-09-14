@@ -111,6 +111,19 @@ describe('Test Command: atlasmap.file.create', function() {
 		}
 	});
 
+	it('Test user cancelling picking up workspace', async function() {
+
+		workspaceSelectorStub.returns("");
+
+		try {
+			await vscode.commands.executeCommand('atlasmap.file.create');
+			expect(workspaceSelectorStub.called, 'Workspace Selector has not been called').to.be.true;
+			expect(infoMessageStub.called, 'Info message was not shown').to.be.true;
+		} catch (err) {
+			fail(err);
+		}
+	});
+
 	it('Test user cancelling picking up directory', async function() {
 
 		workspaceSelectorStub.returns(workspaceFolder);
@@ -146,6 +159,24 @@ describe('Test Command: atlasmap.file.create', function() {
 			expect(dirPickerWindow.calledTwice,
 				`Window directory picker was not called or wasn't shown again`).to.be.true;
 			expect(errorMessageStub.called, 'Error message was not shown').to.be.true;
+		} catch (err) {
+			fail(err);
+		}
+	});
+
+	it('Test user cancelling picking up a file name', async function() {
+
+		workspaceSelectorStub.returns(workspaceFolder);
+		admLocationStub.returns("");
+		fileNameInputStub.returns("");
+
+		try {
+			await vscode.commands.executeCommand('atlasmap.file.create');
+			testADMFile = vscode.Uri.file(`${workspaceFolderUri.path}/${testADMFileName}`);
+			expect(workspaceSelectorStub.called, 'Workspace Selector has not been called').to.be.true;
+			expect(admLocationStub.called, 'Adm location selection has not been called').to.be.true;
+			expect(fileNameInputStub.called, 'File name has not been asked').to.be.true;
+			expect(infoMessageStub.called, 'Info message was not shown').to.be.true;
 		} catch (err) {
 			fail(err);
 		}
