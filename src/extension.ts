@@ -84,7 +84,12 @@ async function createAndOpenADM() {
 				title: "Select the location of the .adm file in the Workspace."
 			};
 		
-			let admFolderUri = (await vscode.window.showOpenDialog(options))[0];
+			let admFolderUriArray = await vscode.window.showOpenDialog(options);
+			if (!admFolderUriArray) {
+				vscode.window.showInformationMessage("Cancelled by the user");
+				return;
+			}
+			let admFolderUri = admFolderUriArray[0];
 			while(!folderIsInside(selectedWorkspaceFolder.uri.fsPath, admFolderUri.fsPath)) {
 				vscode.window.showErrorMessage(
 					"The chosen folder was outside of the workspace. You need to select a folder inside the workspace to create the AtlasMap Data transformation file.");
