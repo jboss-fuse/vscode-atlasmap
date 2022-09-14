@@ -69,34 +69,43 @@ export function deactivate(context: vscode.ExtensionContext) {
 
 async function createAndOpenADM() {
 	const selectedWorkspaceFolder: vscode.WorkspaceFolder | undefined
-		= await vscode.window.showWorkspaceFolderPick(
-			{placeHolder: 'Please select the workspace folder in which the new file will be created.'});
+		= await promptUserForWorkspace();
 	
-	if (selectedWorkspaceFolder) {
-		let admFolderPath : string = selectedWorkspaceFolder.uri.fsPath;
-	
-		const admFileAtWorkspaceRoot : boolean 
-			= await promptIfUserWantsAdmFileAtWorkspaceRoot();
-
-		if (!admFileAtWorkspaceRoot) {
-			const admFolderUri : vscode.Uri | undefined 
-				= await promptUserForAdmFileLocationInWorkspace(selectedWorkspaceFolder);
-
-			if (!admFolderUri) {
-				showUserAbortingInfoMessage();
-				return;
-			}
-
-			admFolderPath = admFolderUri.fsPath;
-		}
-
-		const fileName: string | undefined 
-			= await promptForAdmFileName(selectedWorkspaceFolder);
-
-		if (fileName) {
-			await createAdmFile(admFolderPath, fileName);
-		}
+	if (!selectedWorkspaceFolder) {
+		showUserAbortingInfoMessage();
+		return;
 	}
+
+	let admFolderPath : string = selectedWorkspaceFolder.uri.fsPath;
+
+	const admFileAtWorkspaceRoot : boolean 
+		= await promptIfUserWantsAdmFileAtWorkspaceRoot();
+
+	if (!admFileAtWorkspaceRoot) {
+		const admFolderUri : vscode.Uri | undefined 
+			= await promptUserForAdmFileLocationInWorkspace(selectedWorkspaceFolder);
+
+		if (!admFolderUri) {
+			showUserAbortingInfoMessage();
+			return;
+		}
+
+		admFolderPath = admFolderUri.fsPath;
+	}
+
+	const fileName: string | undefined 
+		= await promptForAdmFileName(selectedWorkspaceFolder);
+
+	if (fileName) {
+		await createAdmFile(admFolderPath, fileName);
+	} else {
+		showUserAbortingInfoMessage();
+	}
+}
+
+async function promptUserForWorkspace() : Promise<vscode.WorkspaceFolder | undefined> {
+	return vscode.window.showWorkspaceFolderPick(
+		{placeHolder: 'Please select the workspace folder in which the new file will be created.'});
 }
 
 async function promptIfUserWantsAdmFileAtWorkspaceRoot() : Promise<boolean> {
