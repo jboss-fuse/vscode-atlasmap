@@ -74,7 +74,7 @@ async function createAndOpenADM() {
 			["Workspace root", "Select a folder inside Workspace"], {placeHolder: "Select the location of the .adm file"}
 		);
 		let admFolder = selectedWorkspaceFolder.uri.fsPath;
-		if(admFileLocationChoice === "Select a folder inside workspace") {
+		if(admFileLocationChoice === "Select a folder inside Workspace") {
 			const options: vscode.OpenDialogOptions = {
 				defaultUri: selectedWorkspaceFolder.uri,
 				canSelectMany: false,
