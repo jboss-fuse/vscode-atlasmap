@@ -13,7 +13,7 @@ import * as fs from "fs";
 const expect = chai.expect;
 chai.use(sinonChai);
 
-describe.only('Test Command: atlasmap.file.create', function() {
+describe('Test Command: atlasmap.file.create', function() {
 
 	let sandbox: sinon.SinonSandbox;
 	let workspaceSelectorStub: sinon.SinonStub;
