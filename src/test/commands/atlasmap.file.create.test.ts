@@ -82,7 +82,7 @@ describe('Test Command: atlasmap.file.create', function() {
 		fs.mkdirSync(tempFolderUri);
 
 		workspaceSelectorStub.returns(workspaceFolder);
-		admLocationStub.returns("Select a folder inside workspace");
+		admLocationStub.returns("Select a folder inside Workspace");
 		dirPickerWindow.resolves([vscode.Uri.file(tempFolderUri)] as vscode.Uri[]);
 		fileNameInputStub.onFirstCall().returns(testADMFileName);
 
