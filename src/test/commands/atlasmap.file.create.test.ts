@@ -20,6 +20,8 @@ describe('Test Command: atlasmap.file.create', function() {
 	let admLocationStub: sinon.SinonStub;
 	let fileNameInputStub: sinon.SinonStub;
 	let dirPickerWindow: sinon.SinonStub;
+	let infoMessageStub: sinon.SinonStub;
+	let errorMessageStub: sinon.SinonStub;
 
 	let testADMFileName: string = 'test.adm';
 	let testADMFile: vscode.Uri;
@@ -36,6 +38,8 @@ describe('Test Command: atlasmap.file.create', function() {
 		admLocationStub = sinon.stub(vscode.window, 'showQuickPick');
 		fileNameInputStub = sinon.stub(vscode.window, 'showInputBox');
 		dirPickerWindow = sinon.stub(vscode.window, 'showOpenDialog');
+		infoMessageStub = sinon.stub(vscode.window, 'showInformationMessage');
+		errorMessageStub = sinon.stub(vscode.window, "showErrorMessage");
 
 	});
 
@@ -45,6 +49,8 @@ describe('Test Command: atlasmap.file.create', function() {
 		fileNameInputStub.restore();
 		admLocationStub.restore();
 		dirPickerWindow.restore();
+		errorMessageStub.restore();
+		infoMessageStub.restore();
 
 		if (testADMFile && await fileExists(testADMFile)) {
 			await vscode.workspace.fs.delete(testADMFile);
@@ -55,6 +61,9 @@ describe('Test Command: atlasmap.file.create', function() {
 		workspaceSelectorStub.resetHistory();
 		fileNameInputStub.resetHistory();
 		admLocationStub.resetHistory();
+		dirPickerWindow.resetHistory();
+		errorMessageStub.resetHistory();
+		infoMessageStub.resetHistory();
 	});
 
 	it('Test execution of command and creation of file', async function() {
@@ -99,6 +108,46 @@ describe('Test Command: atlasmap.file.create', function() {
 			fail(err);
 		} finally {
 			fs.rmSync(tempFolderUri, {force:true, recursive: true});
+		}
+	});
+
+	it('Test user cancelling picking up directory', async function() {
+
+		workspaceSelectorStub.returns(workspaceFolder);
+		admLocationStub.returns("Select a folder inside Workspace");
+		dirPickerWindow.resolves(null);
+
+		try {
+			await vscode.commands.executeCommand('atlasmap.file.create');
+			expect(workspaceSelectorStub.called, 'Workspace Selector has not been called').to.be.true;
+			expect(admLocationStub.called, 'Adm location selection has not been called').to.be.true;
+			expect(dirPickerWindow.called, 'Window directory picker was not called').to.be.true;
+			expect(infoMessageStub.called, 'Info message was not shown').to.be.true;
+		} catch (err) {
+			fail(err);
+		}
+	});
+
+	it('Test user choosing directory outside workspace', async function() {
+
+		const uriOutsideWorkspace = path.join(workspaceFolder.uri.path, "..");
+
+		workspaceSelectorStub.returns(workspaceFolder);
+		admLocationStub.returns("Select a folder inside Workspace");
+		dirPickerWindow
+		.onFirstCall().resolves(
+			[vscode.Uri.file(uriOutsideWorkspace)] as vscode.Uri[])
+		.onSecondCall().resolves(null);
+
+		try {
+			await vscode.commands.executeCommand('atlasmap.file.create');
+			expect(workspaceSelectorStub.called, 'Workspace Selector has not been called').to.be.true;
+			expect(admLocationStub.called, 'Adm location selection has not been called').to.be.true;
+			expect(dirPickerWindow.calledTwice,
+				`Window directory picker was not called or wasn't shown again`).to.be.true;
+			expect(errorMessageStub.called, 'Error message was not shown').to.be.true;
+		} catch (err) {
+			fail(err);
 		}
 	});
 
