@@ -14,7 +14,7 @@ export async function createAndOpenADM() {
 		let admFolderPath : string = selectedWorkspaceFolder.uri.fsPath;
 
 		const admFileAtDifferentPlaceThanRoot : boolean 
-			= await promptIfUserWantsAdmFileAtWorkspaceRoot();
+			= await promptUserIfHeWantsAdmFileAtCustomLocationInWorkspace();
 
 		if (admFileAtDifferentPlaceThanRoot === undefined) {
 			return;
@@ -43,7 +43,7 @@ async function promptUserForWorkspace() : Promise<vscode.WorkspaceFolder | undef
 		{placeHolder: 'Please select the workspace folder in which the new file will be created.'});
 }
 
-async function promptIfUserWantsAdmFileAtWorkspaceRoot() : Promise<boolean | undefined> {
+async function promptUserIfHeWantsAdmFileAtCustomLocationInWorkspace() : Promise<boolean | undefined> {
 	const userSelection = await vscode.window.showQuickPick(
 		["Workspace root", "Select a folder inside Workspace"], {placeHolder: "Select the location of the .adm file"}
 	);
