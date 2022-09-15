@@ -72,7 +72,6 @@ async function createAndOpenADM() {
 		= await promptUserForWorkspace();
 	
 	if (!selectedWorkspaceFolder) {
-		showUserAbortingInfoMessage();
 		return;
 	}
 
@@ -81,12 +80,15 @@ async function createAndOpenADM() {
 	const admFileAtWorkspaceRoot : boolean 
 		= await promptIfUserWantsAdmFileAtWorkspaceRoot();
 
+	if (admFileAtWorkspaceRoot === undefined) {
+		return;
+	}
+
 	if (!admFileAtWorkspaceRoot) {
 		const admFolderUri : vscode.Uri | undefined 
 			= await promptUserForAdmFileLocationInWorkspace(selectedWorkspaceFolder);
 
 		if (!admFolderUri) {
-			showUserAbortingInfoMessage();
 			return;
 		}
 
@@ -98,8 +100,6 @@ async function createAndOpenADM() {
 
 	if (fileName) {
 		await createAdmFile(admFolderPath, fileName);
-	} else {
-		showUserAbortingInfoMessage();
 	}
 }
 
@@ -108,12 +108,16 @@ async function promptUserForWorkspace() : Promise<vscode.WorkspaceFolder | undef
 		{placeHolder: 'Please select the workspace folder in which the new file will be created.'});
 }
 
-async function promptIfUserWantsAdmFileAtWorkspaceRoot() : Promise<boolean> {
+async function promptIfUserWantsAdmFileAtWorkspaceRoot() : Promise<boolean | undefined> {
 	const userSelection = await vscode.window.showQuickPick(
 		["Workspace root", "Select a folder inside Workspace"], {placeHolder: "Select the location of the .adm file"}
 	);
 
-	return !userSelection || userSelection === "Workspace root";
+	if (!userSelection) {
+		return undefined;
+	}
+
+	return userSelection === "Workspace root";
 }
 
 async function promptUserForAdmFileLocationInWorkspace(workspaceRoot: vscode.WorkspaceFolder) 
