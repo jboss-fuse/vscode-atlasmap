@@ -7,7 +7,7 @@ import * as sinonChai from "sinon-chai";
 import * as vscode from "vscode";
 import path = require('path');
 import { fail } from "assert";
-import { fileExists, validateFileName } from "../../extension";
+import { fileExists, validateFileName } from "../../commands/file/create";
 import * as fs from "fs";
 
 const expect = chai.expect;
