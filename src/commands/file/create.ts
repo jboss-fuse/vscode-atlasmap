@@ -10,35 +10,31 @@ export async function createAndOpenADM() {
 	const selectedWorkspaceFolder: vscode.WorkspaceFolder | undefined
 		= await promptUserForWorkspace();
 	
-	if (!selectedWorkspaceFolder) {
-		return;
-	}
+	if (selectedWorkspaceFolder) {
+		let admFolderPath : string = selectedWorkspaceFolder.uri.fsPath;
 
-	let admFolderPath : string = selectedWorkspaceFolder.uri.fsPath;
+		const admFileAtDifferentPlaceThanRoot : boolean 
+			= await promptIfUserWantsAdmFileAtWorkspaceRoot();
 
-	const admFileAtWorkspaceRoot : boolean 
-		= await promptIfUserWantsAdmFileAtWorkspaceRoot();
-
-	if (admFileAtWorkspaceRoot === undefined) {
-		return;
-	}
-
-	if (!admFileAtWorkspaceRoot) {
-		const admFolderUri : vscode.Uri | undefined 
-			= await promptUserForAdmFileLocationInWorkspace(selectedWorkspaceFolder);
-
-		if (!admFolderUri) {
+		if (admFileAtDifferentPlaceThanRoot === undefined) {
 			return;
+		} else if (admFileAtDifferentPlaceThanRoot) {
+			const admFolderUri : vscode.Uri | undefined 
+				= await promptUserForAdmFileLocationInWorkspace(selectedWorkspaceFolder);
+
+			if (!admFolderUri) {
+				return;
+			}
+
+			admFolderPath = admFolderUri.fsPath;
 		}
 
-		admFolderPath = admFolderUri.fsPath;
-	}
+		const fileName: string | undefined 
+			= await promptForAdmFileName(selectedWorkspaceFolder);
 
-	const fileName: string | undefined 
-		= await promptForAdmFileName(selectedWorkspaceFolder);
-
-	if (fileName) {
-		await createAdmFile(admFolderPath, fileName);
+		if (fileName) {
+			await createAdmFile(admFolderPath, fileName);
+		}
 	}
 }
 
@@ -56,7 +52,7 @@ async function promptIfUserWantsAdmFileAtWorkspaceRoot() : Promise<boolean | und
 		return undefined;
 	}
 
-	return userSelection === "Workspace root";
+	return userSelection === "Select a folder inside Workspace";
 }
 
 async function promptUserForAdmFileLocationInWorkspace(workspaceRoot: vscode.WorkspaceFolder) 
