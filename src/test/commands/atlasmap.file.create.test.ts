@@ -23,19 +23,20 @@ describe('Test Command: atlasmap.file.create', function() {
 		"File name input was shown";
 	const SELECT_FOLDER_WINDOW_ASSERTION_LABEL =
 		"Folder selection window was shown";
-	const INFO_MESSAGE_ASSERTION_LABEL =
-		"Information message was shown telling the user about the command cancelling";
 	const ERROR_MESSAGE_ASSERTION_LABEL =
 		"Error message telling user that the .adm file must be inside workspace was shown";
 	const FILE_CREATED_ASSERTION_LABEL =
 		location => `The .adm file was created at expected location: ${location}`;
+	
+	const WORKSPACE_FOLDER_COMMAND = "Select a folder inside Workspace";
+	const WORKSPACE_ROOT_COMMAND = "Workspace root";
+	const CANCEL_WITH_ESC = "";
 
 	let sandbox: sinon.SinonSandbox;
 	let workspaceSelectorStub: sinon.SinonStub;
 	let admLocationStub: sinon.SinonStub;
 	let fileNameInputStub: sinon.SinonStub;
 	let dirPickerWindow: sinon.SinonStub;
-	let infoMessageStub: sinon.SinonStub;
 	let errorMessageStub: sinon.SinonStub;
 
 	let testADMFileName: string = 'test.adm';
@@ -53,7 +54,6 @@ describe('Test Command: atlasmap.file.create', function() {
 		admLocationStub = sinon.stub(vscode.window, 'showQuickPick');
 		fileNameInputStub = sinon.stub(vscode.window, 'showInputBox');
 		dirPickerWindow = sinon.stub(vscode.window, 'showOpenDialog');
-		infoMessageStub = sinon.stub(vscode.window, 'showInformationMessage');
 		errorMessageStub = sinon.stub(vscode.window, "showErrorMessage");
 
 	});
@@ -65,7 +65,6 @@ describe('Test Command: atlasmap.file.create', function() {
 		admLocationStub.restore();
 		dirPickerWindow.restore();
 		errorMessageStub.restore();
-		infoMessageStub.restore();
 
 		if (testADMFile && await fileExists(testADMFile)) {
 			await vscode.workspace.fs.delete(testADMFile);
@@ -78,13 +77,12 @@ describe('Test Command: atlasmap.file.create', function() {
 		admLocationStub.resetHistory();
 		dirPickerWindow.resetHistory();
 		errorMessageStub.resetHistory();
-		infoMessageStub.resetHistory();
 	});
 
 	it('Test execution of command and creation of file', async function() {
 				
 		workspaceSelectorStub.returns(workspaceFolder);
-		admLocationStub.returns("");
+		admLocationStub.returns(WORKSPACE_ROOT_COMMAND);
 		fileNameInputStub.returns(testADMFileName);
 
 		try {
@@ -106,7 +104,7 @@ describe('Test Command: atlasmap.file.create', function() {
 		fs.mkdirSync(tempFolderUri);
 
 		workspaceSelectorStub.returns(workspaceFolder);
-		admLocationStub.returns("Select a folder inside Workspace");
+		admLocationStub.returns(WORKSPACE_FOLDER_COMMAND);
 		dirPickerWindow.returns([vscode.Uri.file(tempFolderUri)] as vscode.Uri[]);
 		fileNameInputStub.returns(testADMFileName);
 
@@ -128,12 +126,27 @@ describe('Test Command: atlasmap.file.create', function() {
 
 	it('Test user cancelling picking up workspace', async function() {
 
-		workspaceSelectorStub.returns("");
+		workspaceSelectorStub.returns(CANCEL_WITH_ESC);
 
 		try {
 			await vscode.commands.executeCommand('atlasmap.file.create');
 			expect(workspaceSelectorStub.called, WORKSPACE_SELECTOR_ASSERTION_LABEL).to.be.true;
-			expect(infoMessageStub.called, INFO_MESSAGE_ASSERTION_LABEL).to.be.true;
+			expect(admLocationStub.called, ADM_LOCATION_SELECTOR_ASSERTION_LABEL).to.not.be.true;
+		} catch (err) {
+			fail(err);
+		}
+	});
+
+	it('Test user cancelling on selection of workspace root or folder inside workspace', async function() {
+
+		workspaceSelectorStub.returns(workspaceFolder);
+		admLocationStub.returns(CANCEL_WITH_ESC);
+
+		try {
+			await vscode.commands.executeCommand('atlasmap.file.create');
+			expect(workspaceSelectorStub.called, WORKSPACE_SELECTOR_ASSERTION_LABEL).to.be.true;
+			expect(admLocationStub.called, ADM_LOCATION_SELECTOR_ASSERTION_LABEL).to.be.true;
+			expect(dirPickerWindow.called, SELECT_FOLDER_WINDOW_ASSERTION_LABEL).to.not.be.true;
 		} catch (err) {
 			fail(err);
 		}
@@ -142,7 +155,7 @@ describe('Test Command: atlasmap.file.create', function() {
 	it('Test user cancelling picking up directory', async function() {
 
 		workspaceSelectorStub.returns(workspaceFolder);
-		admLocationStub.returns("Select a folder inside Workspace");
+		admLocationStub.returns(WORKSPACE_FOLDER_COMMAND);
 		dirPickerWindow.resolves(null);
 
 		try {
@@ -150,7 +163,7 @@ describe('Test Command: atlasmap.file.create', function() {
 			expect(workspaceSelectorStub.called, WORKSPACE_SELECTOR_ASSERTION_LABEL).to.be.true;
 			expect(admLocationStub.called, ADM_LOCATION_SELECTOR_ASSERTION_LABEL).to.be.true;
 			expect(dirPickerWindow.called, SELECT_FOLDER_WINDOW_ASSERTION_LABEL).to.be.true;
-			expect(infoMessageStub.called, INFO_MESSAGE_ASSERTION_LABEL).to.be.true;
+			expect(fileNameInputStub.called, FILE_NAME_INPUT_ASSERTION_LABEL).to.not.be.true;
 		} catch (err) {
 			fail(err);
 		}
@@ -161,11 +174,11 @@ describe('Test Command: atlasmap.file.create', function() {
 		const uriOutsideWorkspace = path.join(workspaceFolder.uri.path, "..");
 
 		workspaceSelectorStub.returns(workspaceFolder);
-		admLocationStub.returns("Select a folder inside Workspace");
+		admLocationStub.returns(WORKSPACE_FOLDER_COMMAND);
 		dirPickerWindow
-		.onFirstCall().resolves(
-			[vscode.Uri.file(uriOutsideWorkspace)] as vscode.Uri[])
-		.onSecondCall().resolves(null);
+			.onFirstCall().resolves(
+				[vscode.Uri.file(uriOutsideWorkspace)] as vscode.Uri[])
+			.onSecondCall().resolves(null);
 
 		try {
 			await vscode.commands.executeCommand('atlasmap.file.create');
@@ -182,8 +195,8 @@ describe('Test Command: atlasmap.file.create', function() {
 	it('Test user cancelling picking up a file name', async function() {
 
 		workspaceSelectorStub.returns(workspaceFolder);
-		admLocationStub.returns("");
-		fileNameInputStub.returns("");
+		admLocationStub.returns(WORKSPACE_ROOT_COMMAND);
+		fileNameInputStub.returns(CANCEL_WITH_ESC);
 
 		try {
 			await vscode.commands.executeCommand('atlasmap.file.create');
@@ -191,7 +204,6 @@ describe('Test Command: atlasmap.file.create', function() {
 			expect(workspaceSelectorStub.called, WORKSPACE_SELECTOR_ASSERTION_LABEL).to.be.true;
 			expect(admLocationStub.called, ADM_LOCATION_SELECTOR_ASSERTION_LABEL).to.be.true;
 			expect(fileNameInputStub.called, FILE_NAME_INPUT_ASSERTION_LABEL).to.be.true;
-			expect(infoMessageStub.called, INFO_MESSAGE_ASSERTION_LABEL).to.be.true;
 		} catch (err) {
 			fail(err);
 		}
