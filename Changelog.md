@@ -1,5 +1,7 @@
 # ChangeLog
 
+## 0.2.2
+
 ## 0.2.1
 
 - Added an option when using 'Create AtlasMap file' action to choose the placement of the .adm file inside the workspace.
