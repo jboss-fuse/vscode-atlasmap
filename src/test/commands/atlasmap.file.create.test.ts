@@ -211,17 +211,80 @@ describe('Test Command: atlasmap.file.create', function() {
 
 	describe('Check validator for file name', () => {
 		
-		it('Check validator of input for valid file name', async function () {
-			expect(await validateFileName(workspaceFolder, 'good name')).to.be.undefined;
+		describe('Check validator for workspace root', () => {
+			it('Check validator of input for valid file name', async function () {
+				expect(await validateFileName(workspaceFolder.uri, 'good name')).to.be.undefined;
+			});
+			
+			it('Check validator of input for invalid file name', async function () {
+				expect(await validateFileName(workspaceFolder.uri, 'wrong/name')).to.not.be.undefined;
+			});
+			
+			it('Check validator of input for invalid empty file name', async function () {
+				expect(await validateFileName(workspaceFolder.uri, '')).to.not.be.undefined;
+			});
+	
 		});
-		
-		it('Check validator of input for invalid file name', async function () {
-			expect(await validateFileName(workspaceFolder, 'wrong/name')).to.not.be.undefined;
+
+		describe('Check validator for already existing files', () => {
+
+			const dummyFileOnCustomLocationName = 'custom-location';
+			const dummyFileOnWorkspaceRootName = 'root-location';
+
+			let customFolderForAdmFilesUri: vscode.Uri;
+
+			let dummyFileOnWorkspaceRoot: vscode.Uri;
+			let dummyFileOnCustomLocation: vscode.Uri;
+
+			this.beforeAll(() => {
+				customFolderForAdmFilesUri = vscode.Uri.file(path.join(workspaceFolderUri.fsPath, './file-validator'));
+	
+				dummyFileOnWorkspaceRoot = vscode.Uri.file(path.join(workspaceFolderUri.fsPath, `./${dummyFileOnWorkspaceRootName}.adm`));
+				dummyFileOnCustomLocation = vscode.Uri.file(path.join(customFolderForAdmFilesUri.fsPath, `./${dummyFileOnCustomLocationName}.adm`));	
+
+				fs.mkdirSync(customFolderForAdmFilesUri.fsPath);
+				fs.writeFileSync(
+					dummyFileOnWorkspaceRoot.fsPath,
+					""
+				);
+				fs.writeFileSync(
+					dummyFileOnCustomLocation.fsPath,
+					""
+				);
+			});
+
+			this.afterAll(() => {
+				fs.rmSync(customFolderForAdmFilesUri.fsPath, {force:true, recursive: true});
+				fs.rmSync(dummyFileOnWorkspaceRoot.fsPath);
+			});
+
+			describe('Workspace root', () => {
+				it('Check validator on workspace root on not existing file', async function () {
+					expect(await validateFileName(workspaceFolder.uri, 'not-existing')).to.be.undefined;
+				});
+
+				it('Check validator on workspace root on existing file', async function () {
+					expect(await validateFileName(workspaceFolder.uri, dummyFileOnWorkspaceRootName)).to.not.be.undefined;
+				});
+
+				it('Check validator on workspace root on existing file on different folder', async function () {
+					expect(await validateFileName(workspaceFolder.uri, dummyFileOnCustomLocationName)).to.be.undefined;
+				});
+			});
+
+			describe('Custom location', () => {
+				it('Check validator on custom location on not existing file', async function () {
+					expect(await validateFileName(customFolderForAdmFilesUri, 'not-existing')).to.be.undefined;
+				});
+
+				it('Check validator on custom location on existing file', async function () {
+					expect(await validateFileName(customFolderForAdmFilesUri, dummyFileOnCustomLocationName)).to.not.be.undefined;
+				});
+
+				it('Check validator on custom location on existing file on different folder', async function () {
+					expect(await validateFileName(customFolderForAdmFilesUri, dummyFileOnWorkspaceRootName)).to.be.undefined;
+				});
+			});
 		});
-		
-		it('Check validator of input for invalid empty file name', async function () {
-			expect(await validateFileName(workspaceFolder, '')).to.not.be.undefined;
-		});
-		
 	});
 });
