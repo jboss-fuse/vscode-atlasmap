@@ -2,6 +2,8 @@
 
 ## 0.2.2
 
+- Fixed a bug when using 'Create AtlasMap file' where name validation for files only considered the workspace root instead of the chosen folder.
+
 ## 0.2.1
 
 - Added an option when using 'Create AtlasMap file' action to choose the placement of the .adm file inside the workspace.
