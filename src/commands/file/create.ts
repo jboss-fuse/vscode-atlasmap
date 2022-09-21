@@ -30,7 +30,7 @@ export async function createAndOpenADM() {
 		}
 
 		const fileName: string | undefined 
-			= await promptForAdmFileName(selectedWorkspaceFolder);
+			= await promptForAdmFileName(vscode.Uri.file(admFolderPath));
 
 		if (fileName) {
 			await createAdmFile(admFolderPath, fileName);
@@ -77,7 +77,7 @@ async function promptUserForAdmFileLocationInWorkspace(workspaceRoot: vscode.Wor
 	return admFolderUri;
 }
 
-async function promptForAdmFileName(workspaceFolder : vscode.WorkspaceFolder)
+async function promptForAdmFileName(workspaceFolder : vscode.Uri)
 	: Promise<string | undefined> {
 	return vscode.window.showInputBox(
 		{placeHolder: "Enter the name of the new AtlasMap file",
@@ -124,8 +124,8 @@ function folderIsInside(parentFolder: string, subFolder: string) : boolean {
 	return !rel.startsWith('../') && rel !== '..';
 }
 
-export async function validateFileName(selectedWorkspaceFolder: vscode.WorkspaceFolder, fileName): Promise<string> {
-	const file: string = `${selectedWorkspaceFolder.uri.fsPath}/${getValidFileNameWithExtension(fileName)}`;
+export async function validateFileName(selectedWorkspaceFolder: vscode.Uri, fileName): Promise<string> {
+	const file: string = `${selectedWorkspaceFolder.fsPath}/${getValidFileNameWithExtension(fileName)}`;
 		if (!validFilename(fileName)) {
 			return 'The filename is invalid.';
 		}
