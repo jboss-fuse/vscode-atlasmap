@@ -100,7 +100,7 @@ describe('Test Command: atlasmap.file.create', function() {
 	it('Test execution of command and creation of file on different directory', async function() {
 
 		const tempFolder = "admTmp";
-		const tempFolderUri = path.join(workspaceFolder.uri.path, tempFolder);
+		const tempFolderUri = path.join(workspaceFolder.uri.fsPath, tempFolder);
 		fs.mkdirSync(tempFolderUri);
 
 		workspaceSelectorStub.returns(workspaceFolder);
