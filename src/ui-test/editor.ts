@@ -17,18 +17,17 @@
 import { VSBrowser, WebDriver, EditorView, WebView, By, CustomEditor, until, Workbench, InputBox, TextEditor, NotificationType } from 'vscode-extension-tester';
 import { assert, expect } from 'chai';
 import path = require('path');
+import { defaultWorkspaceFolderUsedInTests } from './all';
 
 export function editorTests() {
 	let driver: WebDriver;
 
 	describe('AtlasMap in Editor tests', () => {
 
-		const workspaceFolder = path.join(__dirname, '../../test Fixture with speci@l chars');
-
 		before(async function () {
 			this.timeout(20000);
 			driver = VSBrowser.instance.driver;
-			await VSBrowser.instance.openResources(workspaceFolder);
+			await VSBrowser.instance.openResources(defaultWorkspaceFolderUsedInTests);
 		});
 
 		beforeEach(async function () {
@@ -41,12 +40,12 @@ export function editorTests() {
 		
 		it('Save as', async function () {
 			this.timeout(180000);
-			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
+			await openAdmFile(defaultWorkspaceFolderUsedInTests, 'atlasmap-mapping.adm', driver);
 			console.log('Opened editors: '+ (await new EditorView().getOpenEditorTitles()).join(', '));
 			await new Workbench().executeCommand('file: save as');
 			const inputbox = new InputBox();
 			const newName = 'atlasmap-mapping-savedas.adm';
-			await inputbox.setText(path.join(workspaceFolder, newName));
+			await inputbox.setText(path.join(defaultWorkspaceFolderUsedInTests, newName));
 			await inputbox.confirm();
 			await waitForAtlasMapEditorOpening();
 			await handleDirtyEditor();
@@ -76,7 +75,7 @@ export function editorTests() {
 		it('Open and close .adm in AtlasMap Editor', async function () {
 			this.timeout(120000);
 			const admFileName = 'atlasmap-mapping.adm';
-			const atlasMapWebView = await openAdmFile(workspaceFolder, admFileName, driver);
+			const atlasMapWebView = await openAdmFile(defaultWorkspaceFolderUsedInTests, admFileName, driver);
 			const atlasMapEditor = await retrieveAtlasMapEditor(driver, atlasMapWebView);
 			
 			await addConstantInAtlasMap(driver, atlasMapWebView);
@@ -93,14 +92,14 @@ export function editorTests() {
 		
 		it('Open several .adms in AtlasMap Editor', async function () {
 			this.timeout(120000);
-			await openAdmFile(workspaceFolder, 'atlasmap-mapping.adm', driver);
-			await openAdmFile(workspaceFolder, 'atlasmap-mapping2.adm', driver);
+			await openAdmFile(defaultWorkspaceFolderUsedInTests, 'atlasmap-mapping.adm', driver);
+			await openAdmFile(defaultWorkspaceFolderUsedInTests, 'atlasmap-mapping2.adm', driver);
 		});
 		
 		it('Open editor using codelens', async function () {
 			this.timeout(120000);
 			const camelRouteFilename = 'basic-case.xml';
-			await VSBrowser.instance.openResources(path.join(workspaceFolder, 'editor-test', camelRouteFilename));
+			await VSBrowser.instance.openResources(path.join(defaultWorkspaceFolderUsedInTests, 'editor-test', camelRouteFilename));
 			await waitForAtlasMapEditorOpening();
 			const xmlEditor = await new EditorView().openEditor(camelRouteFilename) as TextEditor;
 			const codelens = await xmlEditor.getCodeLens('Open in AtlasMap UI');

@@ -7,7 +7,8 @@
 
 ## Prerequisites
 
--   Java 8+ must be installed on system path or configured through _JAVA_HOME_, _JDK_HOME_ or the VS Code setting _java.home_.
+- Java 8+ must be installed on system path or configured through _JAVA_HOME_, _JDK_HOME_ or the VS Code setting _java.home_.
+- A folder must be opened in VS Code
 
 ## Features
 
