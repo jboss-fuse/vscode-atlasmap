@@ -65,7 +65,8 @@
 		"commands": {
 			"category": "AtlasMap",
 			"title": "Create AtlasMap file",
-			"command": "atlasmap.file.create"
+			"command": "atlasmap.file.create",
+			"enablement": "workbenchState != empty"
 		},
 		"customEditors": [
 			{
