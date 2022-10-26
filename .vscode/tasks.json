@@ -6,7 +6,7 @@
 		{
 			"type": "npm",
 			"script": "watch",
-			"problemMatcher": "$tsc-watch",
+			"problemMatcher": "$eslint-stylish",
 			"isBackground": true,
 			"presentation": {
 				"reveal": "never"
@@ -15,6 +15,13 @@
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"type": "npm",
+			"script": "lint",
+			"problemMatcher": [],
+			"label": "npm: lint",
+			"detail": "eslint -c .eslintrc.json --ext .ts src"
 		}
 	]
 }

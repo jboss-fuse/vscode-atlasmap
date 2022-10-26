@@ -80,10 +80,13 @@ async function promptUserForAdmFileLocationInWorkspace(workspaceRoot: vscode.Wor
 async function promptForAdmFileName(workspaceFolder : vscode.Uri)
 	: Promise<string | undefined> {
 	return vscode.window.showInputBox(
-		{placeHolder: "Enter the name of the new AtlasMap file",
-		validateInput: async (name: string) => {
-			return validateFileName(workspaceFolder, name);
-	}});
+		{
+			placeHolder: "Enter the name of the new AtlasMap file",
+			validateInput: async (name: string) => {
+				return validateFileName(workspaceFolder, name);
+			}
+		}
+	);
 }
 
 async function createAdmFile(admFolderPath : string, fileName : string) {
@@ -126,13 +129,13 @@ function folderIsInside(parentFolder: string, subFolder: string) : boolean {
 
 export async function validateFileName(selectedWorkspaceFolder: vscode.Uri, fileName): Promise<string> {
 	const file: string = `${selectedWorkspaceFolder.fsPath}/${getValidFileNameWithExtension(fileName)}`;
-		if (!validFilename(fileName)) {
-			return 'The filename is invalid.';
-		}
-		if (await fileExists(vscode.Uri.file(file))) {
-			return `A file with that name already exists.`;
-		}
-		return undefined;
+	if (!validFilename(fileName)) {
+		return 'The filename is invalid.';
+	}
+	if (await fileExists(vscode.Uri.file(file))) {
+		return `A file with that name already exists.`;
+	}
+	return undefined;
 }
 
 function getValidFileNameWithExtension(name: string): string {
