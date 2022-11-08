@@ -112,7 +112,7 @@
 		"expand-home-dir": "^0.0.3",
 		"find-java-home": "^1.2.2",
 		"md5": "^2.3.0",
-		"node-fetch": "^2.6.7",
+		"node-fetch": "^3.2.10",
 		"path": "^0.12.7",
 		"path-exists": "^4.0.0",
 		"util": "^0.12.5",
