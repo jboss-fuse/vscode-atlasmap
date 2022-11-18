@@ -106,7 +106,7 @@
 		"lint": "eslint -c .eslintrc.json --ext .ts src"
 	},
 	"dependencies": {
-		"@redhat-developer/vscode-redhat-telemetry": "^0.4.3",
+		"@redhat-developer/vscode-redhat-telemetry": "^0.5.2",
 		"child_process": "^1.0.2",
 		"chokidar": "^3.5.2",
 		"expand-home-dir": "^0.0.3",
