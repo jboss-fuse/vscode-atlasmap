@@ -133,7 +133,7 @@
 		"assert": "^2.0.0",
 		"async-wait-until": "^2.0.12",
 		"chai": "^4.3.7",
-		"eslint": "^8.28.0",
+		"eslint": "^8.30.0",
 		"eslint-plugin-import": "^2.26.0",
 		"file-uri-to-path": "^2.0.0",
 		"file-url": "^3.0.0",
