@@ -139,7 +139,7 @@
 		"file-url": "^3.0.0",
 		"fs": "^0.0.1-security",
 		"glob": "^8.0.3",
-		"mocha": "^10.1.0",
+		"mocha": "^10.2.0",
 		"mocha-jenkins-reporter": "^0.4.8",
 		"mvn-artifact-download": "^6.0.0",
 		"request": "^2.88.2",
