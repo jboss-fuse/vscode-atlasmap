@@ -146,6 +146,6 @@
 		"sinon": "^15.0.2",
 		"sinon-chai": "^3.7.0",
 		"typescript": "^4.9.5",
-		"vscode-extension-tester": "^5.4.0"
+		"vscode-extension-tester": "^5.5.1"
 	}
 }
