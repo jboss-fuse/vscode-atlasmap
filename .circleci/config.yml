@@ -17,7 +17,7 @@ jobs:
           command: npm install --prefix=$HOME/.local -g typescript
       - run:
           name: install-vsce
-          command: npm install --prefix=$HOME/.local -g vsce
+          command: npm install --prefix=$HOME/.local -g @vscode/vsce
       - run:
           name: npm-ci
           command: npm ci
