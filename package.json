@@ -110,7 +110,7 @@
 		"child_process": "^1.0.2",
 		"chokidar": "^3.5.2",
 		"expand-home-dir": "^0.0.3",
-		"find-java-home": "^1.2.2",
+		"find-java-home": "^2.0.0",
 		"md5": "^2.3.0",
 		"node-fetch": "^2.6.7",
 		"path": "^0.12.7",
