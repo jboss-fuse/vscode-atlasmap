@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TitleBar, VSBrowser, Workbench } from 'vscode-extension-tester';
+import { VSBrowser, Workbench } from 'vscode-extension-tester';
 import { expect } from 'chai';
 import { defaultWorkspaceFolderUsedInTests } from './all';
 
@@ -49,7 +49,7 @@ export function createFileCommandTests() {
 	}
 
 	async function openCommandPromptFilteredWithAtlasMap() {
-		const commandPrompt = await (new Workbench().openCommandPrompt());
+		const commandPrompt = await new Workbench().openCommandPrompt();
 		await commandPrompt.setText('> AtlasMap');
 		const quickpicks = await commandPrompt.getQuickPicks();
 		return quickpicks;
