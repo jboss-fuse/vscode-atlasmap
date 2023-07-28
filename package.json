@@ -102,7 +102,7 @@
 		"postinstall": "node ./scripts/postinstall.js",
 		"test": "node ./out/test/runTest.js",
 		"update-deps": "npm update",
-		"ui-test": "extest setup-and-run out/ui-test/all.js --storage uitest-resources --code_settings ./src/ui-test/settings.json --uninstall_extension --code_version 1.73.1",
+		"ui-test": "extest setup-and-run out/ui-test/all.js --code_settings ./src/ui-test/settings.json --uninstall_extension --code_version max",
 		"lint": "eslint -c .eslintrc.json --ext .ts src"
 	},
 	"dependencies": {
