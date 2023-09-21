@@ -138,7 +138,7 @@
 		"file-uri-to-path": "^2.0.0",
 		"file-url": "^3.0.0",
 		"fs": "^0.0.1-security",
-		"glob": "^10.3.4",
+		"glob": "^10.3.5",
 		"mocha": "^10.2.0",
 		"mocha-jenkins-reporter": "^0.4.8",
 		"mvn-artifact-download": "^6.1.1",
