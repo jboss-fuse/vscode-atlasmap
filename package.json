@@ -142,7 +142,7 @@
 		"mocha": "^10.2.0",
 		"mocha-jenkins-reporter": "^0.4.8",
 		"mvn-artifact-download": "^6.1.1",
-		"sinon": "^15.2.0",
+		"sinon": "^16.0.0",
 		"sinon-chai": "^3.7.0",
 		"typescript": "^5.2.2",
 		"vscode-extension-tester": "^5.9.1"
