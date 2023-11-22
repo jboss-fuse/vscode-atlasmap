@@ -124,7 +124,7 @@
 		"@types/mocha": "^10.0.1",
 		"@types/node": "^20.9.4",
 		"@types/node-fetch": "^2.6.4",
-		"@types/sinon": "^10.0.16",
+		"@types/sinon": "^17.0.2",
 		"@types/sinon-chai": "^3.2.11",
 		"@types/vscode": "^1.57.0",
 		"@typescript-eslint/eslint-plugin": "^5.61.0",
@@ -142,7 +142,7 @@
 		"mocha": "^10.2.0",
 		"mocha-jenkins-reporter": "^0.4.8",
 		"mvn-artifact-download": "^6.1.1",
-		"sinon": "^17.0.0",
+		"sinon": "^17.0.1",
 		"sinon-chai": "^3.7.0",
 		"typescript": "^5.2.2",
 		"vscode-extension-tester": "^5.10.0"
