@@ -108,7 +108,7 @@
 	"dependencies": {
 		"@redhat-developer/vscode-redhat-telemetry": "^0.7.1",
 		"child_process": "^1.0.2",
-		"chokidar": "^3.5.2",
+		"chokidar": "^3.6.0",
 		"expand-home-dir": "^0.0.3",
 		"find-java-home": "^2.0.0",
 		"md5": "^2.3.0",
