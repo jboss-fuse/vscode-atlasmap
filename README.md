@@ -5,6 +5,8 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vscode-atlasmap&metric=alert_status)](https://sonarcloud.io/dashboard?id=vscode-atlasmap)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+DEPRECATED: `camel-atlasmap` has been [removed from Camel 4](https://camel.apache.org/manual/camel-4-migration-guide.html#_removed_components). Consequently, this extension is no more maintained.
+
 ## Prerequisites
 
 - Java 8+ must be installed on system path or configured through _JAVA_HOME_, _JDK_HOME_ or the VS Code setting _java.home_.
