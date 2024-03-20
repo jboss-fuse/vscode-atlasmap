@@ -2,6 +2,8 @@
 
 ## 0.2.3
 
+- Mark deprecation due to removal of `camel-atlasmap` component from Camel 4
+
 ## 0.2.2
 
 - Fixed a bug when using 'Create AtlasMap file' where name validation for files only considered the workspace root instead of the chosen folder.
